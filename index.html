@@ -28,6 +28,7 @@
       width: 100%; height: 100%;
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
     }
 
     .layer-bg {
@@ -38,17 +39,6 @@
     .layer-main {
       background-image: url('images/bg.png');
       z-index: 2;
-    }
-
-    .reveal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 3;
-      pointer-events: none;
-      background-image: url('images/main.png');
-      background-size: cover;
-      background-position: center;
     }
 
     .cursor-dot {
@@ -106,6 +96,20 @@
     const POINTS = 80;
     const time = { value: 0 };
 
+    function getRadius(angle, t) {
+      const wave1 = Math.sin(angle * 3 + t * 2.5) * 12;
+      const wave2 = Math.sin(angle * 5 - t * 1.8) * 8;
+      const wave3 = Math.cos(angle * 2 + t * 3.2) * 6;
+      const jitter = Math.sin(t * 8 + angle * 10) * 3;
+      return CIRCLE_RADIUS + wave1 + wave2 + wave3 + jitter;
+    }
+
+    function getPoint(i, t) {
+      const angle = (i / POINTS) * Math.PI * 2;
+      const r = getRadius(angle, t);
+      return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+    }
+
     function drawReveal() {
       cx += (mx - cx) * 0.08;
       cy += (my - cy) * 0.08;
@@ -116,55 +120,47 @@
       ctx.save();
       ctx.beginPath();
 
-      for (let i = 0; i <= POINTS; i++) {
-        const angle = (i / POINTS) * Math.PI * 2;
+      const first = getPoint(0, time.value);
+      ctx.moveTo(first.x, first.y);
 
-        const wave1 = Math.sin(angle * 3 + time.value * 2.5) * 12;
-        const wave2 = Math.sin(angle * 5 - time.value * 1.8) * 8;
-        const wave3 = Math.cos(angle * 2 + time.value * 3.2) * 6;
-        const jitter = Math.sin(time.value * 8 + i * 0.5) * 3;
-
-        const r = CIRCLE_RADIUS + wave1 + wave2 + wave3 + jitter;
-
-        const x = cx + Math.cos(angle) * r;
-        const y = cy + Math.sin(angle) * r;
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          const prevAngle = ((i - 1) / POINTS) * Math.PI * 2;
-          const prevWave1 = Math.sin(prevAngle * 3 + time.value * 2.5) * 12;
-          const prevWave2 = Math.sin(prevAngle * 5 - time.value * 1.8) * 8;
-          const prevWave3 = Math.cos(prevAngle * 2 + time.value * 3.2) * 6;
-          const prevJitter = Math.sin(time.value * 8 + (i - 1) * 0.5) * 3;
-          const prevR = CIRCLE_RADIUS + prevWave1 + prevWave2 + prevWave3 + prevJitter;
-          const prevX = cx + Math.cos(prevAngle) * prevR;
-          const prevY = cy + Math.sin(prevAngle) * prevR;
-
-          const cpX = (prevX + x) / 2;
-          const cpY = (prevY + y) / 2;
-          ctx.quadraticCurveTo(prevX, prevY, cpX, cpY);
-        }
+      for (let i = 1; i <= POINTS; i++) {
+        const curr = getPoint(i % POINTS, time.value);
+        const prev = getPoint((i - 1) % POINTS, time.value);
+        const cpX = (prev.x + curr.x) / 2;
+        const cpY = (prev.y + curr.y) / 2;
+        ctx.quadraticCurveTo(prev.x, prev.y, cpX, cpY);
       }
 
       ctx.closePath();
       ctx.clip();
 
-      const scale = Math.max(W, H) / 400;
       const imgW = bgImg.naturalWidth || W;
       const imgH = bgImg.naturalHeight || H;
       const aspectRatio = imgW / imgH;
-      let drawW, drawH;
+      let drawW, drawH, offsetX, offsetY;
 
       if (W / H > aspectRatio) {
         drawW = W;
         drawH = W / aspectRatio;
+        offsetX = 0;
+        offsetY = (H - drawH) / 2;
       } else {
         drawH = H;
         drawW = H * aspectRatio;
+        offsetX = (W - drawW) / 2;
+        offsetY = 0;
       }
 
-      ctx.drawImage(bgImg, 0, 0, drawW, drawH);
+      ctx.drawImage(bgImg, offsetX, offsetY, drawW, drawH);
+
+      const blurEdge = 50;
+      const grad = ctx.createRadialGradient(cx, cy, CIRCLE_RADIUS - blurEdge, cx, cy, CIRCLE_RADIUS + 30);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(0.6, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.92)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
       ctx.restore();
 
       requestAnimationFrame(drawReveal);

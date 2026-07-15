@@ -41,6 +41,19 @@
       z-index: 2;
     }
 
+    .reveal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 3;
+      pointer-events: none;
+      background-image: url('images/main.png');
+      background-size: cover;
+      background-position: center;
+      mask-image: radial-gradient(circle 100px at 50% 50%, black 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle 100px at 50% 50%, black 0%, transparent 100%);
+    }
+
     .cursor-dot {
       position: fixed;
       width: 6px; height: 6px;
@@ -51,39 +64,22 @@
       transform: translate(-50%, -50%);
       box-shadow: 0 0 12px rgba(255,255,255,0.6);
     }
-
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 3;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <div class="layer layer-bg"></div>
   <div class="layer layer-main"></div>
-  <canvas id="canvas"></canvas>
+  <div class="reveal" id="reveal"></div>
   <div class="cursor-dot" id="dot"></div>
 
   <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    const reveal = document.getElementById('reveal');
     const dot = document.getElementById('dot');
-    const bgImg = new Image();
-    bgImg.src = 'images/main.png';
-
-    let W, H;
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    let mx = W / 2, my = H / 2;
+    let mx = window.innerWidth / 2;
+    let my = window.innerHeight / 2;
     let cx = mx, cy = my;
+
+    const CIRCLE_SIZE = 200;
 
     document.addEventListener('mousemove', e => {
       mx = e.clientX;
@@ -92,81 +88,19 @@
       dot.style.top = my + 'px';
     });
 
-    const CIRCLE_RADIUS = 160;
-    const POINTS = 80;
-    const time = { value: 0 };
+    function loop() {
+      cx += (mx - cx) * 0.12;
+      cy += (my - cy) * 0.12;
 
-    function getRadius(angle, t) {
-      const wave1 = Math.sin(angle * 3 + t * 2.5) * 12;
-      const wave2 = Math.sin(angle * 5 - t * 1.8) * 8;
-      const wave3 = Math.cos(angle * 2 + t * 3.2) * 6;
-      const jitter = Math.sin(t * 8 + angle * 10) * 3;
-      return CIRCLE_RADIUS + wave1 + wave2 + wave3 + jitter;
+      reveal.style.maskImage =
+        `radial-gradient(circle ${CIRCLE_SIZE}px at ${cx}px ${cy}px, black 0%, black 40%, transparent 100%)`;
+      reveal.style.webkitMaskImage =
+        `radial-gradient(circle ${CIRCLE_SIZE}px at ${cx}px ${cy}px, black 0%, black 40%, transparent 100%)`;
+
+      requestAnimationFrame(loop);
     }
 
-    function getPoint(i, t) {
-      const angle = (i / POINTS) * Math.PI * 2;
-      const r = getRadius(angle, t);
-      return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
-    }
-
-    function drawReveal() {
-      cx += (mx - cx) * 0.08;
-      cy += (my - cy) * 0.08;
-      time.value += 0.04;
-
-      ctx.clearRect(0, 0, W, H);
-
-      ctx.save();
-      ctx.beginPath();
-
-      const first = getPoint(0, time.value);
-      ctx.moveTo(first.x, first.y);
-
-      for (let i = 1; i <= POINTS; i++) {
-        const curr = getPoint(i % POINTS, time.value);
-        const prev = getPoint((i - 1) % POINTS, time.value);
-        const cpX = (prev.x + curr.x) / 2;
-        const cpY = (prev.y + curr.y) / 2;
-        ctx.quadraticCurveTo(prev.x, prev.y, cpX, cpY);
-      }
-
-      ctx.closePath();
-      ctx.clip();
-
-      const imgW = bgImg.naturalWidth || W;
-      const imgH = bgImg.naturalHeight || H;
-      const aspectRatio = imgW / imgH;
-      let drawW, drawH, offsetX, offsetY;
-
-      if (W / H > aspectRatio) {
-        drawW = W;
-        drawH = W / aspectRatio;
-        offsetX = 0;
-        offsetY = (H - drawH) / 2;
-      } else {
-        drawH = H;
-        drawW = H * aspectRatio;
-        offsetX = (W - drawW) / 2;
-        offsetY = 0;
-      }
-
-      ctx.drawImage(bgImg, offsetX, offsetY, drawW, drawH);
-
-      const blurEdge = 50;
-      const grad = ctx.createRadialGradient(cx, cy, CIRCLE_RADIUS - blurEdge, cx, cy, CIRCLE_RADIUS + 30);
-      grad.addColorStop(0, 'rgba(0,0,0,0)');
-      grad.addColorStop(0.6, 'rgba(0,0,0,0)');
-      grad.addColorStop(1, 'rgba(0,0,0,0.92)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.restore();
-
-      requestAnimationFrame(drawReveal);
-    }
-
-    bgImg.onload = () => drawReveal();
+    loop();
   </script>
 </body>
 </html>

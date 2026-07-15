@@ -293,12 +293,15 @@
       return {
         x,
         y,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
         size: Math.random() * 4 + 3,
         opacity: Math.random() * 0.6 + 0.3,
         pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: Math.random() * 0.03 + 0.01
+        pulseSpeed: Math.random() * 0.015 + 0.005,
+        drift: Math.random() * Math.PI * 2,
+        driftSpeed: Math.random() * 0.003 + 0.001,
+        driftRadius: Math.random() * 0.15 + 0.05
       };
     }
 
@@ -332,8 +335,13 @@
           n.vy -= (dyr / distToReveal) * force;
         }
 
-        n.vx *= 0.97;
-        n.vy *= 0.97;
+        n.vx *= 0.98;
+        n.vy *= 0.98;
+
+        n.drift += n.driftSpeed;
+        n.vx += Math.sin(n.drift) * n.driftRadius;
+        n.vy += Math.cos(n.drift * 0.7) * n.driftRadius;
+
         n.x += n.vx;
         n.y += n.vy;
         n.pulse += n.pulseSpeed;

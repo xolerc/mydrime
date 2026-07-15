@@ -267,7 +267,7 @@
 
     loop();
 
-    // Particles
+    // Neurons
     const pc = document.getElementById('particles');
     const pctx = pc.getContext('2d');
     let PW, PH;
@@ -278,65 +278,95 @@
     pResize();
     window.addEventListener('resize', pResize);
 
-    const PARTICLE_COUNT = 60;
-    const particles = [];
+    const NEURON_COUNT = 40;
+    const CONNECT_DIST = 200;
+    const CURSOR_PULL = 80;
+    const neurons = [];
 
-    function createParticle() {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 0.3 + Math.random() * 0.7;
-      const side = Math.random() > 0.5 ? 1 : -1;
+    function createNeuron() {
       return {
-        x: PW / 2 + Math.cos(angle) * PW * 0.35 * side * dist,
-        y: PH / 2 + Math.sin(angle) * PH * 0.35 * dist,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 3.5 + 1,
-        opacity: Math.random() * 0.5 + 0.1,
+        x: Math.random() * PW,
+        y: Math.random() * PH,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        size: Math.random() * 4 + 3,
+        opacity: Math.random() * 0.6 + 0.3,
         pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: Math.random() * 0.02 + 0.005,
-        life: 1,
-        fadeSpeed: Math.random() * 0.001 + 0.0003
+        pulseSpeed: Math.random() * 0.03 + 0.01
       };
     }
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(createParticle());
+    for (let i = 0; i < NEURON_COUNT; i++) {
+      neurons.push(createNeuron());
     }
 
-    function drawParticles() {
+    function drawNeurons() {
       pctx.clearRect(0, 0, PW, PH);
 
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+      for (let i = 0; i < neurons.length; i++) {
+        const n = neurons[i];
 
-        p.x += p.vx;
-        p.y += p.vy;
-        p.pulse += p.pulseSpeed;
-        p.life -= p.fadeSpeed;
-
-        const pulseFactor = 0.5 + Math.sin(p.pulse) * 0.5;
-        const alpha = p.opacity * pulseFactor * p.life;
-
-        if (p.life <= 0 || p.x < -50 || p.x > PW + 50 || p.y < -50 || p.y > PH + 50) {
-          particles[i] = createParticle();
-          continue;
+        const dx = mx - n.x;
+        const dy = my - my;
+        const distToCursor = Math.sqrt(dx * dx + dy * dy);
+        if (distToCursor < CURSOR_PULL && distToCursor > 0) {
+          const force = (1 - distToCursor / CURSOR_PULL) * 0.02;
+          n.vx += dx * force;
+          n.vy += dy * force;
         }
 
+        n.vx *= 0.99;
+        n.vy *= 0.99;
+        n.x += n.vx;
+        n.y += n.vy;
+        n.pulse += n.pulseSpeed;
+
+        if (n.x < -20) n.x = PW + 20;
+        if (n.x > PW + 20) n.x = -20;
+        if (n.y < -20) n.y = PH + 20;
+        if (n.y > PH + 20) n.y = -20;
+      }
+
+      for (let i = 0; i < neurons.length; i++) {
+        for (let j = i + 1; j < neurons.length; j++) {
+          const a = neurons[i];
+          const b = neurons[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < CONNECT_DIST) {
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.35;
+            pctx.beginPath();
+            pctx.moveTo(a.x, a.y);
+            pctx.lineTo(b.x, b.y);
+            pctx.strokeStyle = `rgba(0, 0, 0, ${lineAlpha})`;
+            pctx.lineWidth = 1;
+            pctx.stroke();
+          }
+        }
+      }
+
+      for (let i = 0; i < neurons.length; i++) {
+        const n = neurons[i];
+        const pulseFactor = 0.6 + Math.sin(n.pulse) * 0.4;
+        const alpha = n.opacity * pulseFactor;
+
         pctx.beginPath();
-        pctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        pctx.arc(n.x, n.y, n.size * 1.8, 0, Math.PI * 2);
+        pctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.12})`;
         pctx.fill();
 
         pctx.beginPath();
-        pctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.15})`;
+        pctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
+        pctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
         pctx.fill();
       }
 
-      requestAnimationFrame(drawParticles);
+      requestAnimationFrame(drawNeurons);
     }
 
-    drawParticles();
+    drawNeurons();
   </script>
 </body>
 </html>

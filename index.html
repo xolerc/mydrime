@@ -139,11 +139,11 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 500px;
-      height: 500px;
-      margin-top: -250px;
-      margin-left: -250px;
-      animation: orbitSpin 120s linear infinite;
+      width: 200px;
+      height: 200px;
+      margin-top: -100px;
+      margin-left: -100px;
+      animation: orbitSpin 20s linear infinite;
     }
 
     @keyframes orbitSpin {
@@ -164,7 +164,7 @@
       border: 1px solid rgba(255,255,255,0.2);
       pointer-events: auto;
       cursor: none;
-      transition: background 0.3s, transform 0.3s;
+      transition: background 0.3s, filter 0.3s;
     }
 
     .orbit-ring .social-icon:hover {
@@ -184,12 +184,12 @@
       left: 50%;
     }
 
-    .social-icon:nth-child(1) { transform: rotate(0deg) translateX(250px) rotate(0deg); }
-    .social-icon:nth-child(2) { transform: rotate(60deg) translateX(250px) rotate(-60deg); }
-    .social-icon:nth-child(3) { transform: rotate(120deg) translateX(250px) rotate(-120deg); }
-    .social-icon:nth-child(4) { transform: rotate(180deg) translateX(250px) rotate(-180deg); }
-    .social-icon:nth-child(5) { transform: rotate(240deg) translateX(250px) rotate(-240deg); }
-    .social-icon:nth-child(6) { transform: rotate(300deg) translateX(250px) rotate(-300deg); }
+    .social-icon:nth-child(1) { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+    .social-icon:nth-child(2) { transform: rotate(60deg) translateX(100px) rotate(-60deg); }
+    .social-icon:nth-child(3) { transform: rotate(120deg) translateX(100px) rotate(-120deg); }
+    .social-icon:nth-child(4) { transform: rotate(180deg) translateX(100px) rotate(-180deg); }
+    .social-icon:nth-child(5) { transform: rotate(240deg) translateX(100px) rotate(-240deg); }
+    .social-icon:nth-child(6) { transform: rotate(300deg) translateX(100px) rotate(-300deg); }
 
     .social-icon:nth-child(1) { margin-top: -19px; margin-left: -19px; }
     .social-icon:nth-child(2) { margin-top: -19px; margin-left: -19px; }
@@ -239,13 +239,13 @@
       body { cursor: auto; }
       .orbit-ring .social-icon { cursor: pointer; }
       .scroll-hint { display: flex; }
-      .orbit-ring { width: 350px; height: 350px; margin-top: -175px; margin-left: -175px; }
-      .social-icon:nth-child(1) { transform: rotate(0deg) translateX(175px) rotate(0deg); }
-      .social-icon:nth-child(2) { transform: rotate(60deg) translateX(175px) rotate(-60deg); }
-      .social-icon:nth-child(3) { transform: rotate(120deg) translateX(175px) rotate(-120deg); }
-      .social-icon:nth-child(4) { transform: rotate(180deg) translateX(175px) rotate(-180deg); }
-      .social-icon:nth-child(5) { transform: rotate(240deg) translateX(175px) rotate(-240deg); }
-      .social-icon:nth-child(6) { transform: rotate(300deg) translateX(175px) rotate(-300deg); }
+      .orbit-ring { width: 160px; height: 160px; margin-top: -80px; margin-left: -80px; }
+      .social-icon:nth-child(1) { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+      .social-icon:nth-child(2) { transform: rotate(60deg) translateX(80px) rotate(-60deg); }
+      .social-icon:nth-child(3) { transform: rotate(120deg) translateX(80px) rotate(-120deg); }
+      .social-icon:nth-child(4) { transform: rotate(180deg) translateX(80px) rotate(-180deg); }
+      .social-icon:nth-child(5) { transform: rotate(240deg) translateX(80px) rotate(-240deg); }
+      .social-icon:nth-child(6) { transform: rotate(300deg) translateX(80px) rotate(-300deg); }
     }
 
     @media (min-width: 769px) {

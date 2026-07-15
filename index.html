@@ -83,18 +83,33 @@
 
     .welcome {
       position: fixed;
-      bottom: 90px;
+      bottom: 95px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
-      font-size: 14px;
-      letter-spacing: 4px;
+      font-size: 22px;
+      letter-spacing: 6px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-      font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      font-weight: 200;
       font-style: italic;
       white-space: nowrap;
-      text-shadow: 0 0 20px rgba(255,255,255,0.1);
+      text-shadow: 0 0 30px rgba(255,255,255,0.15), 0 0 60px rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .welcome span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(15px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .socials {
@@ -190,7 +205,7 @@
   <div class="cursor-dot" id="dot"></div>
   <canvas id="particles"></canvas>
 
-  <div class="welcome">welcome to xoleric portfolio</div>
+  <div class="welcome" id="welcome"></div>
 
   <div class="socials">
     <a href="https://youtube.com/@xolericc" target="_blank" rel="noopener">
@@ -293,6 +308,16 @@
     }
 
     loop();
+
+    // Welcome text animation
+    const welcomeText = 'welcome to xoleric portfolio';
+    const welcomeEl = document.getElementById('welcome');
+    welcomeText.split('').forEach((char, i) => {
+      const span = document.createElement('span');
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.animationDelay = `${i * 0.04}s`;
+      welcomeEl.appendChild(span);
+    });
 
     // Neurons
     const pc = document.getElementById('particles');

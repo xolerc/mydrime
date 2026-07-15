@@ -280,13 +280,19 @@
 
     const NEURON_COUNT = 40;
     const CONNECT_DIST = 200;
-    const CURSOR_PULL = 80;
+    const CURSOR_REPEL = 250;
+    const REVEAL_REPEL = 220;
     const neurons = [];
 
     function createNeuron() {
+      let x, y;
+      do {
+        x = Math.random() * PW;
+        y = Math.random() * PH;
+      } while (Math.sqrt((x - mx) ** 2 + (y - my) ** 2) < CURSOR_REPEL);
       return {
-        x: Math.random() * PW,
-        y: Math.random() * PH,
+        x,
+        y,
         vx: (Math.random() - 0.5) * 0.6,
         vy: (Math.random() - 0.5) * 0.6,
         size: Math.random() * 4 + 3,
@@ -307,24 +313,35 @@
         const n = neurons[i];
 
         const dx = mx - n.x;
-        const dy = my - my;
+        const dy = my - n.y;
         const distToCursor = Math.sqrt(dx * dx + dy * dy);
-        if (distToCursor < CURSOR_PULL && distToCursor > 0) {
-          const force = (1 - distToCursor / CURSOR_PULL) * 0.02;
-          n.vx += dx * force;
-          n.vy += dy * force;
+        if (distToCursor < CURSOR_REPEL && distToCursor > 0) {
+          const force = (1 - distToCursor / CURSOR_REPEL) * 0.8;
+          n.vx -= (dx / distToCursor) * force;
+          n.vy -= (dy / distToCursor) * force;
         }
 
-        n.vx *= 0.99;
-        n.vy *= 0.99;
+        const rcx = cx;
+        const rcy = cy;
+        const dxr = rcx - n.x;
+        const dyr = rcy - n.y;
+        const distToReveal = Math.sqrt(dxr * dxr + dyr * dyr);
+        if (distToReveal < REVEAL_REPEL && distToReveal > 0) {
+          const force = (1 - distToReveal / REVEAL_REPEL) * 0.5;
+          n.vx -= (dxr / distToReveal) * force;
+          n.vy -= (dyr / distToReveal) * force;
+        }
+
+        n.vx *= 0.97;
+        n.vy *= 0.97;
         n.x += n.vx;
         n.y += n.vy;
         n.pulse += n.pulseSpeed;
 
-        if (n.x < -20) n.x = PW + 20;
-        if (n.x > PW + 20) n.x = -20;
-        if (n.y < -20) n.y = PH + 20;
-        if (n.y > PH + 20) n.y = -20;
+        if (n.x < -30) n.x = PW + 30;
+        if (n.x > PW + 30) n.x = -30;
+        if (n.y < -30) n.y = PH + 30;
+        if (n.y > PH + 30) n.y = -30;
       }
 
       for (let i = 0; i < neurons.length; i++) {
@@ -336,12 +353,15 @@
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < CONNECT_DIST) {
-            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.35;
+            const t = (1 - dist / CONNECT_DIST);
+            const lineAlpha = t * 0.4;
+            const gold = Math.floor(180 + t * 75);
+            const green = Math.floor(140 + t * 60);
             pctx.beginPath();
             pctx.moveTo(a.x, a.y);
             pctx.lineTo(b.x, b.y);
-            pctx.strokeStyle = `rgba(0, 0, 0, ${lineAlpha})`;
-            pctx.lineWidth = 1;
+            pctx.strokeStyle = `rgba(${gold}, ${green}, 0, ${lineAlpha})`;
+            pctx.lineWidth = t * 1.5;
             pctx.stroke();
           }
         }
@@ -353,13 +373,18 @@
         const alpha = n.opacity * pulseFactor;
 
         pctx.beginPath();
-        pctx.arc(n.x, n.y, n.size * 1.8, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.12})`;
+        pctx.arc(n.x, n.y, n.size * 2, 0, Math.PI * 2);
+        pctx.fillStyle = `rgba(200, 160, 0, ${alpha * 0.1})`;
         pctx.fill();
 
         pctx.beginPath();
         pctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        pctx.fillStyle = `rgba(30, 25, 0, ${alpha})`;
+        pctx.fill();
+
+        pctx.beginPath();
+        pctx.arc(n.x, n.y, n.size * 0.5, 0, Math.PI * 2);
+        pctx.fillStyle = `rgba(210, 170, 0, ${alpha * 0.8})`;
         pctx.fill();
       }
 

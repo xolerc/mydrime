@@ -1,12 +1,12 @@
 <div align="center">
 
-# Xoleric Portfolio
+# ✦ Xoleric Portfolio ✦
 
-### An immersive interactive experience built with pure HTML, CSS & JavaScript
+### Immersive interactive portfolio — pure HTML, CSS & JavaScript
 
-[![Live Demo](https://img.shields.io/badge/LIVE-DEMO-00d4ff?style=for-the-badge&logo=vercel&logoColor=white)](https://xolerc.github.io/mydrime/)
-[![GitHub Stars](https://img.shields.io/github/stars/xolerc/mydrime?style=for-the-badge&color=yellow)](https://github.com/xolerc/mydrime)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/VISIT-SITE-00d4ff?style=for-the-badge&logo=vercel&logoColor=white)](https://xolerc.github.io/mydrime/)
+[![GitHub](https://img.shields.io/badge/GITHUB-xolerc-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xolerc)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](#license)
 
 </div>
 
@@ -66,14 +66,9 @@ JS    ─── Canvas API, requestAnimationFrame, lerp interpolation
 ## Quick Start
 
 ```bash
-# Clone
 git clone https://github.com/xolerc/mydrime.git
-
-# Open
 cd mydrime
-open index.html        # macOS
-xdg-open index.html    # Linux
-start index.html       # Windows
+open index.html
 ```
 
 Or just visit the **[live site](https://xolerc.github.io/mydrime/)** directly.
@@ -104,7 +99,7 @@ mydrime/
 
 ---
 
-## Social Links
+## Connect
 
 <div align="center">
 

@@ -49,17 +49,12 @@
       z-index: 2;
     }
 
-    .reveal {
-      position: absolute;
+    canvas#revealCanvas {
+      position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 3;
       pointer-events: none;
-      background-image: url('images/bg.png');
-      background-size: cover;
-      background-position: -45px center;
-      mask-image: radial-gradient(circle 0px at 50% 50%, black 0%, transparent 100%);
-      -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, black 0%, transparent 100%);
     }
 
     canvas#particles {
@@ -200,6 +195,7 @@
     <div class="layer layer-bg"></div>
     <div class="layer layer-main"></div>
     <div class="reveal" id="reveal"></div>
+  <canvas id="revealCanvas"></canvas>
   </div>
 
   <div class="cursor-dot" id="dot"></div>
@@ -287,27 +283,97 @@
       });
     }
 
+    const revealCanvas = document.getElementById('revealCanvas');
+    const rctx = revealCanvas.getContext('2d');
+    const revealImg = new Image();
+    revealImg.src = 'images/bg.png';
+    let RCW, RCH;
+    function rcResize() {
+      RCW = revealCanvas.width = window.innerWidth;
+      RCH = revealCanvas.height = window.innerHeight;
+    }
+    rcResize();
+    window.addEventListener('resize', rcResize);
+
+    const REVEAL_POINTS = 120;
+    let rTime = 0;
+
+    function getWavyRadius(angle, t) {
+      const w1 = Math.sin(angle * 2.0 + t * 0.3) * 8;
+      const w2 = Math.cos(angle * 3.7 + t * 0.17) * 5;
+      const w3 = Math.sin(angle * 5.1 - t * 0.23) * 3;
+      const w4 = Math.cos(angle * 1.3 + t * 0.11) * 6;
+      const w5 = Math.sin(angle * 7.2 - t * 0.08) * 2;
+      const jitter = Math.sin(t * 0.5 + angle * 13) * 1.5;
+      return currentR + w1 + w2 + w3 + w4 + w5 + jitter;
+    }
+
     function loop() {
       cx += (mx - cx) * 0.25;
       cy += (my - cy) * 0.25;
       currentR += (targetR - currentR) * 0.1;
+      rTime += 0.008;
+
+      rctx.clearRect(0, 0, RCW, RCH);
 
       if (currentR > 0.5) {
-        reveal.style.maskImage =
-          `radial-gradient(circle ${currentR}px at ${cx}px ${cy}px, black 0%, black 40%, transparent 100%)`;
-        reveal.style.webkitMaskImage =
-          `radial-gradient(circle ${currentR}px at ${cx}px ${cy}px, black 0%, black 40%, transparent 100%)`;
-      } else {
-        reveal.style.maskImage =
-          `radial-gradient(circle 0px at 50% 50%, black 0%, transparent 100%)`;
-        reveal.style.webkitMaskImage =
-          `radial-gradient(circle 0px at 50% 50%, black 0%, transparent 100%)`;
+        rctx.save();
+        rctx.beginPath();
+
+        const first = { x: cx + Math.cos(0) * getWavyRadius(0, rTime), y: cy + Math.sin(0) * getWavyRadius(0, rTime) };
+        rctx.moveTo(first.x, first.y);
+
+        for (let i = 1; i <= REVEAL_POINTS; i++) {
+          const angle = (i / REVEAL_POINTS) * Math.PI * 2;
+          const prevAngle = ((i - 1) / REVEAL_POINTS) * Math.PI * 2;
+          const r = getWavyRadius(angle, rTime);
+          const prevR = getWavyRadius(prevAngle, rTime);
+          const x = cx + Math.cos(angle) * r;
+          const y = cy + Math.sin(angle) * r;
+          const prevX = cx + Math.cos(prevAngle) * prevR;
+          const prevY = cy + Math.sin(prevAngle) * prevR;
+          const cpX = (prevX + x) / 2;
+          const cpY = (prevY + y) / 2;
+          rctx.quadraticCurveTo(prevX, prevY, cpX, cpY);
+        }
+
+        rctx.closePath();
+        rctx.clip();
+
+        const imgW = revealImg.naturalWidth || RCW;
+        const imgH = revealImg.naturalHeight || RCH;
+        const aspectRatio = imgW / imgH;
+        let drawW, drawH, offsetX, offsetY;
+
+        if (RCW / RCH > aspectRatio) {
+          drawW = RCW;
+          drawH = RCW / aspectRatio;
+          offsetX = -45;
+          offsetY = (RCH - drawH) / 2;
+        } else {
+          drawH = RCH;
+          drawW = RCH * aspectRatio;
+          offsetX = (RCW - drawW) / 2 - 45;
+          offsetY = 0;
+        }
+
+        rctx.drawImage(revealImg, offsetX, offsetY, drawW, drawH);
+
+        const blurEdge = 40;
+        const grad = rctx.createRadialGradient(cx, cy, currentR - blurEdge, cx, cy, currentR + 20);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(0.7, 'rgba(0,0,0,0)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.85)');
+        rctx.fillStyle = grad;
+        rctx.fillRect(cx - currentR - 40, cy - currentR - 40, currentR * 2 + 80, currentR * 2 + 80);
+
+        rctx.restore();
       }
 
       requestAnimationFrame(loop);
     }
 
-    loop();
+    revealImg.onload = () => loop();
 
     // Welcome text animation
     const welcomeText = 'welcome to xoleric portfolio';

@@ -113,6 +113,10 @@
       opacity: 1;
       transform: translateY(0) scale(1) rotateX(0);
       animation: softGlow 3s infinite alternate ease-in-out;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                  text-shadow 0.4s ease,
+                  color 0.4s ease;
+      will-change: transform, text-shadow;
     }
 
     @keyframes softGlow {
@@ -372,16 +376,88 @@
     // Welcome text animation
     const welcomeText = 'welcome to xoleric portfolio';
     const welcomeEl = document.getElementById('welcome');
+    const letterEls = [];
     welcomeText.split('').forEach((char, index) => {
       const span = document.createElement('span');
       span.textContent = char;
       span.classList.add('letter');
       span.style.animationDelay = `${index * 0.1}s`;
       welcomeEl.appendChild(span);
+      letterEls.push(span);
       setTimeout(() => {
         span.classList.add('visible');
       }, index * 120);
     });
+
+    // Magnetic letter effect — letters scatter from cursor
+    const LETTER_RADIUS = 150;
+    const LETTER_FORCE = 35;
+    const letterStates = letterEls.map(() => ({
+      offsetX: 0, offsetY: 0,
+      velocityX: 0, velocityY: 0,
+      glowIntensity: 0,
+      scaleBoost: 0,
+      rotX: 0, rotY: 0
+    }));
+
+    function updateLetters() {
+      letterEls.forEach((span, i) => {
+        if (!span.classList.contains('visible')) return;
+        const rect = span.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        let dx = mx - cx;
+        let dy = my - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        const state = letterStates[i];
+        let forceX = 0, forceY = 0;
+        let glow = 0, scale = 0;
+        let rX = 0, rY = 0;
+
+        if (dist < LETTER_RADIUS && dist > 0) {
+          const strength = 1 - dist / LETTER_RADIUS;
+          const power = strength * strength;
+          forceX = -(dx / dist) * LETTER_FORCE * power;
+          forceY = -(dy / dist) * LETTER_FORCE * power;
+          glow = power;
+          scale = power * 0.15;
+          rX = -(dy / dist) * 20 * power;
+          rY = (dx / dist) * 20 * power;
+        }
+
+        state.velocityX += forceX;
+        state.velocityY += forceY;
+        state.velocityX *= 0.88;
+        state.velocityY *= 0.88;
+        state.offsetX += state.velocityX;
+        state.offsetY += state.velocityY;
+
+        const returnForce = 0.12;
+        state.offsetX += -state.offsetX * returnForce;
+        state.offsetY += -state.offsetY * returnForce;
+
+        state.glowIntensity += (glow - state.glowIntensity) * 0.15;
+        state.scaleBoost += (scale - state.scaleBoost) * 0.15;
+        state.rotX += (rX - state.rotX) * 0.1;
+        state.rotY += (rY - state.rotY) * 0.1;
+
+        const s = 1 + state.scaleBoost;
+        const g = state.glowIntensity;
+        const hue = 190 + g * 60;
+
+        span.style.transform =
+          `translate(${state.offsetX}px, ${state.offsetY}px) scale(${s}) perspective(500px) rotateX(${state.rotX}deg) rotateY(${state.rotY}deg)`;
+        span.style.textShadow =
+          `0 0 ${10 + g * 30}px hsla(${hue}, 100%, 70%, ${0.3 + g * 0.7}),
+           0 0 ${20 + g * 50}px hsla(${hue}, 100%, 60%, ${0.1 + g * 0.5}),
+           0 0 ${5 + g * 15}px rgba(255,255,255,${g * 0.4})`;
+        span.style.color = g > 0.3
+          ? `hsl(${hue}, ${60 + g * 40}%, ${80 + g * 15}%)`
+          : 'rgba(230, 230, 230, 0.9)';
+      });
+    }
 
     // Neurons
     const pc = document.getElementById('particles');
@@ -511,6 +587,7 @@
       }
 
       requestAnimationFrame(drawNeurons);
+      updateLetters();
     }
 
     drawNeurons();

@@ -194,10 +194,9 @@
   <div class="scene">
     <div class="layer layer-bg"></div>
     <div class="layer layer-main"></div>
-    <div class="reveal" id="reveal"></div>
-  <canvas id="revealCanvas"></canvas>
   </div>
 
+  <canvas id="revealCanvas"></canvas>
   <div class="cursor-dot" id="dot"></div>
   <canvas id="particles"></canvas>
 
@@ -230,7 +229,6 @@
   </div>
 
   <script>
-    const reveal = document.getElementById('reveal');
     const dot = document.getElementById('dot');
     const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 

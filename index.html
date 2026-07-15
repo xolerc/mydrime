@@ -87,29 +87,41 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
-      font-size: 22px;
-      letter-spacing: 6px;
+      font-size: 2.5vw;
+      font-weight: 900;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.6);
-      font-weight: 200;
-      font-style: italic;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      letter-spacing: 4px;
+      text-align: center;
       white-space: nowrap;
-      text-shadow: 0 0 30px rgba(255,255,255,0.15), 0 0 60px rgba(255,255,255,0.05);
-      overflow: hidden;
+      font-family: 'Arial Black', Impact, sans-serif;
     }
 
-    .welcome span {
+    .welcome .letter {
       display: inline-block;
+      color: rgba(230, 230, 230, 0.9);
       opacity: 0;
-      transform: translateY(15px);
-      animation: fadeUp 0.6s ease forwards;
+      transform: translateY(30px) scale(0.8) rotateX(-45deg);
+      transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: pre;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0), 0 0 20px rgba(0, 255, 255, 0);
     }
 
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .welcome .letter.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotateX(0);
+      animation: softGlow 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes softGlow {
+      0% { text-shadow: 0 0 10px rgba(74, 144, 226, 0.3), 0 0 20px rgba(74, 144, 226, 0.1); }
+      100% { text-shadow: 0 0 20px rgba(74, 144, 226, 0.6), 0 0 40px rgba(74, 144, 226, 0.3); }
+    }
+
+    @media (max-width: 768px) {
+      .welcome { font-size: 8vw; }
     }
 
     .socials {
@@ -312,11 +324,15 @@
     // Welcome text animation
     const welcomeText = 'welcome to xoleric portfolio';
     const welcomeEl = document.getElementById('welcome');
-    welcomeText.split('').forEach((char, i) => {
+    welcomeText.split('').forEach((char, index) => {
       const span = document.createElement('span');
-      span.textContent = char === ' ' ? '\u00A0' : char;
-      span.style.animationDelay = `${i * 0.04}s`;
+      span.textContent = char;
+      span.classList.add('letter');
+      span.style.animationDelay = `${index * 0.1}s`;
       welcomeEl.appendChild(span);
+      setTimeout(() => {
+        span.classList.add('visible');
+      }, index * 120);
     });
 
     // Neurons

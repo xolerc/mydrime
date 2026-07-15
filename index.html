@@ -354,13 +354,11 @@
 
           if (dist < CONNECT_DIST) {
             const t = (1 - dist / CONNECT_DIST);
-            const lineAlpha = t * 0.4;
-            const gold = Math.floor(180 + t * 75);
-            const green = Math.floor(140 + t * 60);
+            const lineAlpha = t * 0.5;
             pctx.beginPath();
             pctx.moveTo(a.x, a.y);
             pctx.lineTo(b.x, b.y);
-            pctx.strokeStyle = `rgba(${gold}, ${green}, 0, ${lineAlpha})`;
+            pctx.strokeStyle = `rgba(210, 170, 0, ${lineAlpha})`;
             pctx.lineWidth = t * 1.5;
             pctx.stroke();
           }
@@ -374,17 +372,17 @@
 
         pctx.beginPath();
         pctx.arc(n.x, n.y, n.size * 2, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(200, 160, 0, ${alpha * 0.1})`;
+        pctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.1})`;
         pctx.fill();
 
         pctx.beginPath();
         pctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(30, 25, 0, ${alpha})`;
+        pctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
         pctx.fill();
 
         pctx.beginPath();
         pctx.arc(n.x, n.y, n.size * 0.5, 0, Math.PI * 2);
-        pctx.fillStyle = `rgba(210, 170, 0, ${alpha * 0.8})`;
+        pctx.fillStyle = `rgba(20, 18, 0, ${alpha * 0.8})`;
         pctx.fill();
       }
 

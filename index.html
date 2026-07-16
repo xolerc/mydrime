@@ -359,14 +359,11 @@
         my = e.clientY;
         dot.style.left = mx + 'px';
         dot.style.top = my + 'px';
-
-        // Lightning trigger on fast movement
-        if (Math.random() < 0.15) spawnLightning(mx, my);
       });
     }
 
     // ═══════════════════════════════════════════
-    // LIGHTNING EFFECT
+    // SOFT CURSOR LIGHTNING
     // ═══════════════════════════════════════════
 
     const lCanvas = document.getElementById('lightning');
@@ -380,71 +377,50 @@
     lResize();
     window.addEventListener('resize', lResize);
 
-    let bolts = [];
+    let sparks = [];
 
-    function spawnLightning(x, y) {
-      const count = 1 + Math.floor(Math.random() * 2);
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const length = 40 + Math.random() * 80;
-        const branches = [];
-        buildBolt(x, y, angle, length, 3, branches);
-        bolts.push({ segments: branches, alpha: 1, decay: 0.025 + Math.random() * 0.02 });
-      }
-    }
-
-    function buildBolt(x, y, angle, length, depth, arr) {
-      if (depth <= 0 || length < 4) return;
-
-      const segs = 6 + Math.floor(Math.random() * 4);
-      let px = x, py = y;
-
-      for (let i = 0; i < segs; i++) {
-        const t = (i + 1) / segs;
-        const nx = x + Math.cos(angle) * length * t + (Math.random() - 0.5) * 25;
-        const ny = y + Math.sin(angle) * length * t + (Math.random() - 0.5) * 25;
-        arr.push({ x1: px, y1: py, x2: nx, y2: ny });
-        px = nx;
-        py = ny;
-
-        // branch
-        if (Math.random() < 0.35 && depth > 1) {
-          const bAngle = angle + (Math.random() - 0.5) * 1.8;
-          const bLen = length * (0.3 + Math.random() * 0.3);
-          buildBolt(px, py, bAngle, bLen, depth - 1, arr);
-        }
-      }
+    function addSpark() {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 15 + Math.random() * 30;
+      sparks.push({
+        x: mx + Math.cos(angle) * dist,
+        y: my + Math.sin(angle) * dist,
+        len: 8 + Math.random() * 15,
+        angle: angle + (Math.random() - 0.5) * 1.2,
+        alpha: 0.6 + Math.random() * 0.4,
+        decay: 0.04 + Math.random() * 0.04
+      });
     }
 
     function drawLightning() {
       lCtx.clearRect(0, 0, LW, LH);
 
-      for (let i = bolts.length - 1; i >= 0; i--) {
-        const b = bolts[i];
-        b.alpha -= b.decay;
-        if (b.alpha <= 0) { bolts.splice(i, 1); continue; }
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.alpha -= s.decay;
+        if (s.alpha <= 0) { sparks.splice(i, 1); continue; }
 
-        // glow layer
-        lCtx.save();
-        lCtx.globalAlpha = b.alpha * 0.4;
-        lCtx.strokeStyle = '#8af';
-        lCtx.lineWidth = 6;
-        lCtx.shadowColor = '#4bf';
-        lCtx.shadowBlur = 20;
-        lCtx.beginPath();
-        b.segments.forEach(s => { lCtx.moveTo(s.x1, s.y1); lCtx.lineTo(s.x2, s.y2); });
-        lCtx.stroke();
-        lCtx.restore();
+        const ex = s.x + Math.cos(s.angle) * s.len;
+        const ey = s.y + Math.sin(s.angle) * s.len;
 
-        // core
-        lCtx.save();
-        lCtx.globalAlpha = b.alpha;
-        lCtx.strokeStyle = '#fff';
-        lCtx.lineWidth = 1.5;
+        // soft glow
         lCtx.beginPath();
-        b.segments.forEach(s => { lCtx.moveTo(s.x1, s.y1); lCtx.lineTo(s.x2, s.y2); });
+        lCtx.moveTo(s.x, s.y);
+        lCtx.lineTo(ex, ey);
+        lCtx.strokeStyle = `rgba(180, 200, 255, ${s.alpha * 0.3})`;
+        lCtx.lineWidth = 4;
+        lCtx.shadowColor = 'rgba(100, 150, 255, 0.5)';
+        lCtx.shadowBlur = 10;
         lCtx.stroke();
-        lCtx.restore();
+        lCtx.shadowBlur = 0;
+
+        // thin core
+        lCtx.beginPath();
+        lCtx.moveTo(s.x, s.y);
+        lCtx.lineTo(ex, ey);
+        lCtx.strokeStyle = `rgba(255, 255, 255, ${s.alpha * 0.7})`;
+        lCtx.lineWidth = 1;
+        lCtx.stroke();
       }
 
       requestAnimationFrame(drawLightning);
@@ -452,15 +428,12 @@
 
     drawLightning();
 
-    // Random ambient sparks
+    // gentle sparks around cursor
     setInterval(() => {
-      if (Math.random() < 0.3) {
-        spawnLightning(
-          Math.random() * LW,
-          Math.random() * LH * 0.6
-        );
+      if (!isMobile && active && Math.random() < 0.4) {
+        addSpark();
       }
-    }, 800);
+    }, 100);
 
     function loop() {
       cx += (mx - cx) * 0.25;

@@ -675,6 +675,26 @@
     }
 
     drawNeurons();
+
+    // 4x "0" = fullscreen
+    let zeroCount = 0;
+    let zeroTimer = null;
+
+    document.addEventListener('keydown', e => {
+      if (e.key === '0') {
+        zeroCount++;
+        clearTimeout(zeroTimer);
+        zeroTimer = setTimeout(() => { zeroCount = 0; }, 1500);
+        if (zeroCount >= 4) {
+          zeroCount = 0;
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen().catch(() => {});
+          }
+        }
+      }
+    });
   </script>
 </body>
 </html>

@@ -16,29 +16,18 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html {
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-    }
-
-    body {
+    html, body {
       width: 100%;
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: 100%;
+      overflow: hidden;
       background: #000;
       font-family: sans-serif;
     }
 
-    /* ─── HERO SCENE ─── */
-    .hero-scene {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-    }
+    body { cursor: none; }
 
     .scene {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
     }
@@ -76,7 +65,7 @@
     }
 
     canvas#particles {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 4;
@@ -95,7 +84,7 @@
     }
 
     .welcome {
-      position: absolute;
+      position: fixed;
       bottom: 95px;
       left: 40%;
       transform: translateX(-50%);
@@ -142,7 +131,7 @@
     }
 
     .orbit-container {
-      position: absolute;
+      position: fixed;
       top: 120px;
       right: 160px;
       transform: none;
@@ -181,12 +170,12 @@
       border: 1px solid rgba(255,255,255,0.2);
       pointer-events: auto;
       cursor: none;
-      transition: background 0.3s, transform 0.3s;
+      transition: background 0.3s, filter 0.3s;
     }
 
     .orbit-ring .social-icon:hover {
       background: rgba(255,255,255,0.25);
-      transform: scale(1.2) !important;
+      filter: scale(1.2);
     }
 
     .orbit-ring .social-icon svg {
@@ -216,12 +205,12 @@
     .social-icon:nth-child(6) { margin-top: -19px; margin-left: -19px; }
 
     .scroll-hint {
-      position: absolute;
-      bottom: 30px;
+      position: fixed;
+      bottom: 110px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       gap: 8px;
@@ -255,6 +244,7 @@
       .cursor-dot { display: none; }
       body { cursor: auto; }
       .orbit-ring .social-icon { cursor: pointer; }
+      .scroll-hint { display: flex; }
       .orbit-ring { width: 160px; height: 160px; margin-top: -80px; margin-left: -80px; }
       .social-icon:nth-child(1) { transform: rotate(0deg) translateX(80px) rotate(0deg); }
       .social-icon:nth-child(2) { transform: rotate(60deg) translateX(80px) rotate(-60deg); }
@@ -264,516 +254,50 @@
       .social-icon:nth-child(6) { transform: rotate(300deg) translateX(80px) rotate(-300deg); }
     }
 
-    /* ─── F1 CAR SECTION ─── */
-    .f1-section {
-      position: relative;
-      width: 100%;
-      height: 200vh;
-      background: linear-gradient(180deg, #000 0%, #0a0a1a 30%, #050520 70%, #000 100%);
-      overflow: hidden;
-    }
-
-    .f1-sticky {
-      position: sticky;
-      top: 0;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      perspective: 1200px;
-      overflow: hidden;
-    }
-
-    /* Lightning Canvas */
-    #lightningCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 5;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-
-    /* 3D F1 Car Container */
-    .f1-car-wrapper {
-      position: relative;
-      width: 500px;
-      height: 200px;
-      transform-style: preserve-3d;
-      transform: rotateX(15deg) rotateY(-180deg) translateX(800px) scale(0.3);
-      opacity: 0;
-      transition: none;
-      will-change: transform, opacity;
-    }
-
-    .f1-car {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-    }
-
-    /* Car Body - Main Chassis */
-    .car-body {
-      position: absolute;
-      width: 360px;
-      height: 50px;
-      left: 70px;
-      top: 75px;
-      background: linear-gradient(180deg, #e10600 0%, #b80500 50%, #8b0300 100%);
-      border-radius: 20px 60px 8px 8px;
-      box-shadow:
-        0 0 30px rgba(225, 6, 0, 0.6),
-        0 0 60px rgba(225, 6, 0, 0.3),
-        inset 0 -5px 15px rgba(0,0,0,0.4);
-      transform: translateZ(20px);
-    }
-
-    .car-body::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: 30px;
-      right: 80px;
-      height: 15px;
-      background: linear-gradient(180deg, #ff2020, #e10600);
-      border-radius: 8px 40px 0 0;
-      box-shadow: 0 -2px 15px rgba(225, 6, 0, 0.5);
-    }
-
-    .car-body::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 8px;
-      background: linear-gradient(180deg, #660000, #330000);
-      border-radius: 0 0 8px 8px;
-    }
-
-    /* Cockpit */
-    .car-cockpit {
-      position: absolute;
-      width: 100px;
-      height: 35px;
-      left: 180px;
-      top: 42px;
-      background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
-      border-radius: 30px 30px 5px 5px;
-      transform: translateZ(35px);
-      box-shadow:
-        inset 0 2px 10px rgba(0,212,255,0.3),
-        0 0 20px rgba(0,0,0,0.5);
-    }
-
-    .car-cockpit::after {
-      content: '';
-      position: absolute;
-      top: 5px;
-      left: 10px;
-      right: 10px;
-      height: 15px;
-      background: linear-gradient(180deg, rgba(0,212,255,0.2), transparent);
-      border-radius: 20px 20px 0 0;
-    }
-
-    /* Nose Cone */
-    .car-nose {
-      position: absolute;
-      width: 100px;
-      height: 30px;
-      left: -15px;
-      top: 85px;
-      background: linear-gradient(180deg, #e10600, #990000);
-      clip-path: polygon(0% 50%, 40% 0%, 100% 0%, 100% 100%, 40% 100%);
-      transform: translateZ(20px);
-      box-shadow: 0 0 20px rgba(225, 6, 0, 0.4);
-    }
-
-    .car-nose::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 15px;
-      height: 3px;
-      background: #fff;
-      border-radius: 2px;
-      box-shadow: 0 0 10px #fff;
-    }
-
-    /* Rear Wing */
-    .car-wing-rear {
-      position: absolute;
-      width: 80px;
-      height: 8px;
-      right: -5px;
-      top: 55px;
-      background: linear-gradient(180deg, #1a1a1a, #000);
-      border-radius: 2px;
-      transform: translateZ(45px);
-      box-shadow: 0 0 15px rgba(0,0,0,0.8);
-    }
-
-    .car-wing-rear::before {
-      content: '';
-      position: absolute;
-      top: -20px;
-      left: 10px;
-      right: 10px;
-      height: 6px;
-      background: linear-gradient(180deg, #e10600, #990000);
-      border-radius: 2px;
-      box-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
-    }
-
-    .car-wing-rear::after {
-      content: '';
-      position: absolute;
-      top: -18px;
-      left: 5px;
-      width: 3px;
-      height: 18px;
-      background: #333;
-    }
-
-    /* Front Wing */
-    .car-wing-front {
-      position: absolute;
-      width: 60px;
-      height: 6px;
-      left: -10px;
-      top: 70px;
-      background: linear-gradient(180deg, #1a1a1a, #000);
-      border-radius: 2px;
-      transform: translateZ(25px);
-    }
-
-    .car-wing-front::before {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: 5px;
-      right: 5px;
-      height: 4px;
-      background: linear-gradient(180deg, #e10600, #990000);
-      border-radius: 2px;
-      box-shadow: 0 0 8px rgba(225, 6, 0, 0.4);
-    }
-
-    /* Wheels */
-    .car-wheel {
-      position: absolute;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 40%, #333, #111 60%, #000);
-      border: 3px solid #222;
-      transform: translateZ(5px);
-      box-shadow:
-        0 0 15px rgba(0,0,0,0.8),
-        inset 0 0 10px rgba(0,212,255,0.1);
-    }
-
-    .car-wheel::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #444, #222);
-      border: 2px solid #555;
-    }
-
-    .car-wheel::after {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.05);
-    }
-
-    .wheel-fl { left: 30px; top: 80px; }
-    .wheel-fr { left: 30px; top: 120px; }
-    .wheel-rl { right: 50px; top: 80px; }
-    .wheel-rr { right: 50px; top: 120px; }
-
-    /* Tire marks */
-    .car-wheel {
-      animation: wheelSpin 0.5s linear infinite;
-    }
-
-    @keyframes wheelSpin {
-      to { transform: translateZ(5px) rotate(360deg); }
-    }
-
-    /* Halo */
-    .car-halo {
-      position: absolute;
-      width: 50px;
-      height: 25px;
-      left: 195px;
-      top: 30px;
-      border: 3px solid #444;
-      border-bottom: none;
-      border-radius: 25px 25px 0 0;
-      transform: translateZ(40px);
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    /* Sidepod */
-    .car-sidepod-l,
-    .car-sidepod-r {
-      position: absolute;
-      width: 80px;
-      height: 25px;
-      background: linear-gradient(180deg, #cc0000, #880000);
-      border-radius: 5px 15px 5px 5px;
-      transform: translateZ(15px);
-    }
-
-    .car-sidepod-l {
-      left: 120px;
-      top: 100px;
-    }
-
-    .car-sidepod-r {
-      left: 120px;
-      top: 75px;
-    }
-
-    /* Exhaust glow */
-    .car-exhaust {
-      position: absolute;
-      right: -20px;
-      top: 95px;
-      width: 30px;
-      height: 10px;
-      background: radial-gradient(ellipse, rgba(255,150,0,0.8), rgba(255,100,0,0.3), transparent);
-      border-radius: 50%;
-      animation: exhaustPulse 0.15s ease-in-out infinite alternate;
-      transform: translateZ(20px);
-    }
-
-    @keyframes exhaustPulse {
-      from { opacity: 0.6; transform: translateZ(20px) scaleX(0.8); }
-      to { opacity: 1; transform: translateZ(20px) scaleX(1.2); }
-    }
-
-    /* Ground Shadow */
-    .car-shadow {
-      position: absolute;
-      width: 420px;
-      height: 30px;
-      left: 40px;
-      bottom: -10px;
-      background: radial-gradient(ellipse, rgba(225,6,0,0.3), transparent 70%);
-      filter: blur(10px);
-      transform: rotateX(90deg) translateZ(-20px);
-    }
-
-    /* Speed Lines */
-    .speed-lines {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0;
-    }
-
-    .speed-line {
-      position: absolute;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(225,6,0,0.6), transparent);
-      border-radius: 1px;
-    }
-
-    /* F1 Text */
-    .f1-title {
-      position: absolute;
-      bottom: 15%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Arial Black', Impact, sans-serif;
-      font-size: clamp(60px, 12vw, 160px);
-      font-weight: 900;
-      text-transform: uppercase;
-      color: transparent;
-      -webkit-text-stroke: 2px rgba(225, 6, 0, 0.4);
-      letter-spacing: 20px;
-      opacity: 0;
-      white-space: nowrap;
-      z-index: 6;
-    }
-
-    .f1-title span {
-      color: #e10600;
-      -webkit-text-stroke: 0;
-      text-shadow: 0 0 40px rgba(225, 6, 0, 0.6), 0 0 80px rgba(225, 6, 0, 0.3);
-    }
-
-    /* Speed text */
-    .speed-text {
-      position: absolute;
-      top: 20%;
-      right: 10%;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      color: rgba(225, 6, 0, 0.6);
-      letter-spacing: 4px;
-      opacity: 0;
-      z-index: 6;
-    }
-
-    .speed-number {
-      font-size: 48px;
-      font-weight: bold;
-      color: #e10600;
-      text-shadow: 0 0 20px rgba(225, 6, 0, 0.5);
-    }
-
-    /* After F1 section */
-    .after-f1 {
-      position: relative;
-      width: 100%;
-      min-height: 100vh;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 80px 20px;
-    }
-
-    .after-f1 h2 {
-      font-family: 'Arial Black', Impact, sans-serif;
-      font-size: clamp(32px, 5vw, 64px);
-      color: #fff;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .after-f1 p {
-      color: rgba(255,255,255,0.5);
-      font-size: 18px;
-      text-align: center;
-      max-width: 600px;
+    @media (min-width: 769px) {
+      .scroll-hint { display: none; }
     }
   </style>
 </head>
 <body>
-  <!-- Hero Section -->
-  <section class="hero-scene" id="hero">
-    <div class="scene">
-      <div class="layer layer-bg"></div>
-      <div class="layer layer-main"></div>
-      <div class="reveal" id="reveal"></div>
+  <div class="scene">
+    <div class="layer layer-bg"></div>
+    <div class="layer layer-main"></div>
+    <div class="reveal" id="reveal"></div>
+  </div>
+
+  <div class="cursor-dot" id="dot"></div>
+  <canvas id="particles"></canvas>
+
+  <div class="welcome" id="welcome"></div>
+
+  <div class="orbit-container">
+    <div class="orbit-ring">
+      <a class="social-icon" href="https://youtube.com/@xolericc" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a class="social-icon" href="https://www.instagram.com/xoleric_" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a class="social-icon" href="https://t.me/Wxoleric" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      </a>
+      <a class="social-icon" href="https://github.com/xolerc" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
+      <a class="social-icon" href="https://pin.it/2BCXGGCba" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
+      </a>
+      <a class="social-icon" href="https://www.linkedin.com/in/xoleric-undefined-8b689b3a1" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
     </div>
+  </div>
 
-    <div class="cursor-dot" id="dot"></div>
-    <canvas id="particles"></canvas>
-
-    <div class="welcome" id="welcome"></div>
-
-    <div class="orbit-container">
-      <div class="orbit-ring">
-        <a class="social-icon" href="https://youtube.com/@xolericc" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        </a>
-        <a class="social-icon" href="https://www.instagram.com/xoleric_" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-        </a>
-        <a class="social-icon" href="https://t.me/Wxoleric" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-        </a>
-        <a class="social-icon" href="https://github.com/xolerc" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        </a>
-        <a class="social-icon" href="https://pin.it/2BCXGGCba" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
-        </a>
-        <a class="social-icon" href="https://www.linkedin.com/in/xoleric-undefined-8b689b3a1" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        </a>
-      </div>
-    </div>
-
-    <div class="scroll-hint" id="scrollHint">
-      <span>SCROLL</span>
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </div>
-  </section>
-
-  <!-- F1 Car Section -->
-  <section class="f1-section" id="f1Section">
-    <div class="f1-sticky">
-      <canvas id="lightningCanvas"></canvas>
-
-      <!-- Speed Lines Container -->
-      <div class="speed-lines" id="speedLines"></div>
-
-      <!-- 3D F1 Car -->
-      <div class="f1-car-wrapper" id="f1Car">
-        <div class="f1-car">
-          <!-- Nose -->
-          <div class="car-nose"></div>
-
-          <!-- Main Body -->
-          <div class="car-body"></div>
-
-          <!-- Sidepods -->
-          <div class="car-sidepod-l"></div>
-          <div class="car-sidepod-r"></div>
-
-          <!-- Cockpit -->
-          <div class="car-cockpit"></div>
-
-          <!-- Halo -->
-          <div class="car-halo"></div>
-
-          <!-- Wings -->
-          <div class="car-wing-front"></div>
-          <div class="car-wing-rear"></div>
-
-          <!-- Wheels -->
-          <div class="car-wheel wheel-fl"></div>
-          <div class="car-wheel wheel-fr"></div>
-          <div class="car-wheel wheel-rl"></div>
-          <div class="car-wheel wheel-rr"></div>
-
-          <!-- Exhaust -->
-          <div class="car-exhaust"></div>
-
-          <!-- Shadow -->
-          <div class="car-shadow"></div>
-        </div>
-      </div>
-
-      <!-- F1 Title -->
-      <div class="f1-title" id="f1Title">
-        <span>F</span>ORMULA <span>1</span>
-      </div>
-
-      <!-- Speed Counter -->
-      <div class="speed-text" id="speedText">
-        <div class="speed-number" id="speedNum">0</div>
-        <div>KM/H</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- After F1 -->
-  <section class="after-f1">
-    <h2>Speed Meets Design</h2>
-    <p>Premium performance in every pixel. That's the xoleric way.</p>
-  </section>
+  <div class="scroll-hint" id="scrollHint">
+    <span>TEGING</span>
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
 
   <script>
     const reveal = document.getElementById('reveal');
@@ -867,7 +391,7 @@
       }, index * 120);
     });
 
-    // Magnetic letter effect
+    // Magnetic letter effect — letters scatter from cursor
     const LETTER_RADIUS = 150;
     const LETTER_FORCE = 35;
     const letterStates = letterEls.map(() => ({
@@ -882,11 +406,11 @@
       letterEls.forEach((span, i) => {
         if (!span.classList.contains('visible')) return;
         const rect = span.getBoundingClientRect();
-        const lx = rect.left + rect.width / 2;
-        const ly = rect.top + rect.height / 2;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
 
-        let dx = mx - lx;
-        let dy = my - ly;
+        let dx = mx - cx;
+        let dy = my - cy;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         const state = letterStates[i];
@@ -961,7 +485,8 @@
         y = Math.random() * PH;
       } while (Math.sqrt((x - mx) ** 2 + (y - my) ** 2) < CURSOR_REPEL);
       return {
-        x, y,
+        x,
+        y,
         vx: (Math.random() - 0.5) * 0.05,
         vy: (Math.random() - 0.5) * 0.05,
         size: Math.random() * 4 + 3,
@@ -974,7 +499,9 @@
       };
     }
 
-    for (let i = 0; i < NEURON_COUNT; i++) neurons.push(createNeuron());
+    for (let i = 0; i < NEURON_COUNT; i++) {
+      neurons.push(createNeuron());
+    }
 
     function drawNeurons() {
       pctx.clearRect(0, 0, PW, PH);
@@ -1066,263 +593,6 @@
     }
 
     drawNeurons();
-
-    // ═══════════════════════════════════════════
-    // F1 CAR SCROLL ANIMATION
-    // ═══════════════════════════════════════════
-
-    const f1Section = document.getElementById('f1Section');
-    const f1Car = document.getElementById('f1Car');
-    const f1Title = document.getElementById('f1Title');
-    const speedText = document.getElementById('speedText');
-    const speedNum = document.getElementById('speedNum');
-    const speedLines = document.getElementById('speedLines');
-    const lightningCanvas = document.getElementById('lightningCanvas');
-    const lctx = lightningCanvas.getContext('2d');
-
-    function resizeLightning() {
-      lightningCanvas.width = window.innerWidth;
-      lightningCanvas.height = window.innerHeight;
-    }
-    resizeLightning();
-    window.addEventListener('resize', resizeLightning);
-
-    // Create speed lines
-    for (let i = 0; i < 20; i++) {
-      const line = document.createElement('div');
-      line.className = 'speed-line';
-      line.style.top = Math.random() * 100 + '%';
-      line.style.width = Math.random() * 200 + 100 + 'px';
-      line.style.left = Math.random() * 100 + '%';
-      speedLines.appendChild(line);
-    }
-
-    // Lightning system
-    let lightningBolts = [];
-    let lightningActive = false;
-
-    function createLightningBolt(x, y, length, angle, depth) {
-      if (depth <= 0 || length < 5) return;
-
-      const endX = x + Math.cos(angle) * length;
-      const endY = y + Math.sin(angle) * length;
-      const segments = Math.floor(length / 10);
-
-      let points = [{ x, y }];
-      for (let i = 1; i < segments; i++) {
-        const t = i / segments;
-        const px = x + (endX - x) * t + (Math.random() - 0.5) * 30;
-        const py = y + (endY - y) * t + (Math.random() - 0.5) * 30;
-        points.push({ x: px, y: py });
-      }
-      points.push({ x: endX, y: endY });
-
-      lightningBolts.push({ points, alpha: 1, decay: 0.02 + Math.random() * 0.03 });
-
-      // Branch
-      if (Math.random() < 0.4 && depth > 1) {
-        const branchPoint = points[Math.floor(Math.random() * points.length)];
-        const branchAngle = angle + (Math.random() - 0.5) * 1.5;
-        createLightningBolt(branchPoint.x, branchPoint.y, length * 0.5, branchAngle, depth - 1);
-      }
-    }
-
-    function drawLightning() {
-      lctx.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
-
-      lightningBolts = lightningBolts.filter(bolt => {
-        bolt.alpha -= bolt.decay;
-        if (bolt.alpha <= 0) return false;
-
-        // Glow
-        lctx.beginPath();
-        lctx.moveTo(bolt.points[0].x, bolt.points[0].y);
-        for (let i = 1; i < bolt.points.length; i++) {
-          lctx.lineTo(bolt.points[i].x, bolt.points[i].y);
-        }
-        lctx.strokeStyle = `rgba(180, 200, 255, ${bolt.alpha * 0.3})`;
-        lctx.lineWidth = 8;
-        lctx.stroke();
-
-        // Core
-        lctx.beginPath();
-        lctx.moveTo(bolt.points[0].x, bolt.points[0].y);
-        for (let i = 1; i < bolt.points.length; i++) {
-          lctx.lineTo(bolt.points[i].x, bolt.points[i].y);
-        }
-        lctx.strokeStyle = `rgba(255, 255, 255, ${bolt.alpha})`;
-        lctx.lineWidth = 2;
-        lctx.stroke();
-
-        return true;
-      });
-
-      requestAnimationFrame(drawLightning);
-    }
-
-    drawLightning();
-
-    function triggerLightning() {
-      if (!lightningActive) return;
-
-      const w = lightningCanvas.width;
-      const h = lightningCanvas.height;
-
-      // Multiple bolts
-      const boltCount = 2 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < boltCount; i++) {
-        const x = Math.random() * w;
-        const y = 0;
-        const length = Math.random() * 300 + 200;
-        const angle = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
-        createLightningBolt(x, y, length, angle, 3);
-      }
-
-      // Screen flash
-      lightningCanvas.style.opacity = '0.15';
-      setTimeout(() => { lightningCanvas.style.opacity = '0'; }, 50);
-    }
-
-    // Periodic lightning
-    let lightningInterval;
-    function startLightningStorm() {
-      lightningActive = true;
-      triggerLightning();
-      lightningInterval = setInterval(() => {
-        if (Math.random() < 0.6) triggerLightning();
-      }, 200);
-    }
-
-    function stopLightningStorm() {
-      lightningActive = false;
-      clearInterval(lightningInterval);
-    }
-
-    // Scroll handler for F1 section
-    let f1Animating = false;
-
-    function handleF1Scroll() {
-      const rect = f1Section.getBoundingClientRect();
-      const sectionHeight = f1Section.offsetHeight;
-      const viewportHeight = window.innerHeight;
-
-      // Progress: 0 (top of section) to 1 (bottom of section)
-      const scrolled = -rect.top;
-      const totalScrollable = sectionHeight - viewportHeight;
-      const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-
-      if (progress > 0 && progress < 1) {
-        f1Animating = true;
-
-        // Phase 1: Car enters (0 - 0.3) — from right, rotating
-        // Phase 2: Car centers (0.3 - 0.5) — stops rotation, scales up
-        // Phase 3: Car shows speed (0.5 - 0.8) — speed lines + counter
-        // Phase 4: Lightning storm (0.8 - 1.0) — dramatic finish
-
-        let carX, carY, carRotY, carRotX, carScale, carOpacity;
-
-        if (progress < 0.3) {
-          // Entry phase
-          const t = progress / 0.3;
-          const ease = t * t * (3 - 2 * t); // smoothstep
-
-          carX = lerp(800, 0, ease);
-          carRotY = lerp(-180, -30, ease);
-          carRotX = lerp(15, 10, ease);
-          carScale = lerp(0.3, 0.8, ease);
-          carOpacity = ease;
-
-          f1Car.style.transform = `rotateX(${carRotX}deg) rotateY(${carRotY}deg) translateX(${carX}px) scale(${carScale})`;
-          f1Car.style.opacity = carOpacity;
-
-          f1Title.style.opacity = '0';
-          speedText.style.opacity = '0';
-          speedLines.style.opacity = '0';
-          stopLightningStorm();
-
-        } else if (progress < 0.5) {
-          // Center phase
-          const t = (progress - 0.3) / 0.2;
-          const ease = t * t * (3 - 2 * t);
-
-          carRotY = lerp(-30, 0, ease);
-          carRotX = lerp(10, 5, ease);
-          carScale = lerp(0.8, 1, ease);
-
-          f1Car.style.transform = `rotateX(${carRotX}deg) rotateY(${carRotY}deg) translateX(0px) scale(${carScale})`;
-          f1Car.style.opacity = '1';
-
-          f1Title.style.opacity = ease * 0.8;
-          f1Title.style.transform = `translateX(-50%) translateY(${lerp(50, 0, ease)}px)`;
-
-          speedText.style.opacity = '0';
-          speedLines.style.opacity = '0';
-          stopLightningStorm();
-
-        } else if (progress < 0.8) {
-          // Speed phase
-          const t = (progress - 0.5) / 0.3;
-
-          f1Car.style.transform = `rotateX(5deg) rotateY(0deg) translateX(0px) scale(1)`;
-          f1Car.style.opacity = '1';
-
-          f1Title.style.opacity = '0.8';
-          f1Title.style.transform = 'translateX(-50%) translateY(0)';
-
-          speedText.style.opacity = t;
-          const speed = Math.round(t * 370);
-          speedNum.textContent = speed;
-
-          speedLines.style.opacity = t;
-          const lines = speedLines.querySelectorAll('.speed-line');
-          lines.forEach((line, i) => {
-            const offset = (performance.now() * (0.5 + i * 0.1)) % 200;
-            line.style.transform = `translateX(${-offset}px)`;
-          });
-
-          // Slight vibration at high speed
-          if (t > 0.5) {
-            const shake = (1 - t) * 2;
-            f1Car.style.transform = `rotateX(${5 + (Math.random() - 0.5) * shake}deg) rotateY(${(Math.random() - 0.5) * shake}deg) translateX(0px) scale(1)`;
-          }
-
-          stopLightningStorm();
-
-        } else {
-          // Lightning phase
-          const t = (progress - 0.8) / 0.2;
-
-          f1Car.style.transform = `rotateX(5deg) rotateY(0deg) translateX(0px) scale(1)`;
-          f1Car.style.opacity = 1 - t * 0.3;
-
-          f1Title.style.opacity = 0.8 - t * 0.5;
-          speedText.style.opacity = 1;
-          speedNum.textContent = 370;
-          speedLines.style.opacity = 1;
-
-          if (!lightningActive) startLightningStorm();
-        }
-
-      } else if (progress <= 0) {
-        // Before section
-        f1Car.style.opacity = '0';
-        f1Title.style.opacity = '0';
-        speedText.style.opacity = '0';
-        speedLines.style.opacity = '0';
-        stopLightningStorm();
-
-      } else {
-        // After section
-        stopLightningStorm();
-      }
-    }
-
-    function lerp(a, b, t) {
-      return a + (b - a) * t;
-    }
-
-    window.addEventListener('scroll', handleF1Scroll, { passive: true });
-    handleF1Scroll();
   </script>
 </body>
 </html>

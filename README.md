@@ -14,9 +14,27 @@
 
 ## What Is This?
 
-A multi-section portfolio website with an immersive flashlight-reveal hero, neural particle system, smooth scroll-triggered animations, and a professional dark aesthetic.
+A single-page portfolio website where your cursor becomes a flashlight — revealing a hidden image behind the visible layer through a smooth radial mask. Neural particles connect and scatter. Neon text greets you letter by letter. Social icons orbit the screen.
 
 **No frameworks. No dependencies. Just raw web magic.**
+
+---
+
+## Preview
+
+```
+  ╔══════════════════════════════════════════════╗
+  ║                                              ║
+  ║    ██████████     [Orbit Icons]              ║
+  ║    █ MAIN  █                                  ║
+  ║    █  ████  █  ← cursor reveals hidden img   ║
+  ║    █ BG.png █                                 ║
+  ║    ██████████                                 ║
+  ║                                              ║
+  ║         ✦ WELCOME TO XOLERIC PORTFOLIO ✦     ║
+  ║         ● ● ● ● (neural particles) ● ● ●    ║
+  ╚══════════════════════════════════════════════╝
+```
 
 ---
 
@@ -24,27 +42,21 @@ A multi-section portfolio website with an immersive flashlight-reveal hero, neur
 
 | Feature | Description |
 |---------|-------------|
-| **Loading Screen** | Animated dual-ring loader with progress bar — brand identity from the first frame |
-| **Cursor Reveal** | CSS `mask-image` radial-gradient tracks your mouse — reveals `bg.png` through `main.png` |
-| **Custom Cursor** | Glowing cyan dot + outer ring with 8-particle trailing effect — expands on interactive elements |
-| **Neural Particles** | 50 canvas-drawn dots with hue-shifted connections — repel from cursor |
-| **Typing Effect** | Dynamic subtitle types character-by-character with blinking cursor |
-| **Scroll Reveal** | Staggered entrance animations on every section via IntersectionObserver-style scroll detection |
-| **Counter Animation** | Stats count up from 0 when scrolled into view |
-| **Navigation** | Fixed glassmorphism navbar with active-section highlighting — appears after scroll |
-| **Orbiting Icons** | 6 social media SVG icons rotating on a circular path with counter-rotation |
-| **Ambient Effects** | Dual gradient glows + subtle noise overlay for depth |
-| **Responsive** | Fully responsive — cursor disabled on mobile, orbit hidden on tablet, sections stack vertically |
-| **Accessibility** | ARIA labels, semantic HTML, `noscript` fallback, `rel="noopener noreferrer"` on external links |
+| **Cursor Reveal** | CSS `mask-image` radial-gradient tracks your mouse — reveals `bg.png` through a 200px hole in `main.png` |
+| **Neural Particles** | 40 canvas-drawn dots with gold connecting lines — repel from cursor (250px) and reveal circle (220px) |
+| **Neon Text** | "welcome to xoleric portfolio" — letter-by-letter entry with 3D rotateX + cyan glow pulse animation |
+| **Orbiting Icons** | 6 social media SVG icons rotating on a circular path — always face upright via counter-rotation |
+| **Mobile Touch** | Tap-to-reveal on mobile with 140px touch circle + cursor dot disabled |
+| **Responsive** | Orbit shrinks to 80px radius on mobile, text scales with `vw` units |
 
 ---
 
 ## Tech Stack
 
 ```
-HTML5  ─── Semantic markup, SVG icons, ARIA attributes
-CSS3   ─── mask-image, backdrop-filter, keyframe animations, 3D transforms, CSS variables
-JS     ─── Canvas API, requestAnimationFrame, lerp interpolation, scroll-driven animations
+HTML5 ─── Semantic markup, SVG icons
+CSS3  ─── mask-image, backdrop-filter, keyframe animations, 3D transforms
+JS    ─── Canvas API, requestAnimationFrame, lerp interpolation
 ```
 
 **Zero dependencies. Zero build steps. Open `index.html` and it works.**
@@ -79,37 +91,11 @@ mydrime/
 
 ## How It Works
 
-1. **Loading screen** shows animated rings + progress bar while images load
-2. **Two image layers** stack — `bg.png` (hidden) and `main.png` (visible)
-3. **CSS mask** on `.hero-reveal` creates a radial-gradient circle following the cursor via `lerp(0.25)`
-4. **Canvas particles** drawn per-frame — dots repel from cursor, draw hue-shifted connections
-5. **Custom cursor** with outer ring + 8 trailing particles, all lerped smoothly
-6. **Typing effect** types the subtitle character-by-character after hero entrance
-7. **Scroll reveals** — elements fade in with staggered delays as you scroll
-8. **Counter animation** — stat numbers count up when scrolled into view
-9. **Social orbit** uses CSS `rotate()` + `translateX()` + counter-`rotate()`
-
----
-
-## What Was Fixed (v2)
-
-| Issue | Fix |
-|-------|-----|
-| "TEGING" typo | Replaced with proper "Scroll" indicator |
-| Double RAF loops | Merged into single unified `mainLoop()` |
-| Invisible particles | Changed from black to hue-shifted visible colors |
-| No loading screen | Added animated dual-ring loader with progress bar |
-| No accessibility | Added ARIA labels, semantic HTML, noscript fallback |
-| Broken LinkedIn URL | Fixed URL (removed "undefined") |
-| Social hover `filter: scale()` | Fixed to use proper CSS transitions |
-| `left: 40%` centering | Fixed to `left: 50%` + `translateX(-50%)` |
-| Mobile overflow | Orbit hidden on tablet, proper responsive breakpoints |
-| No nav / sections | Added full 5-section portfolio with smooth scrolling |
-| No cursor effects | Added cursor trail, hover states, outer ring |
-| No scroll animations | Added reveal-on-scroll with staggered delays |
-| No noise/ambient | Added subtle noise texture + ambient gradient glows |
-| Hardcoded magic numbers | Moved to CSS custom properties |
-| No mobile nav | Added hamburger toggle for mobile |
+1. **Two image layers** stack on top of each other — `bg.png` (hidden) and `main.png` (visible)
+2. **CSS mask** on `.reveal` div creates a `radial-gradient` circle that follows the cursor via `lerp(0.25)` smoothing
+3. **Canvas particles** are drawn on every frame — each dot checks distance to cursor and reveal center, repels if within range, draws gold lines between nearby dots
+4. **Welcome text** is split into `<span>` elements with staggered `setTimeout` for letter-by-letter neon animation
+5. **Social orbit** uses CSS `rotate()` + `translateX()` + counter-`rotate()` so icons circle while staying upright
 
 ---
 
@@ -122,7 +108,7 @@ mydrime/
 [![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Wxoleric)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xolerc)
 [![Pinterest](https://img.shields.io/badge/Pinterest-E60023?style=for-the-badge&logo=pinterest&logoColor=white)](https://pin.it/2BCXGGCba)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/xoleric)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/xoleric-undefined-8b689b3a1)
 
 </div>
 
@@ -136,6 +122,6 @@ MIT — use it, fork it, learn from it.
 
 <div align="center">
 
-**Built with curiosity & caffeine by [xolerc](https://github.com/xoleric)**
+**Built with curiosity & caffeine by [xolerc](https://github.com/xolerc)**
 
 </div>

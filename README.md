@@ -1,8 +1,8 @@
 <div align="center">
 
-# ✦ Xoleric Portfolio v2 ✦
+# ✦ Xoleric Portfolio v3 ✦
 
-### Immersive interactive portfolio — pure HTML, CSS & JavaScript, now split & performance-tuned
+### Interactive, performant portfolio — pure HTML, CSS & JavaScript, zero dependencies
 
 [![Live Demo](https://img.shields.io/badge/VISIT-SITE-00d4ff?style=for-the-badge&logo=vercel&logoColor=white)](https://xolerc.github.io/mydrime/)
 [![GitHub](https://img.shields.io/badge/GITHUB-xolerc-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xolerc)
@@ -14,34 +14,29 @@
 
 ## What Is This?
 
-A single-page portfolio website where your cursor becomes a flashlight — revealing a hidden image behind the visible layer through a smooth radial mask. Neural particles connect and scatter, neon text greets you letter by letter, social icons orbit the screen, and a Konami code unlocks a hidden theme.
+The v3 portfolio — a scroll-driven storytelling site with an **Aurora soft-light cursor**, a typed-roles hero, a tech ticker, interactive 3D-tilt case-study cards with modals, a Matrix rain demo, a working contact form, light/dark theming, and a print-ready CV page.
 
 **No frameworks. No dependencies. No build steps.**
 
 ---
 
-## v2 Changelog
+## v3 Changelog
 
 | Area | What changed |
 |------|-------------|
-| **Architecture** | Split `index.html` + `css/styles.css` + `js/app.js` (was one 2086-line file) |
-| **Performance** | 7 canvases + 6 `requestAnimationFrame` loops → **1 effects canvas + 1 master loop** (delta-time based) |
-| **Loader** | Real image-preload with true progress bar + percentage (was fake timer) |
-| **Sharpness** | DPR-aware canvas sizing — crisp on retina displays |
-| **Battery** | Pauses the render loop on `document.hidden`; debounced resize |
-| **Accessibility** | `prefers-reduced-motion` support, skip-link, `aria-hidden`/`role="region"`, `focus-visible` rings, semantic `<h1>`/`<nav>` |
-| **Mobile** | Pointer-coarse detection, touch-reveal, swipe navigation, mobile orbit size |
-| **Theming** | Full CSS custom-property token system in `:root` |
-
-### Bugs fixed in v2
-
-- `filter: scale(1.2)` (invalid CSS) → `transform: scale(1.25)` on orbit icons
-- `.reveal` hardcoded `background-position: -45px center` misaligning the revealed layer → `center` matching the bg layer
-- Typo `scrroll` → `scroll`
-- Stray Chinese character `专注` in the about paragraph → removed
-- All 6 orbit icons forced YouTube-red `#e10600` → per-brand hover colors
-- Splash ring reading `particles[0]` after particles died → stable `cx/cy` snapshot
-- 6 concurrent rAF loops / 7 layered canvases → single loop, single canvas
+| **Scroll model** | Full-screen wheel-swap replaced with **content-first vertical scroll + scroll-snap** — hero → ticker → about → work → playground → contact → footer |
+| **Cursor effect** | Flashlight mask-reveal replaced with an **Aurora soft-light cursor**: two blurred radial gradients on the `#fx` canvas with `lighter` compositing + a CSS `radial-gradient` halo fallback |
+| **Creative cuts** | Removed warp streaks, lightning sparks, click splash and long trail; kept tuned-down ambient glow + sparse neural particles (20 desktop / 10 mobile) |
+| **Typed hero** | `I build [creative web experiences]` — typing/deleting roles loop with a blinking caret |
+| **Tech ticker** | Seamless marquee (`translateX(-50%)`) with an `aria-hidden` duplicated track |
+| **Work section** | 6 data-driven case-study cards with cursor-reactive 3D tilt (`--rx`/`--ry`), populated from JS, opened in a **case-study modal** (30s re-open cooldown) |
+| **Playground** | Cursor-gravity particle field + **Matrix rain demo** in a wide modal |
+| **Contact form** | Validation + Formspree submit with a graceful `mailto:` fallback |
+| **Navigation polish** | Scroll progress bar, sticky header `.scrolled` state, scroll-spy active nav link, IntersectionObserver reveals |
+| **CV** | New `cv.html` — print-friendly résumé with Print/Save-PDF button |
+| **Theming** | Light/dark toggle persisted to `localStorage`, respects `prefers-color-scheme`, flips `color-scheme` |
+| **Typography** | Inter (body) + Space Grotesk (display), 8pt spacing scale, motion tokens |
+| **Kept** | Real preload loader + 8s failsafe, Konami easter egg, `0000` fullscreen, reduced-motion, visibility pause, debounced resize, DPR-aware canvas |
 
 ---
 
@@ -49,24 +44,26 @@ A single-page portfolio website where your cursor becomes a flashlight — revea
 
 | Feature | Description |
 |---------|-------------|
-| **Cursor Reveal** | CSS `mask-image` radial-gradient tracks your mouse — reveals `bg.png` through a 200px hole in `main.png` |
-| **Neural Particles** | 40 canvas-drawn dots with gold connecting lines — repel from cursor and reveal circle |
-| **Neon Text** | "welcome to xoleric portfolio" — letter-by-letter entry with magnetic repel + glow pulse |
-| **Warp Speed** | Rotating streaks inside the reveal circle |
-| **Click Splash** | Shockwave ring + particle burst on every click |
-| **Orbiting Icons** | 6 social SVG icons rotate on a circular path, each with its brand color on hover |
-| **Mobile Touch** | Tap-to-reveal with 140px touch circle + swipe section navigation |
-| **Responsive** | Orbit shrinks to 80px radius on mobile, text scales with `clamp()` |
-| **Easter Eggs** | Konami code theme-swap; type `0000` for fullscreen |
+| **Aurora Cursor** | Soft dual-glow light follows the cursor; CSS halo fallback; `cursor: none` only on fine pointers |
+| **Typed Roles** | Hero line cycles through role phrases with type/delete animation |
+| **Tech Ticker** | Infinite scrolling stack marquee with masked edges |
+| **Case Studies** | 6 projects, 3D-tilt cards, data-driven lightbox with outcome metrics |
+| **Gravity Field** | Playground canvas of particles attracted to the cursor |
+| **Matrix Demo** | Falling-character rain rendered in a modal |
+| **Contact Form** | Validated, Formspree-ready, `mailto:` fallback offline |
+| **Theme Toggle** | Persistent light/dark switch |
+| **Scroll Progress** | Top progress bar + header shrink on scroll + active nav highlight |
+| **Easter Eggs** | Konami code theme swap; type `0000` for fullscreen |
+| **Performance** | Single `#fx` canvas, one delta-time master loop, reduced-motion support, battery-friendly pause |
 
 ---
 
 ## Tech Stack
 
 ```
-HTML5 ─── Semantic markup, SVG icons, ARIA roles
-CSS3  ─── Custom properties, mask-image, backdrop-filter, keyframes, 3D transforms
-JS    ─── Canvas API, single master rAF loop, delta-time interpolation, DPR scaling
+HTML5 ─── Semantic markup, ARIA roles, dialog/modals
+CSS3  ─── Custom properties, color-scheme, scroll-snap, backdrop-filter, 3D transforms
+JS    ─── Canvas API, single master rAF loop, IntersectionObserver, Fetch API
 ```
 
 **Zero dependencies. Open `index.html` and it works.**
@@ -90,13 +87,14 @@ Or visit the **[live site](https://xolerc.github.io/mydrime/)** directly.
 ```
 mydrime/
 ├── index.html          ← semantic markup, no inline CSS/JS
+├── cv.html             ← print-friendly résumé
 ├── css/
 │   └── styles.css      ← design tokens + all styling
 ├── js/
-│   └── app.js          ← loader, effects engine, navigation, easter eggs
+│   └── app.js          ← loader, aurora FX, typed hero, modals, form, theme, easter eggs
 ├── images/
-│   ├── bg.png          ← hidden layer (revealed by cursor)
-│   └── main.png        ← visible top layer
+│   ├── bg.png          ← hero background layer
+│   └── main.png        ← hero main art layer
 └── README.md
 ```
 
@@ -104,12 +102,14 @@ mydrime/
 
 ## How It Works
 
-1. **Loader** preloads `bg.png` + `main.png` with real progress, then particle-explodes into the scene.
-2. **One master loop** runs on a single `#fx` canvas: ambient glow → cursor trail → neural network → warp streaks → lightning sparks → click splashes.
-3. **Reveal mask** on `.reveal` follows the cursor via lerp interpolation; background layers get subtle parallax.
-4. **Welcome text** splits into `<span>`s with staggered neon entry, then reacts magnetically to the cursor.
-5. **Social orbit** uses `rotate()` + `translateX()` + counter-rotation so icons circle while staying upright.
-6. **Navigation** (wheel / swipe / arrows / dots) slides between 4 full-screen sections.
+1. **Loader** preloads `bg.png` + `main.png` with real progress (8s failsafe), then particle-explodes into the scene.
+2. **Aurora cursor** draws two blurred radial gradients on `#fx` with `lighter` compositing, lerped after the pointer; a CSS halo is the no-canvas fallback.
+3. **One master loop** drives lerp, aurora, neurons and ambient glow on a single canvas.
+4. **Typed hero** types/deletes role phrases; the tech ticker duplicates its track for a seamless loop.
+5. **Scroll** updates the progress bar, header state and active nav link; `IntersectionObserver` reveals cards and counts stats.
+6. **Project cards** tilt in 3D toward the pointer and open a data-driven case-study modal (30s cooldown).
+7. **Contact form** validates, posts to Formspree, and falls back to the user's email app when offline.
+8. **Theme toggle** persists to `localStorage` and flips `color-scheme`.
 
 ---
 

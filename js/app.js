@@ -50,6 +50,7 @@
   let cursorX = rawX, cursorY = rawY;
   let haloX = rawX, haloY = rawY;
   let targetR = 0, currentR = 0;
+  let hasPointer = false;
 
   let loaded = false;
   let lastFrame = 0;
@@ -199,6 +200,7 @@
     window.addEventListener('pointermove', (e) => {
       rawX = e.clientX;
       rawY = e.clientY;
+      hasPointer = true;
       cursorDot.style.left = rawX + 'px';
       cursorDot.style.top = rawY + 'px';
     }, { passive: true });
@@ -232,6 +234,9 @@
       const t = e.touches[0];
       rawX = t.clientX;
       rawY = t.clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', () => {
+      lastTouchTime = Date.now();
     }, { passive: true });
   }
 
@@ -271,7 +276,7 @@
   }
 
   function updateLetters(heroInView) {
-    if (reduceMotion || !heroInView) return;
+    if (reduceMotion || !heroInView || !isFine || !hasPointer) return;
     for (let i = 0; i < letterEls.length; i++) {
       const span = letterEls[i];
       if (!span.classList.contains('visible')) continue;

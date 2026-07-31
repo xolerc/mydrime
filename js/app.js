@@ -194,6 +194,14 @@
     loaderPct.classList.add('visible');
     loaderLoop();
 
+    // Failsafe: never let the loader hang if an image stalls
+    setTimeout(() => {
+      if (!loaded) {
+        loaderProgress = 100;
+        finishLoading();
+      }
+    }, 8000);
+
     const minTime = reduceMotion ? 150 : 1500;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
@@ -807,7 +815,7 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       cancelAnimationFrame(rafId);
-    } else {
+    } else if (loaded) {
       lastFrame = performance.now();
       rafId = requestAnimationFrame(masterLoop);
     }
@@ -913,6 +921,9 @@
     }
 
     if (currentSection === 1) animateStats();
+
+    lastFrame = performance.now();
+    rafId = requestAnimationFrame(masterLoop);
   }
 
   setupCanvas(fxCanvas);
@@ -922,6 +933,4 @@
   cursorHalo.style.top = VH / 2 + 'px';
   setSectionA11y();
   startLoading();
-  lastFrame = performance.now();
-  rafId = requestAnimationFrame(masterLoop);
 })();

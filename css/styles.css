@@ -466,6 +466,7 @@ canvas#fx.visible { opacity: 1; }
   letter-spacing: -0.03em;
   color: var(--text);
   margin-bottom: var(--space-3);
+  white-space: nowrap;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
@@ -923,7 +924,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .header-actions .btn { display: none; }
   .projects-grid { grid-template-columns: 1fr; }
   .hero { align-items: center; text-align: left; }
-  .hero-title { font-size: clamp(28px, 8.5vw, 44px); }
+  .hero-title { font-size: clamp(16px, 5vw, 44px); }
   .hero-art::after {
     background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 70%, transparent) 0%, var(--bg) 100%);
   }

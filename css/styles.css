@@ -399,7 +399,7 @@ canvas#fx.visible { opacity: 1; }
   display: flex;
   align-items: flex-start;
   overflow: hidden;
-  padding: calc(var(--header-h) + var(--space-5)) clamp(var(--space-3), 6vw, var(--space-7)) var(--space-6);
+  padding: var(--header-h) clamp(var(--space-3), 6vw, var(--space-7)) var(--space-6);
 }
 
 .hero-art {

@@ -451,15 +451,15 @@ canvas#webgl-bg {
   position: relative;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
+  justify-content: space-between;
   overflow: hidden;
   padding: var(--header-h) clamp(var(--space-3), 6vw, var(--space-7)) var(--space-6);
 }
 
 .hero-art {
-  position: absolute;
-  top: calc(var(--header-h) + var(--space-2));
-  left: clamp(var(--space-3), 4vw, var(--space-6));
+  position: relative;
   width: min(34vw, 300px);
   height: min(34vw, 300px);
   z-index: 1;
@@ -501,12 +501,10 @@ canvas#webgl-bg {
 }
 
 .hero-content {
-  position: absolute;
-  left: clamp(var(--space-3), 6vw, var(--space-7));
-  right: clamp(var(--space-3), 6vw, var(--space-7));
-  bottom: clamp(64px, 9vh, 110px);
-  z-index: 3;
+  position: relative;
+  z-index: 2;
   max-width: 760px;
+  padding-bottom: var(--space-2);
 }
 
 .hero .eyebrow {
@@ -1030,6 +1028,12 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .about-sticky { position: static; }
 }
 
+@media (max-height: 620px) and (min-width: 769px) {
+  .hero-art { width: 150px; height: 150px; }
+  .hero-title { font-size: clamp(26px, 4vw, 46px); }
+  .hero { padding-bottom: calc(var(--space-6) / 2); }
+}
+
 @media (max-width: 768px) {
   .site-nav a { font-size: 12.5px; }
   .header-actions .btn { display: none; }
@@ -1037,11 +1041,9 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .hero { align-items: flex-start; text-align: left; }
   .hero-title { font-size: clamp(16px, 5vw, 44px); }
   .hero-art {
-    top: calc(var(--header-h) + var(--space-1));
     width: min(46vw, 170px);
     height: min(46vw, 170px);
   }
-  .hero-content { bottom: clamp(56px, 8vh, 84px); }
   .hero-scroll { display: none; }
   .hero-orbit {
     right: 50%;

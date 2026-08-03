@@ -217,7 +217,7 @@
      NEON WELCOME LETTERS
      ═══════════════════════════════════════ */
 
-  const WELCOME_TEXT = 'welcome to xoleric portfolio';
+  const WELCOME_TEXT = 'I build web experiences that drive real results';
   const welcomeEl = $('welcomeText');
   const letterEls = [];
 
@@ -239,7 +239,7 @@
       return;
     }
     letterEls.forEach((s, i) => {
-      setTimeout(() => s.classList.add('visible'), 150 + i * 45);
+      setTimeout(() => s.classList.add('visible'), 150 + i * 30);
     });
   }
 
@@ -442,12 +442,12 @@
   };
 
   const FALLBACK_PROJECTS = [
-    { name: 'Mydrime', language: 'HTML', description: 'This very portfolio — creative coding, WebGL background and a neon welcome.', html_url: 'https://github.com/xolerc/mydrime', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Music', language: 'Dart', description: 'Music application experiment.', html_url: 'https://github.com/xolerc/music', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'xolericc', language: 'TypeScript', description: 'Experiments and snippets.', html_url: 'https://github.com/xolerc/xolericc', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Savodhon', language: 'Python', description: 'Utility project.', html_url: 'https://github.com/xolerc/Savodhon', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Abdullo-usta', language: 'JavaScript', description: 'Craft project.', html_url: 'https://github.com/xolerc/Abdullo-usta', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'xoleric-globe', language: 'CSS', description: 'Globe experiment.', html_url: 'https://github.com/xolerc/xoleric-globe', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() }
+    { name: 'Mydrime', language: 'HTML', role: 'Creator', impact: 'this portfolio, live on GitHub Pages', description: 'This very portfolio — creative coding, WebGL background and a neon welcome.', html_url: 'https://github.com/xolerc/mydrime', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Music', language: 'Dart', role: 'Creator', impact: 'cross-platform music app prototype', description: 'Music application experiment.', html_url: 'https://github.com/xolerc/music', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'xolericc', language: 'TypeScript', role: 'Creator', impact: 'TypeScript experiments', description: 'Experiments and snippets.', html_url: 'https://github.com/xolerc/xolericc', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Savodhon', language: 'Python', role: 'Creator', impact: 'utility tooling', description: 'Utility project.', html_url: 'https://github.com/xolerc/Savodhon', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Abdullo-usta', language: 'JavaScript', role: 'Creator', impact: 'client project', description: 'Craft project.', html_url: 'https://github.com/xolerc/Abdullo-usta', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'xoleric-globe', language: 'CSS', role: 'Creator', impact: 'WebGL globe experiment', description: 'Globe experiment.', html_url: 'https://github.com/xolerc/xoleric-globe', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() }
   ];
 
   function esc(str) {
@@ -468,6 +468,15 @@
       const stars = r.stargazers_count || 0;
       const forks = r.forks_count || 0;
       const date = new Date(r.updated_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      const role = r.role || '';
+      const impact = r.impact || '';
+      const impactLine = (role || impact)
+        ? '<div class="card-impact">' +
+          (role ? '<span>Role: ' + esc(role) + '</span>' : '') +
+          (role && impact ? ' · ' : '') +
+          (impact ? '<span>Impact: ' + esc(impact) + '</span>' : '') +
+          '</div>'
+        : '';
 
       const card = document.createElement('article');
       card.className = 'project-card reveal-up';
@@ -481,6 +490,7 @@
         `<span class="card-tag">${esc(lang)}</span>` +
         `<h3>${esc(r.name)}</h3>` +
         `<p>${desc}</p>` +
+        impactLine +
         '<div class="card-meta">' +
         `<span class="meta-stars">★ ${stars}</span>` +
         `<span class="meta-forks">⑂ ${forks}</span>` +

@@ -20,6 +20,16 @@ The v3.3 portfolio — **clean, content-first**: corner hero art with a V1-style
 
 ---
 
+## v3.4 Changelog — conversion polish
+
+| Area | What changed |
+|------|-------------|
+| **Hero copy** | Eyebrow → `Product-focused Frontend Engineer`; neon headline → outcome-led **"I build web experiences that drive real results"** (30ms letter stagger) |
+| **CTAs** | `View Work`/`Let's Talk` → **`Work with me`** (→ contact) + **`See my work`** (→ work) |
+| **SEO / OG** | Description + OG/Twitter meta rewritten to lead with measurable results |
+| **Project cards** | **Role / Impact** line (`Role: … · Impact: …`) on curated fallback cards |
+| **Micro-interactions** | `.btn:focus-visible` ring strengthened to 3px accent |
+
 ## v3.3 Changelog
 
 | Area | What changed |

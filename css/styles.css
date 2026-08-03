@@ -531,10 +531,16 @@ canvas#webgl-bg {
 .hero.ready .hero-title { opacity: 1; transform: none; }
 
 /* Neon welcome letters */
+.hero-title .word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .hero-title .letter {
   display: inline-block;
   opacity: 0;
-  transition: opacity 0.35s ease, transform 0.15s ease-out, text-shadow 0.2s ease, color 0.2s ease;
+  transform: translateY(22px) scale(0.9);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
 }
 
 .hero-title .letter.visible { opacity: 1; }

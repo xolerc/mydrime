@@ -224,12 +224,24 @@
   function buildLetters() {
     if (!welcomeEl) return;
     welcomeEl.textContent = '';
-    WELCOME_TEXT.split('').forEach((char) => {
-      const span = document.createElement('span');
-      span.textContent = char === ' ' ? '\u00A0' : char;
-      span.className = char === ' ' ? 'letter space' : 'letter';
-      welcomeEl.appendChild(span);
-      letterEls.push(span);
+    WELCOME_TEXT.split(/\s+/).forEach((word, wi, arr) => {
+      const wordEl = document.createElement('span');
+      wordEl.className = 'word';
+      word.split('').forEach((char) => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        span.className = 'letter';
+        wordEl.appendChild(span);
+        letterEls.push(span);
+      });
+      welcomeEl.appendChild(wordEl);
+      if (wi < arr.length - 1) {
+        const sp = document.createElement('span');
+        sp.className = 'letter space';
+        sp.textContent = '\u00A0';
+        welcomeEl.appendChild(sp);
+        letterEls.push(sp);
+      }
     });
   }
 

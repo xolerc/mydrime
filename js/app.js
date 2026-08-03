@@ -8,8 +8,8 @@
   /* ─────────── CONFIG / TOKENS ─────────── */
   const CFG = {
     images: ['images/bg.png', 'images/main.png'],
-    revealRadius: 240,
-    revealEase: 0.1,
+    circle: 200,
+    circleMobile: 140,
     githubUser: 'xolerc'
   };
 
@@ -36,8 +36,9 @@
   let dpr = 1;
 
   let rawX = VW / 2, rawY = VH / 2;
+  let cursorX = rawX, cursorY = rawY;
+  let currentR = 0;
   let hasPointer = false;
-  let revealOpacity = 0;
   let lastTouchTime = 0;
 
   let loaded = false;
@@ -336,7 +337,7 @@
   }
 
   /* ═══════════════════════════════════════
-     BLUR REVEAL — bg opens softly near cursor
+     FLASHLIGHT REVEAL — V1 style, art box only
      ═══════════════════════════════════════ */
 
   function heroInView() {
@@ -347,20 +348,35 @@
 
   function updateReveal() {
     if (!revealEl || reduceMotion) return;
-    let target = 0;
-    if (heroInView() && hasPointer) {
-      const rect = revealEl.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const reach = Math.hypot(rect.width, rect.height) / 2 + CFG.revealRadius;
-      const dist = Math.hypot(rawX - cx, rawY - cy);
-      const t = 1 - clamp(dist / reach, 0, 1);
-      target = t * t;
-      if (!isFine && !touchActiveRecently()) target = 0;
+    cursorX = lerp(cursorX, rawX, 0.12);
+    cursorY = lerp(cursorY, rawY, 0.12);
+
+    const rect = revealEl.getBoundingClientRect();
+    const mx = cursorX - rect.left;
+    const my = cursorY - rect.top;
+    const inside = mx >= -24 && my >= -24 && mx <= rect.width + 24 && my <= rect.height + 24;
+
+    let targetR = 0;
+    if (heroInView() && hasPointer && inside) {
+      targetR = isFine ? CFG.circle : CFG.circleMobile;
+      if (!isFine && !touchActiveRecently()) targetR = 0;
     }
-    revealOpacity = lerp(revealOpacity, target, CFG.revealEase);
-    if (Math.abs(revealOpacity - target) < 0.001) revealOpacity = target;
-    revealEl.style.opacity = revealOpacity;
+
+    currentR = lerp(currentR, targetR, 0.1);
+    if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
+
+    if (currentR > 0.5) {
+      const cx = clamp(mx, 0, rect.width);
+      const cy = clamp(my, 0, rect.height);
+      const mask =
+        `radial-gradient(circle ${currentR.toFixed(1)}px at ${cx.toFixed(1)}px ${cy.toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`;
+      revealEl.style.maskImage = mask;
+      revealEl.style.webkitMaskImage = mask;
+    } else {
+      const zero = 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+      revealEl.style.maskImage = zero;
+      revealEl.style.webkitMaskImage = zero;
+    }
   }
 
   function masterLoop() {

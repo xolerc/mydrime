@@ -426,19 +426,21 @@ canvas#webgl-bg {
   inset: 0;
   background-size: cover;
   background-position: center;
-  will-change: transform, opacity;
+  will-change: transform, -webkit-mask-image, mask-image;
 }
 
 .hero-art .layer-bg { background-image: url('../images/bg.png'); opacity: 0.5; }
 .hero-art .layer-main { background-image: url('../images/main.png'); opacity: 1; }
 
-/* Blur reveal — bg.png softly opens over main.png near the cursor */
+/* V1 flashlight reveal — clear bg.png opens in a circle inside the art box only */
 .hero-art .reveal {
   z-index: 2;
   background-image: url('../images/bg.png');
-  opacity: 0;
-  filter: blur(14px);
-  transform: scale(1.1);
+  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 .hero-art-sheen {

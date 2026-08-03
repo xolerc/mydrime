@@ -14,12 +14,20 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const lowEnd = (navigator.hardwareConcurrency || 4) <= 4 && ((navigator.deviceMemory || 8) <= 4);
+  const glDisabled = (function () {
+    try { return localStorage.getItem('xoleric-gl') === '0'; }
+    catch (e) { return false; }
+  })();
+  if (glDisabled) return;
+
   let gl = null;
   let program = null;
   let resolutionLocation = null;
   let timeLocation = null;
   let cursorLocation = null;
   let cursorVelLocation = null;
+  let qualityLocation = null;
   let animationId = 0;
   let lastTime = null;
   let elapsed = 0;
@@ -68,6 +76,7 @@
     'uniform float u_time;',
     'uniform vec2 u_cursor;',
     'uniform vec2 u_cursorVel;',
+    'uniform float u_quality;',
     '',
     'vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
     'vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
@@ -124,7 +133,7 @@
     '  p.y += ripple * 0.3;',
     '',
     '  float n1 = snoise(p);',
-    '  float n2 = snoise(p * 2.2 + vec2(0.0, time * 0.25));',
+    '  float n2 = snoise(p * 2.2 + vec2(0.0, time * 0.25)) * u_quality;',
     '  float val = n1 * 0.65 + n2 * 0.35;',
     '  val += ripple * 0.1;',
     '',
@@ -215,16 +224,18 @@
     timeLocation = gl.getUniformLocation(program, 'u_time');
     cursorLocation = gl.getUniformLocation(program, 'u_cursor');
     cursorVelLocation = gl.getUniformLocation(program, 'u_cursorVel');
+    qualityLocation = gl.getUniformLocation(program, 'u_quality');
     return true;
   }
 
   function resize() {
     if (!gl) return;
-    const maxPixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+    const maxPixelRatio = Math.min(window.devicePixelRatio || 1, lowEnd ? 1 : 1.5);
     canvas.width = Math.round(window.innerWidth * maxPixelRatio);
     canvas.height = Math.round(window.innerHeight * maxPixelRatio);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+    gl.uniform1f(qualityLocation, lowEnd ? 0.55 : 1.0);
   }
 
   let resizeTimeout;

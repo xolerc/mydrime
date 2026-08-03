@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✦ Xoleric Portfolio v3.2 ✦
+# ✦ Xoleric Portfolio v3.3 ✦
 
 ### Interactive, performant portfolio — pure HTML, CSS & JavaScript, zero dependencies
 
@@ -14,11 +14,23 @@
 
 ## What Is This?
 
-The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style **flashlight reveal** confined to the art box (a clear circle of `bg.webp` opens over `main.webp` only while the cursor is over the image), neon welcome letters, orbiting social icons, a WebGL liquid-chrome background and a **live GitHub projects grid** fed from the GitHub API.
+The v3.3 portfolio — **clean, content-first**: corner hero art with a V1-style **flashlight reveal** confined to the art box (a clear circle of `bg.webp` opens over `main.webp` only while the cursor is over the image), a **terminal-boot loader** that hands over to a glowing XOLERIC logo, neon welcome letters, orbiting social icons, a WebGL liquid-chrome background and a **live GitHub projects grid** fed from the GitHub API.
 
 **No frameworks. No dependencies. No build steps.**
 
 ---
+
+## v3.3 Changelog
+
+| Area | What changed |
+|------|-------------|
+| **Loader** | Replaced the particle loader with a **terminal boot screen**: fake kernel/system log lines (trimmed to 60), real preload progress printed as `[ LOAD n% ]` lines, then a white-bordered **XOLERIC** logo that glitches in and settles into a steady glow before the scene mounts |
+| **Images** | Hero art converted to **WebP** (`bg.webp` 12KB + `main.webp` 16KB, was ~818KB of PNG) — ~97% smaller; preloads get `fetchpriority="high"` |
+| **Nav / scroll-spy** | Per-scroll `getBoundingClientRect` scanning replaced with an **IntersectionObserver** nav spy |
+| **Flashlight reveal** | Hero/reveal bounds **cached** (resize + rAF-throttled scroll), no per-frame layout reads |
+| **Scroll progress** | `width` → GPU-composited `transform: scaleX` |
+| **WebGL** | **Device-tier adaptive** — DPR capped to 1.0 + a `u_quality` shader uniform (second noise octave scaled) on low-end devices; `localStorage xoleric-gl=0` disables it entirely |
+| **Reduced motion** | `prefers-reduced-motion` collapses all animations; loader + reveal skip their rAF loops |
 
 ## v3.2 Changelog
 
@@ -48,7 +60,7 @@ The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style
 | **WebGL Background** | Cursor-reactive "ship on the sea" — the Mercury liquid-chrome shader drifts, ripples and re-tints slowly toward the cursor while the pointer stays 1:1 |
 | **Scroll Progress** | Top progress bar + header shrink on scroll + active nav highlight |
 | **Easter Eggs** | Konami code; type `0000` for fullscreen |
-| **Performance** | Lightweight master loop, reduced-motion support, battery-friendly pause |
+| **Performance** | Single rAF loop with cached bounds, IntersectionObserver spies, GPU-composited progress, reduced-motion support, battery-friendly pause |
 
 ---
 
@@ -84,7 +96,7 @@ mydrime/
 ├── css/
 │   └── styles.css      ← design tokens + all styling
 ├── js/
-│   └── app.js          ← loader, flashlight reveal, neon letters, orbit, live GitHub, easter eggs
+│   └── app.js          ← terminal-boot loader, flashlight reveal, neon letters, orbit, live GitHub, easter eggs
 ├── js/
 │   └── webgl-bg.js     ← Mercury liquid-chrome background shader
 ├── images/
@@ -97,12 +109,12 @@ mydrime/
 
 ## How It Works
 
-1. **Loader** preloads `bg.webp` + `main.webp` with real progress (8s failsafe), then particle-explodes into the scene.
+1. **Loader** runs a terminal boot sequence while preloading `bg.webp` + `main.webp` (real progress, 8s failsafe), then hands over to a glitching **XOLERIC** logo that settles into a steady glow before the scene mounts.
 2. **Flashlight reveal** sets `mask-image: radial-gradient(circle …)` on the `.reveal` layer (clear `bg.webp`) each frame; the circle radius lerps to `200px` desktop / `140px` touch only while the cursor is inside the art box — it never touches the rest of the UI.
 3. **Neon letters** pop in one by one with a 45ms stagger.
 4. **Live GitHub grid** fetches `users/xolerc/repos` (non-fork, top 6 by updated) and renders cards with language/stars/forks; falls back to static cards offline.
-5. **Scroll** updates the progress bar, header state and active nav link; `IntersectionObserver` reveals cards and counts stats.
-6. **WebGL background** renders the Mercury liquid-chrome shader behind everything (skipped under reduced motion).
+5. **Scroll** updates the progress bar (GPU `scaleX`) and header state; an `IntersectionObserver` drives the active nav link, and cached bounds keep the reveal thrash-free.
+6. **WebGL background** renders the Mercury liquid-chrome shader behind everything (DPR + noise tiered by device; skipped under reduced motion).
 7. **Easter eggs**: Konami code toggles the theme; typing `0000` toggles fullscreen.
 
 ---

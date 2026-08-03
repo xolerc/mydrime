@@ -118,79 +118,95 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .skip-link:focus-visible { transform: translateY(0); }
 
-/* ─────────── LOADER ─────────── */
+/* ─────────── LOADER — terminal boot → XOLERIC logo ─────────── */
 #loader {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 20px;
+  background: #030303;
+  overflow: hidden;
   transition: opacity 0.7s ease, visibility 0.7s ease;
 }
 
 #loader.hidden { opacity: 0; visibility: hidden; }
 
-#loaderCanvas {
+.scanlines {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.12));
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
 }
 
-.loader-text {
-  position: relative;
+#terminal-container {
+  position: absolute;
+  inset: 0;
+  padding: clamp(16px, 4vw, 32px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: clamp(11px, 1.4vw, 13px);
+  line-height: 1.45;
+  color: #d1d1d1;
+  opacity: 0.85;
+  z-index: 1;
+}
+
+.log-line { word-break: break-word; }
+.log-line .ok { color: var(--ok); }
+.log-line .hash { color: var(--accent-2); }
+.log-line .load { color: var(--accent); }
+
+#logo-container {
+  position: absolute;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: #030303;
   z-index: 2;
+}
+
+.xoleric-logo {
   font-family: var(--font-display);
-  font-size: clamp(18px, 1.6vw, 28px);
-  font-weight: 700;
-  letter-spacing: 0.6em;
-  text-indent: 0.6em;
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: clamp(6px, 1.2vw, 10px);
   text-transform: uppercase;
-  color: var(--text-2);
-  opacity: 0;
-  transition: opacity 0.6s ease;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: clamp(14px, 3vw, 20px) clamp(30px, 6vw, 50px);
+  box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3);
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  animation: fadeIn 0.5s ease-out forwards, glitch-anim 0.3s steps(2, end) infinite;
 }
 
-.loader-text.visible { opacity: 1; }
-
-.loader-bar {
-  position: relative;
-  z-index: 2;
-  width: min(220px, 60vw);
-  height: 2px;
-  background: var(--line);
-  border-radius: 2px;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+.xoleric-logo.stable {
+  animation: fadeIn 0.5s ease-out forwards, glow 3s ease-in-out infinite;
 }
 
-.loader-bar.visible { opacity: 1; }
-
-.loader-bar-fill {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius: 2px;
-  transition: width 0.25s ease;
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.loader-pct {
-  position: relative;
-  z-index: 2;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  color: var(--muted);
-  opacity: 0;
-  transition: opacity 0.6s ease;
+@keyframes glitch-anim {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, 3px); }
+  80% { transform: translate(3px, -3px); }
+  100% { transform: translate(0, 0); }
 }
 
-.loader-pct.visible { opacity: 1; }
+@keyframes glow {
+  0% { box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3); }
+  50% { box-shadow: 0 0 30px rgba(255,255,255,0.5) inset, 0 0 50px rgba(255,255,255,0.6); }
+  100% { box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3); }
+}
 
 /* ─────────── SCROLL PROGRESS + HEADER ─────────── */
 .scroll-progress {
@@ -198,11 +214,13 @@ img, svg, canvas { display: block; max-width: 100%; }
   top: 0;
   left: 0;
   height: 3px;
-  width: 0;
+  width: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: left;
   z-index: 40;
   pointer-events: none;
-  transition: width 0.2s linear;
+  will-change: transform;
 }
 
 .site-header {

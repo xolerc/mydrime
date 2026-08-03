@@ -22,17 +22,15 @@
   };
 
   /* ─────────── DEVICE FLAGS ─────────── */
-  const isMobile = window.matchMedia('(hover: none), (pointer: coarse)').matches;
   const isFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ─────────── DOM REFS ─────────── */
   const $ = (id) => document.getElementById(id);
   const loaderEl = $('loader');
-  const loaderText = $('loaderText');
-  const loaderBar = $('loaderBar');
-  const loaderFill = $('loaderFill');
-  const loaderPct = $('loaderPct');
+  const terminalEl = $('terminal-container');
+  const logoContainer = $('logo-container');
+  const mainLogo = $('mainLogo');
   const vignette = $('vignette');
   const revealEl = $('reveal');
   const heroEl = document.querySelector('.hero');
@@ -41,7 +39,6 @@
   /* ─────────── GLOBAL STATE ─────────── */
   let VW = window.innerWidth;
   let VH = window.innerHeight;
-  let dpr = 1;
 
   let rawX = VW / 2, rawY = VH / 2;
   let cursorX = rawX, cursorY = rawY;
@@ -50,23 +47,11 @@
   let lastTouchTime = 0;
 
   let loaded = false;
-  let lastFrame = 0;
   let rafId = 0;
 
   /* ─────────── HELPERS ─────────── */
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-  const rand = (min, max) => Math.random() * (max - min) + min;
-
-  function setupCanvas(canvas) {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(VW * dpr);
-    canvas.height = Math.round(VH * dpr);
-  }
-  const resetCtx = (ctx) => {
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, VW, VH);
-  };
 
   /* ═══════════════════════════════════════
      CONTENT PROTECTION — no select, no copy,
@@ -94,67 +79,55 @@
   });
 
   /* ═══════════════════════════════════════
-     LOADER — real preload + failsafe
+     LOADER — terminal boot → XOLERIC logo
+     Real preload + failsafe
      ═══════════════════════════════════════ */
 
-  const lCanvas = $('loaderCanvas');
-  const lctx = lCanvas.getContext('2d');
-  setupCanvas(lCanvas);
+  const TERMINAL_MAX = 60;
+  let bootTimer = 0;
+  let loaderProgress = 0;
+  let lastPctBucket = -1;
+  let loaderDone = false;
 
-  const loaderParticles = [];
-  const LOADER_COUNT = reduceMotion ? 0 : 110;
-  for (let i = 0; i < LOADER_COUNT; i++) {
-    loaderParticles.push({
-      x: Math.random() * VW,
-      y: Math.random() * VH,
-      tx: VW / 2, ty: VH / 2,
-      size: rand(1, 3.5),
-      alpha: rand(0.2, 0.8),
-      speed: rand(0.005, 0.025),
-      color: `rgba(${Math.round(rand(100, 200))}, ${Math.round(rand(150, 250))}, 255, `,
-      exploded: false, vx: 0, vy: 0
-    });
+  const bootPrefixes = ['SYSTEM', 'KERNEL', 'INIT', 'DAEMON', 'XOLERIC-CORE', 'NETWORK', 'FS-CHECK', 'SECURITY'];
+  const bootActions = ['Mounting', 'Initializing', 'Starting', 'Verifying', 'Loading module', 'Unpacking', 'Connecting to', 'Bypassing'];
+  const bootTargets = ['/dev/sda1', '/sys/fs/cgroup', '0x8F9A2B', 'socket_buffer', 'local_host', 'encrypted_payload', 'UI_module', 'core_registry'];
+  const randHex = (n) => {
+    let out = '';
+    const chars = '0123456789ABCDEF';
+    for (let i = 0; i < n; i++) out += chars[Math.floor(Math.random() * 16)];
+    return out;
+  };
+
+  function bootLine() {
+    if (Math.random() > 0.82) return 'DUMP: ' + randHex(70);
+    const pre = bootPrefixes[Math.floor(Math.random() * bootPrefixes.length)];
+    const act = bootActions[Math.floor(Math.random() * bootActions.length)];
+    const tgt = bootTargets[Math.floor(Math.random() * bootTargets.length)];
+    return `[ ${(Math.random() * 2).toFixed(4)} ] ${pre}: ${act} ${tgt} ... <span class="ok">[ OK ]</span> - Hash: <span class="hash">${randHex(8)}</span>`;
   }
 
-  let loaderProgress = 0;
-  let loaderShown = 0;
+  function appendLog(html) {
+    if (!terminalEl) return;
+    const div = document.createElement('div');
+    div.className = 'log-line';
+    div.innerHTML = html;
+    terminalEl.appendChild(div);
+    while (terminalEl.childNodes.length > TERMINAL_MAX) {
+      terminalEl.removeChild(terminalEl.firstChild);
+    }
+  }
 
-  function drawLoader() {
-    resetCtx(lctx);
-    for (let i = 0; i < loaderParticles.length; i++) {
-      for (let j = i + 1; j < loaderParticles.length; j++) {
-        const a = loaderParticles[i], b = loaderParticles[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 80) {
-          lctx.beginPath();
-          lctx.moveTo(a.x, a.y);
-          lctx.lineTo(b.x, b.y);
-          lctx.strokeStyle = `rgba(74, 144, 226, ${(1 - dist / 80) * 0.3})`;
-          lctx.lineWidth = 0.5;
-          lctx.stroke();
-        }
-      }
+  function bootTick() {
+    if (loaderDone) return;
+    const bucket = Math.floor(loaderProgress / 10);
+    if (bucket > lastPctBucket) {
+      lastPctBucket = bucket;
+      appendLog(`<span class="load">[ LOAD ${Math.round(loaderProgress)}% ]</span> unpacking module core_registry`);
+    } else {
+      appendLog(bootLine());
     }
-    for (const p of loaderParticles) {
-      if (!p.exploded) {
-        p.x += (p.tx - p.x) * p.speed;
-        p.y += (p.ty - p.y) * p.speed;
-      } else {
-        p.x += p.vx; p.y += p.vy;
-        p.vx *= 0.98; p.vy *= 0.98;
-        p.alpha *= 0.97;
-      }
-      lctx.beginPath();
-      lctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      lctx.fillStyle = p.color + Math.max(p.alpha, 0) + ')';
-      lctx.fill();
-    }
-    loaderShown = lerp(loaderShown, loaderProgress, 0.12);
-    if (loaderShown < 0.5) loaderShown = 0;
-    loaderFill.style.width = clamp(loaderShown, 0, 100) + '%';
-    loaderPct.textContent = Math.round(clamp(loaderShown, 0, 100)) + '%';
-    if (!loaded) requestAnimationFrame(drawLoader);
+    bootTimer = setTimeout(bootTick, reduceMotion ? 4 : 10 + Math.random() * 30);
   }
 
   function preloadAssets(onDone) {
@@ -172,32 +145,26 @@
     }
   }
 
-  function explodeLoader() {
-    for (const p of loaderParticles) {
-      if (!p.exploded) {
-        p.exploded = true;
-        const angle = Math.atan2(p.y - VH / 2, p.x - VW / 2);
-        const power = rand(5, 15);
-        p.vx = Math.cos(angle) * power;
-        p.vy = Math.sin(angle) * power;
-      }
-    }
-  }
-
   function finishLoading() {
-    explodeLoader();
+    if (loaderDone) return;
+    clearTimeout(bootTimer);
+    loaderDone = true;
+    if (terminalEl) terminalEl.style.display = 'none';
+    if (logoContainer) logoContainer.style.display = 'flex';
+
+    const logoWait = reduceMotion ? 250 : 800;
+    const hideWait = reduceMotion ? 500 : 1550;
+    setTimeout(() => { if (mainLogo) mainLogo.classList.add('stable'); }, logoWait);
     setTimeout(() => {
       loaded = true;
       loaderEl.classList.add('hidden');
       initMainScene();
-    }, 550);
+    }, hideWait);
   }
 
   function startLoading() {
-    loaderText.classList.add('visible');
-    loaderBar.classList.add('visible');
-    loaderPct.classList.add('visible');
-    drawLoader();
+    appendLog('<span class="load">[ BOOT ]</span> xoleric core v3.2 — cold start');
+    bootTick();
 
     setTimeout(() => {
       if (!loaded) {
@@ -206,7 +173,7 @@
       }
     }, 8000);
 
-    const minTime = reduceMotion ? 150 : 1400;
+    const minTime = reduceMotion ? 150 : 1500;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
     });
@@ -304,27 +271,61 @@
   const scrollProgress = $('scrollProgress');
   const siteHeader = $('siteHeader');
   const navLinks = Array.prototype.slice.call(document.querySelectorAll('.site-nav a'));
-
-  function onScroll() {
-    const doc = document.documentElement;
-    const max = doc.scrollHeight - VH;
-    const p = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
-    if (scrollProgress) scrollProgress.style.width = p * 100 + '%';
-    if (siteHeader) siteHeader.classList.toggle('scrolled', window.scrollY > 10);
-
-    let current = '#hero';
-    for (const link of navLinks) {
-      const sec = document.querySelector(link.getAttribute('href'));
-      if (!sec) continue;
-      const rect = sec.getBoundingClientRect();
-      if (rect.top <= VH * 0.5 && rect.bottom > VH * 0.5) current = link.getAttribute('href');
-    }
-    for (const link of navLinks) {
-      link.classList.toggle('active', link.getAttribute('href') === current);
-    }
+  const navTargets = [];
+  for (const link of navLinks) {
+    const sec = document.querySelector(link.getAttribute('href'));
+    if (sec) navTargets.push({ link, sec });
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
+  let heroVisible = true;
+  let revealRect = { left: 0, top: 0, width: 0, height: 0 };
+
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - VH;
+    const p = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+    if (scrollProgress) scrollProgress.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+    if (siteHeader) siteHeader.classList.toggle('scrolled', window.scrollY > 10);
+  }
+
+  function measureReveal() {
+    if (!revealEl) return;
+    const r = revealEl.getBoundingClientRect();
+    revealRect = { left: r.left, top: r.top, width: r.width, height: r.height };
+  }
+
+  let scrollRaf = 0;
+  window.addEventListener('scroll', () => {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(() => {
+      scrollRaf = 0;
+      onScroll();
+      if (heroVisible) measureReveal();
+    });
+  }, { passive: true });
+
+  function setActiveNav(id) {
+    for (const t of navTargets) t.link.classList.toggle('active', t.link.getAttribute('href') === id);
+  }
+
+  function initNavSpy() {
+    if (!navTargets.length) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) setActiveNav('#' + entry.target.id);
+      }
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    for (const t of navTargets) io.observe(t.sec);
+    setActiveNav('#hero');
+  }
+
+  function initViewportSpy() {
+    if (!heroEl) return;
+    const io = new IntersectionObserver((entries) => {
+      heroVisible = entries.some((e) => e.isIntersecting);
+      measureReveal();
+    }, { threshold: 0 });
+    io.observe(heroEl);
+  }
 
   function initReveal() {
     if (reduceMotion) return;
@@ -374,28 +375,17 @@
      FLASHLIGHT REVEAL — V1 style, art box only
      ═══════════════════════════════════════ */
 
-  function heroInView() {
-    if (!heroEl) return false;
-    const rect = heroEl.getBoundingClientRect();
-    return rect.bottom > 0 && rect.top < VH;
-  }
-
   function updateReveal() {
     if (!revealEl || reduceMotion) return;
     cursorX = lerp(cursorX, rawX, 0.12);
     cursorY = lerp(cursorY, rawY, 0.12);
 
-    const inView = heroInView();
-    const rect = inView ? revealEl.getBoundingClientRect() : null;
-    let mx = 0, my = 0, inside = false;
-    if (rect) {
-      mx = cursorX - rect.left;
-      my = cursorY - rect.top;
-      inside = mx >= -24 && my >= -24 && mx <= rect.width + 24 && my <= rect.height + 24;
-    }
+    const mx = cursorX - revealRect.left;
+    const my = cursorY - revealRect.top;
+    const inside = mx >= -24 && my >= -24 && mx <= revealRect.width + 24 && my <= revealRect.height + 24;
 
     let targetR = 0;
-    if (inView && hasPointer && inside) {
+    if (heroVisible && hasPointer && inside) {
       targetR = isFine ? CFG.circle : CFG.circleMobile;
       if (!isFine && !touchActiveRecently()) targetR = 0;
     }
@@ -403,9 +393,9 @@
     currentR = lerp(currentR, targetR, 0.1);
     if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
 
-    if (currentR > 0.5 && rect) {
-      const cx = clamp(mx, 0, rect.width);
-      const cy = clamp(my, 0, rect.height);
+    if (currentR > 0.5 && revealRect.width > 0) {
+      const cx = clamp(mx, 0, revealRect.width);
+      const cy = clamp(my, 0, revealRect.height);
       const mask =
         `radial-gradient(circle ${currentR.toFixed(1)}px at ${cx.toFixed(1)}px ${cy.toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`;
       revealEl.style.maskImage = mask;
@@ -425,7 +415,7 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       cancelAnimationFrame(rafId);
-    } else if (loaded) {
+    } else if (loaded && !reduceMotion) {
       rafId = requestAnimationFrame(masterLoop);
     }
   });
@@ -569,9 +559,9 @@
   function onResize() {
     VW = window.innerWidth;
     VH = window.innerHeight;
-    setupCanvas(lCanvas);
     rawX = clamp(rawX, 0, VW);
     rawY = clamp(rawY, 0, VH);
+    measureReveal();
     onScroll();
   }
 
@@ -589,9 +579,13 @@
     buildLetters();
     buildProjectCards();
     initStatsSpy();
+    initNavSpy();
+    initViewportSpy();
+    measureReveal();
 
-    lastFrame = performance.now();
-    rafId = requestAnimationFrame(masterLoop);
+    if (!reduceMotion) {
+      rafId = requestAnimationFrame(masterLoop);
+    }
     revealLetters();
 
     const yearEl = $('year');

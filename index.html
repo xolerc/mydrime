@@ -10,8 +10,8 @@
   <link rel="icon" type="image/png" href="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
   <link rel="apple-touch-icon" href="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
 
-  <link rel="preload" as="image" href="images/bg.webp">
-  <link rel="preload" as="image" href="images/main.webp">
+  <link rel="preload" as="image" href="images/bg.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="images/main.webp" fetchpriority="high">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,14 +41,13 @@
   <div class="grain-top" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ═══ LOADER ═══ -->
+  <!-- ═══ LOADER — terminal boot → XOLERIC logo ═══ -->
   <div id="loader" aria-hidden="true">
-    <canvas id="loaderCanvas"></canvas>
-    <div class="loader-text" id="loaderText">xoleric</div>
-    <div class="loader-bar" id="loaderBar">
-      <div class="loader-bar-fill" id="loaderFill"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div id="terminal-container" aria-hidden="true"></div>
+    <div id="logo-container" aria-hidden="true">
+      <div class="xoleric-logo" id="mainLogo">XOLERIC</div>
     </div>
-    <div class="loader-pct" id="loaderPct">0%</div>
   </div>
 
   <!-- ═══ SCROLL PROGRESS + HEADER ═══ -->

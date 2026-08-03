@@ -45,7 +45,7 @@ The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style
 | **Neon Welcome** | Staggered neon `welcome to xoleric portfolio` letters |
 | **Orbit Icons** | Social icons orbiting the hero, cloned from the footer |
 | **Live GitHub Grid** | Project cards fetched in real time from `api.github.com/users/xolerc/repos` |
-| **WebGL Background** | Mercury liquid-chrome shader + accent glow + grain |
+| **WebGL Background** | Cursor-reactive "ship on the sea" — the Mercury liquid-chrome shader drifts, ripples and re-tints slowly toward the cursor while the pointer stays 1:1 |
 | **Scroll Progress** | Top progress bar + header shrink on scroll + active nav highlight |
 | **Easter Eggs** | Konami code; type `0000` for fullscreen |
 | **Performance** | Lightweight master loop, reduced-motion support, battery-friendly pause |

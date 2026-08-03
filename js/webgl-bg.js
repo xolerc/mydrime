@@ -1,7 +1,10 @@
 /* ═══════════════════════════════════════════════════════════
    xoleric — global WebGL background · Mercury Liquid Chrome
    Simplex-noise chrome surface + specular lighting, text-free
-   Fullscreen quad · u_resolution + u_time · DPR-aware · pauses
+   Cursor-reactive "ship on the sea": the background drifts,
+   ripples and re-tints slowly toward the cursor — the pointer
+   itself stays 1:1 and unaffected.
+   Fullscreen quad · u_resolution + u_time + u_cursor · DPR-aware
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -15,9 +18,39 @@
   let program = null;
   let resolutionLocation = null;
   let timeLocation = null;
+  let cursorLocation = null;
+  let cursorVelLocation = null;
   let animationId = 0;
   let lastTime = null;
   let elapsed = 0;
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  let targetX = 0.5, targetY = 0.5;
+  let shipX = 0.5, shipY = 0.5;
+  let velX = 0, velY = 0;
+  let lastShipX = shipX, lastShipY = shipY;
+
+  function updateShip() {
+    shipX += (targetX - shipX) * 0.025;
+    shipY += (targetY - shipY) * 0.025;
+    velX = lerp(velX, (shipX - lastShipX), 0.25);
+    velY = lerp(velY, (shipY - lastShipY), 0.25);
+    lastShipX = shipX;
+    lastShipY = shipY;
+  }
+
+  window.addEventListener('pointermove', (e) => {
+    targetX = e.clientX / Math.max(window.innerWidth, 1);
+    targetY = e.clientY / Math.max(window.innerHeight, 1);
+  }, { passive: true });
+
+  document.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    targetX = t.clientX / Math.max(window.innerWidth, 1);
+    targetY = t.clientY / Math.max(window.innerHeight, 1);
+  }, { passive: true });
 
   const VERT = [
     'attribute vec2 position;',
@@ -33,6 +66,8 @@
     '',
     'uniform vec2 u_resolution;',
     'uniform float u_time;',
+    'uniform vec2 u_cursor;',
+    'uniform vec2 u_cursorVel;',
     '',
     'vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
     'vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
@@ -64,22 +99,41 @@
     '',
     'void main() {',
     '  vec2 st = gl_FragCoord.xy / u_resolution.xy;',
-    '  st.x *= u_resolution.x / u_resolution.y;',
+    '  float aspect = u_resolution.x / u_resolution.y;',
+    '  st.x *= aspect;',
     '',
-    '  float time = u_time * 0.08;',
+    '  vec2 cursor = vec2(u_cursor.x * aspect, u_cursor.y);',
+    '  float time = u_time * 0.055;',
+    '',
     '  vec2 p = st * 1.8;',
     '  p.y -= time;',
+    '',
+    '  // water flows back as the ship moves through it',
+    '  p -= u_cursorVel * 0.32;',
+    '',
+    '  // distance to the ship',
+    '  vec2 toShip = cursor - st;',
+    '  float dist = length(toShip * vec2(1.0, 1.35));',
+    '  float pull = exp(-dist * 3.0);',
+    '',
+    '  // slow swell rippling outward from the ship',
+    '  float ripple = sin(dist * 16.0 - time * 1.4) * pull;',
+    '',
+    '  // bow the surface gently toward the ship',
+    '  p += (toShip / (length(toShip) + 0.001)) * pull * 0.22;',
+    '  p.y += ripple * 0.3;',
     '',
     '  float n1 = snoise(p);',
     '  float n2 = snoise(p * 2.2 + vec2(0.0, time * 0.25));',
     '  float val = n1 * 0.65 + n2 * 0.35;',
+    '  val += ripple * 0.1;',
     '',
     '  vec2 e = vec2(0.025, 0.0);',
     '  float nx = snoise(p + e.xy) - snoise(p - e.xy);',
     '  float ny = snoise(p + e.yx) - snoise(p - e.yx);',
-    '  vec3 normal = normalize(vec3(-nx, -ny, 1.0));',
+    '  vec3 normal = normalize(vec3(-nx * 1.4, -ny * 1.4, 1.0));',
     '',
-    '  vec3 lightDir = normalize(vec3(0.3, 0.7, 0.5));',
+    '  vec3 lightDir = normalize(vec3(0.3 + u_cursorVel.x * 2.0, 0.7 + u_cursorVel.y * 2.0, 0.5));',
     '  vec3 viewDir = vec3(0.0, 0.0, 1.0);',
     '  vec3 reflectDir = reflect(-lightDir, normal);',
     '  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 24.0);',
@@ -95,7 +149,19 @@
     '  color = mix(color, pureSilver, smoothstep(0.45, 0.85, chromeVal));',
     '  color = mix(color, whiteGlow, smoothstep(0.85, 1.0, chromeVal));',
     '',
-    '  color += vec3(spec * 0.4);',
+    '  // the sea harmonizes with the ship — teal/blue accents swell around it',
+    '  vec3 seaA = vec3(0.05, 0.45, 0.62);',
+    '  vec3 seaB = vec3(0.12, 0.42, 0.95);',
+    '  color = mix(color, seaA, pull * 0.4);',
+    '  color = mix(color, seaB, clamp(u_cursor.x * 0.5 + u_cursor.y * 0.2, 0.0, 0.6) * 0.28);',
+    '  color += seaB * (spec * 0.35 + ripple * 0.1);',
+    '',
+    '  // soft moonlight glow on the water at the ship',
+    '  float glow = exp(-dist * dist * 5.0);',
+    '  color += vec3(0.85, 0.92, 1.0) * glow * 0.16;',
+    '  color += seaB * glow * 0.1;',
+    '',
+    '  color += vec3(spec * 0.3);',
     '',
     '  gl_FragColor = vec4(color, 1.0);',
     '}'
@@ -147,6 +213,8 @@
 
     resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
     timeLocation = gl.getUniformLocation(program, 'u_time');
+    cursorLocation = gl.getUniformLocation(program, 'u_cursor');
+    cursorVelLocation = gl.getUniformLocation(program, 'u_cursorVel');
     return true;
   }
 
@@ -169,6 +237,11 @@
     if (!gl || gl.isContextLost()) return;
     if (lastTime != null) elapsed += (now - lastTime) / 1000;
     lastTime = now;
+    if (!reduceMotion) {
+      updateShip();
+      gl.uniform2f(cursorLocation, shipX, shipY);
+      gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
+    }
     gl.uniform1f(timeLocation, elapsed);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }

@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✦ Xoleric Portfolio v3.1 ✦
+# ✦ Xoleric Portfolio v3.2 ✦
 
 ### Interactive, performant portfolio — pure HTML, CSS & JavaScript, zero dependencies
 
@@ -14,25 +14,26 @@
 
 ## What Is This?
 
-The v3.1 portfolio — **V1 spirit restored on the V3 skeleton**: a flashlight mask-reveal hero with neon welcome letters and orbiting social icons, rebuilt around a content-first vertical scroll layout, one shared canvas and a single delta-time loop.
+The v3.2 portfolio — **clean, content-first**: corner hero art with a soft **blur reveal** (the background image opens over the main art near the cursor), neon welcome letters, orbiting social icons, a WebGL liquid-chrome background and a **live GitHub projects grid** fed from the GitHub API.
 
 **No frameworks. No dependencies. No build steps.**
 
 ---
 
-## v3.1 Changelog
+## v3.2 Changelog
 
 | Area | What changed |
 |------|-------------|
-| **Hero reveal** | Restored the V1 **flashlight mask-reveal** — a CSS `radial-gradient` mask on the `.reveal` layer that follows the cursor (radius lerped, `200px` desktop / `140px` touch within 700ms of a touch) |
-| **Welcome text** | Neon **`welcome to xoleric portfolio`** letters: staggered pop-in (45ms steps), cursor-repel with glow/scale/3D tilt, hover glitch |
-| **Orbit** | The footer's 6 social icons are cloned into an **orbiting ring** behind the hero (`--a` per-icon angle, CSS `orbitSpin`) |
-| **Creative FX** | Warp streaks clipped inside the flashlight circle + click **splash burst** + gold/dark neural particles with cursor repel |
+| **Hero art** | Corner 2-layer image: `main.png` fully visible; `bg.png` fades in **blurred** over it when the cursor approaches the box |
+| **Layout** | Hero texts (eyebrow, welcome title, CTAs) moved **below** the art box; styled with the UI palette + contrast shadows |
+| **Welcome text** | Neon **`welcome to xoleric portfolio`** letters: staggered pop-in (45ms steps) — no cursor scattering |
+| **Cursor** | Custom cursor dot/halo, click splash, warp streaks and neural particles all **removed**; native cursor restored |
+| **Projects** | **Live from GitHub API** — top 6 non-fork repos of `xolerc`, auto-updating, with language/stars/forks meta; graceful offline fallback |
+| **Orbit** | The footer's 6 social icons cloned into an **orbiting ring** behind the hero |
+| **Background** | Global WebGL **Mercury liquid-chrome** shader (`webgl-bg.js`) + accent glow + film grain; static reduced-motion fallback |
 | **Scroll model** | Content-first vertical scroll + scroll-snap — hero → about → work → contact → footer |
-| **Work section** | 6 static professional cards (no modals) with cursor-reactive 3D tilt (`--rx`/`--ry`) |
 | **Contact** | Simple **Telegram / Email** buttons — no form |
-| **Removed from v3** | Aurora cursor, typed-roles hero, tech ticker, case-study modals, playground / Matrix demo, contact form, light/dark theme toggle, CV link |
-| **Kept from v3** | Real preload loader + 8s failsafe, scroll progress, sticky header + scroll-spy, IntersectionObserver reveals, stat counters, Konami easter egg, `0000` fullscreen, reduced-motion, visibility pause, debounced resize, DPR-aware canvas |
+| **Kept from v3** | Real preload loader + 8s failsafe, scroll progress, sticky header + scroll-spy, IntersectionObserver reveals, stat counters, Konami easter egg, `0000` fullscreen, reduced-motion, visibility pause, debounced resize |
 
 ---
 
@@ -40,15 +41,14 @@ The v3.1 portfolio — **V1 spirit restored on the V3 skeleton**: a flashlight m
 
 | Feature | Description |
 |---------|-------------|
-| **Flashlight Reveal** | Mask-revealed hero layer that lights up around the cursor |
-| **Neon Welcome** | Cursor-reactive neon letters with repel, glow and glitch |
+| **Blur Reveal** | Hero background fades in blurred over the main art near the cursor |
+| **Neon Welcome** | Staggered neon `welcome to xoleric portfolio` letters |
 | **Orbit Icons** | Social icons orbiting the hero, cloned from the footer |
-| **Warp + Splash** | Light-speed streaks inside the reveal circle; click bursts |
-| **Neural Field** | Sparse gold/dark particles with connections, pushed by the cursor |
-| **Static Work Grid** | 6 clean project cards with 3D tilt |
+| **Live GitHub Grid** | Project cards fetched in real time from `api.github.com/users/xolerc/repos` |
+| **WebGL Background** | Mercury liquid-chrome shader + accent glow + grain |
 | **Scroll Progress** | Top progress bar + header shrink on scroll + active nav highlight |
-| **Easter Eggs** | Konami code sparks; type `0000` for fullscreen |
-| **Performance** | Single `#fx` canvas, one delta-time master loop, reduced-motion support, battery-friendly pause |
+| **Easter Eggs** | Konami code; type `0000` for fullscreen |
+| **Performance** | Lightweight master loop, reduced-motion support, battery-friendly pause |
 
 ---
 
@@ -56,8 +56,8 @@ The v3.1 portfolio — **V1 spirit restored on the V3 skeleton**: a flashlight m
 
 ```
 HTML5 ─── Semantic markup, ARIA roles, skip link
-CSS3  ─── Custom properties, color-scheme, scroll-snap, mask-image, 3D transforms
-JS    ─── Canvas API, single master rAF loop, IntersectionObserver
+CSS3  ─── Custom properties, color-scheme, scroll-snap, blur reveal, gradient art cards
+JS    ─── Fetch API (GitHub), WebGL shader, IntersectionObserver, single rAF loop
 ```
 
 **Zero dependencies. Open `index.html` and it works.**
@@ -84,7 +84,9 @@ mydrime/
 ├── css/
 │   └── styles.css      ← design tokens + all styling
 ├── js/
-│   └── app.js          ← loader, flashlight reveal, neon letters, orbit, FX, easter eggs
+│   └── app.js          ← loader, blur reveal, neon letters, orbit, live GitHub, easter eggs
+├── js/
+│   └── webgl-bg.js     ← Mercury liquid-chrome background shader
 ├── images/
 │   ├── bg.png          ← hero background layer
 │   └── main.png        ← hero main art layer
@@ -96,12 +98,12 @@ mydrime/
 ## How It Works
 
 1. **Loader** preloads `bg.png` + `main.png` with real progress (8s failsafe), then particle-explodes into the scene.
-2. **Flashlight reveal** sets `mask-image: radial-gradient(circle …)` on the `.reveal` layer each frame; the radius lerps to a target only while the hero is on screen.
-3. **Neon letters** pop in one by one, then repel/glow/tilt away from the cursor within a 150px radius.
-4. **One master loop** drives the cursor lerp, reveal mask, letters, warp streaks, splashes and neurons on a single canvas.
+2. **Blur reveal** fades the blurred `bg.png` layer in over `main.png` — opacity lerps toward a target that scales with the cursor's distance to the art box.
+3. **Neon letters** pop in one by one with a 45ms stagger.
+4. **Live GitHub grid** fetches `users/xolerc/repos` (non-fork, top 6 by updated) and renders cards with language/stars/forks; falls back to static cards offline.
 5. **Scroll** updates the progress bar, header state and active nav link; `IntersectionObserver` reveals cards and counts stats.
-6. **Project cards** tilt in 3D toward the pointer and reset on leave.
-7. **Easter eggs**: Konami code spawns a splash storm; typing `0000` toggles fullscreen.
+6. **WebGL background** renders the Mercury liquid-chrome shader behind everything (skipped under reduced motion).
+7. **Easter eggs**: Konami code toggles the theme; typing `0000` toggles fullscreen.
 
 ---
 

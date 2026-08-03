@@ -282,56 +282,6 @@ img, svg, canvas { display: block; max-width: 100%; }
 .btn-lg { padding: 15px 28px; font-size: 15px; }
 .btn-sm { padding: 9px 16px; font-size: 13px; }
 
-/* ─────────── CURSOR ─────────── */
-.cursor-dot,
-.cursor-halo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 90;
-  opacity: 0;
-}
-
-.cursor-dot {
-  width: 7px;
-  height: 7px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.7);
-  transform: translate(-50%, -50%);
-}
-
-.cursor-halo {
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(var(--accent-rgb), 0.35);
-  transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.cursor-dot.hovering {
-  width: 14px;
-  height: 14px;
-  background: var(--accent-2);
-}
-
-.cursor-halo.hovering {
-  width: 54px;
-  height: 54px;
-  border-color: rgba(var(--accent-rgb), 0.7);
-  background: rgba(var(--accent-rgb), 0.08);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  body { cursor: none; }
-  .cursor-dot, .cursor-halo { opacity: 1; }
-}
-
-@media (hover: none), (pointer: coarse) {
-  .cursor-dot, .cursor-halo { display: none; }
-}
-
 /* ─────────── GLOBAL WEBGL BACKGROUND ─────────── */
 canvas#webgl-bg {
   position: fixed;
@@ -379,20 +329,7 @@ canvas#webgl-bg {
   border-radius: 0 0 60% 30%;
 }
 
-/* ─────────── FX + VIGNETTE ─────────── */
-canvas#fx {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 25;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-
-canvas#fx.visible { opacity: 1; }
-
+/* ─────────── VIGNETTE ─────────── */
 .vignette {
   position: fixed;
   inset: 0;
@@ -412,6 +349,27 @@ canvas#fx.visible { opacity: 1; }
 }
 
 .section-head { margin-bottom: var(--space-5); }
+
+.section-sub {
+  margin-top: var(--space-2);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.section-sub .dot-live {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3fb950;
+  margin-right: 6px;
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(63, 185, 80, 0); }
+}
 
 .eyebrow {
   font-size: 12px;
@@ -468,22 +426,19 @@ canvas#fx.visible { opacity: 1; }
   inset: 0;
   background-size: cover;
   background-position: center;
-  will-change: transform, -webkit-mask-image, mask-image;
+  will-change: transform, opacity;
 }
 
 .hero-art .layer-bg { background-image: url('../images/bg.png'); opacity: 0.5; }
-.hero-art .layer-main { background-image: url('../images/main.png'); opacity: 0.32; filter: saturate(0.85) contrast(1.05); }
+.hero-art .layer-main { background-image: url('../images/main.png'); opacity: 1; }
 
-/* Flashlight reveal layer — bg.png peeks through the cursor mask */
+/* Blur reveal — bg.png softly opens over main.png near the cursor */
 .hero-art .reveal {
   z-index: 2;
   background-image: url('../images/bg.png');
-  opacity: 0.92;
-  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
-  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  transition: opacity 0.4s ease;
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(1.1);
 }
 
 .hero-art-sheen {
@@ -501,10 +456,13 @@ canvas#fx.visible { opacity: 1; }
 }
 
 @media (min-width: 769px) {
-  .hero-content { margin-left: min(42vw, 400px); }
+  .hero-content { margin-top: min(44vw, 360px); }
 }
 
-.hero .eyebrow { color: var(--accent-2); }
+.hero .eyebrow {
+  color: var(--accent-2);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 0, 0, 0.4);
+}
 
 .hero-title {
   font-family: var(--font-display);
@@ -513,6 +471,7 @@ canvas#fx.visible { opacity: 1; }
   line-height: 1.03;
   letter-spacing: -0.03em;
   color: var(--text);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5), 0 0 44px rgba(0, 0, 0, 0.35);
   margin-bottom: var(--space-3);
   white-space: nowrap;
   opacity: 0;
@@ -729,17 +688,9 @@ canvas#fx.visible { opacity: 1; }
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--surface);
-  transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transition: transform var(--t-fast) var(--ease-out), border-color var(--t-ui), box-shadow var(--t-ui);
   opacity: 0;
   transform-origin: center;
-}
-
-.project-card.revealed { animation: cardIn 0.7s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
-
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .project-card:hover {
@@ -784,6 +735,61 @@ canvas#fx.visible { opacity: 1; }
 }
 
 .card-body p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+/* GitHub live-card art (no screenshot — gradient + lang badge) */
+.card-art {
+  aspect-ratio: 16 / 10;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a2536, #0c121d);
+}
+
+.card-art::before {
+  content: '';
+  position: absolute;
+  top: -45%;
+  right: -25%;
+  width: 75%;
+  height: 130%;
+  background: radial-gradient(circle at 30% 35%, rgba(143, 215, 255, 0.22), transparent 60%);
+}
+
+.card-art-lang {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 34px;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.card-art-name {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  right: 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.card-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.card-meta .meta-stars { color: var(--accent-2); }
 
 .card-link {
   display: inline-block;

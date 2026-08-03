@@ -332,6 +332,16 @@ img, svg, canvas { display: block; max-width: 100%; }
   .cursor-dot, .cursor-halo { display: none; }
 }
 
+/* ─────────── GLOBAL WEBGL BACKGROUND ─────────── */
+canvas#webgl-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ─────────── FX + VIGNETTE ─────────── */
 canvas#fx {
   position: fixed;
@@ -404,8 +414,14 @@ canvas#fx.visible { opacity: 1; }
 
 .hero-art {
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  top: calc(var(--header-h) + var(--space-2));
+  left: clamp(var(--space-3), 4vw, var(--space-6));
+  width: min(34vw, 300px);
+  height: min(34vw, 300px);
+  z-index: 1;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
 }
 
 .hero-art .layer-main,
@@ -433,15 +449,6 @@ canvas#fx.visible { opacity: 1; }
   transition: opacity 0.4s ease;
 }
 
-.hero-art::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 82%, transparent) 45%, transparent 75%),
-    linear-gradient(0deg, var(--bg) 2%, transparent 40%);
-}
-
 .hero-art-sheen {
   position: absolute;
   inset: 0;
@@ -454,6 +461,10 @@ canvas#fx.visible { opacity: 1; }
   position: relative;
   z-index: 3;
   max-width: 760px;
+}
+
+@media (min-width: 769px) {
+  .hero-content { margin-left: min(42vw, 400px); }
 }
 
 .hero .eyebrow { color: var(--accent-2); }
@@ -913,9 +924,12 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .projects-grid { grid-template-columns: 1fr; }
   .hero { align-items: flex-start; text-align: left; }
   .hero-title { font-size: clamp(16px, 5vw, 44px); }
-  .hero-art::after {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 70%, transparent) 0%, var(--bg) 100%);
+  .hero-art {
+    top: calc(var(--header-h) + var(--space-1));
+    width: min(46vw, 170px);
+    height: min(46vw, 170px);
   }
+  .hero-content { margin-top: min(58vw, 210px); }
   .hero-scroll { display: none; }
   .hero-orbit {
     right: 50%;

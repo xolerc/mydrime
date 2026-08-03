@@ -79,32 +79,44 @@
   });
 
   /* ═══════════════════════════════════════
-     LOADER — terminal boot → XOLERIC logo
+     LOADER — BIOS boot → XOLERIC logo
      Real preload + failsafe
      ═══════════════════════════════════════ */
 
-  const TERMINAL_MAX = 60;
+  const TERMINAL_MAX = 24;
   let bootTimer = 0;
-  let loaderProgress = 0;
-  let lastPctBucket = -1;
+  let bootIdx = 0;
+  let fillIdx = 0;
   let loaderDone = false;
 
-  const bootPrefixes = ['SYSTEM', 'KERNEL', 'INIT', 'DAEMON', 'XOLERIC-CORE', 'NETWORK', 'FS-CHECK', 'SECURITY'];
-  const bootActions = ['Mounting', 'Initializing', 'Starting', 'Verifying', 'Loading module', 'Unpacking', 'Connecting to', 'Bypassing'];
-  const bootTargets = ['/dev/sda1', '/sys/fs/cgroup', '0x8F9A2B', 'socket_buffer', 'local_host', 'encrypted_payload', 'UI_module', 'core_registry'];
-  const randHex = (n) => {
-    let out = '';
-    const chars = '0123456789ABCDEF';
-    for (let i = 0; i < n; i++) out += chars[Math.floor(Math.random() * 16)];
-    return out;
-  };
+  const bootScript = [
+    'BIOS version 3.3.0',
+    'Copyright (C) 2026 XOLERIC SYSTEMS',
+    '',
+    'CPU : XOLERIC-CORE @ 5.2GHz',
+    'Memory Test : 65536K ... <span class="ok">OK</span>',
+    'SATA : /dev/sda1 AHCI',
+    'USB : 3 devices detected',
+    'NETWORK : initialized ... <span class="ok">OK</span>',
+    'MOUNT /sys/fs/cgroup ... <span class="ok">OK</span>',
+    'DAEMON XOLERIC-CORE ... <span class="ok">OK</span>',
+    'UI_MODULE : loaded',
+    'Booting xoleric portfolio ...'
+  ];
 
-  function bootLine() {
-    if (Math.random() > 0.82) return 'DUMP: ' + randHex(70);
-    const pre = bootPrefixes[Math.floor(Math.random() * bootPrefixes.length)];
-    const act = bootActions[Math.floor(Math.random() * bootActions.length)];
-    const tgt = bootTargets[Math.floor(Math.random() * bootTargets.length)];
-    return `[ ${(Math.random() * 2).toFixed(4)} ] ${pre}: ${act} ${tgt} ... <span class="ok">[ OK ]</span> - Hash: <span class="hash">${randHex(8)}</span>`;
+  const bootFillers = [
+    'validating core registry ... <span class="ok">OK</span>',
+    'synchronizing clock ... <span class="ok">OK</span>',
+    'scanning socket_buffer ... <span class="ok">OK</span>',
+    'checking encrypted_payload ... <span class="ok">OK</span>',
+    'reloading security policies ... <span class="ok">OK</span>'
+  ];
+
+  function nextBootLine() {
+    if (bootIdx < bootScript.length) return bootScript[bootIdx++];
+    const line = bootFillers[fillIdx % bootFillers.length];
+    fillIdx++;
+    return line;
   }
 
   function appendLog(html) {
@@ -120,14 +132,8 @@
 
   function bootTick() {
     if (loaderDone) return;
-    const bucket = Math.floor(loaderProgress / 10);
-    if (bucket > lastPctBucket) {
-      lastPctBucket = bucket;
-      appendLog(`<span class="load">[ LOAD ${Math.round(loaderProgress)}% ]</span> unpacking module core_registry`);
-    } else {
-      appendLog(bootLine());
-    }
-    bootTimer = setTimeout(bootTick, reduceMotion ? 4 : 10 + Math.random() * 30);
+    appendLog(nextBootLine());
+    bootTimer = setTimeout(bootTick, reduceMotion ? 5 : 130 + Math.random() * 140);
   }
 
   function preloadAssets(onDone) {
@@ -136,7 +142,6 @@
       const img = new Image();
       const resolve = () => {
         count++;
-        loaderProgress = (count / CFG.images.length) * 100;
         if (count === CFG.images.length) onDone();
       };
       img.onload = resolve;
@@ -152,8 +157,8 @@
     if (terminalEl) terminalEl.style.display = 'none';
     if (logoContainer) logoContainer.style.display = 'flex';
 
-    const logoWait = reduceMotion ? 250 : 800;
-    const hideWait = reduceMotion ? 500 : 1550;
+    const logoWait = reduceMotion ? 250 : 900;
+    const hideWait = reduceMotion ? 500 : 1750;
     setTimeout(() => { if (mainLogo) mainLogo.classList.add('stable'); }, logoWait);
     setTimeout(() => {
       loaded = true;
@@ -163,17 +168,16 @@
   }
 
   function startLoading() {
-    appendLog('<span class="load">[ BOOT ]</span> xoleric core v3.2 — cold start');
+    appendLog('XOLERIC BIOS v3.3.0');
+    appendLog('Copyright (C) 2026 xoleric systems');
+    appendLog('');
     bootTick();
 
     setTimeout(() => {
-      if (!loaded) {
-        loaderProgress = 100;
-        finishLoading();
-      }
+      if (!loaded) finishLoading();
     }, 8000);
 
-    const minTime = reduceMotion ? 150 : 1500;
+    const minTime = reduceMotion ? 150 : 2600;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
     });

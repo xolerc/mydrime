@@ -118,12 +118,12 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .skip-link:focus-visible { transform: translateY(0); }
 
-/* ─────────── LOADER — terminal boot → XOLERIC logo ─────────── */
+/* ─────────── LOADER — BIOS boot → XOLERIC logo ─────────── */
 #loader {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #030303;
+  background: #000;
   overflow: hidden;
   transition: opacity 0.7s ease, visibility 0.7s ease;
 }
@@ -142,23 +142,24 @@ img, svg, canvas { display: block; max-width: 100%; }
 #terminal-container {
   position: absolute;
   inset: 0;
-  padding: clamp(16px, 4vw, 32px);
+  padding: clamp(28px, 6vw, 72px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   font-family: 'Courier New', ui-monospace, monospace;
-  font-size: clamp(11px, 1.4vw, 13px);
-  line-height: 1.45;
-  color: #d1d1d1;
-  opacity: 0.85;
+  font-size: clamp(16px, 2.6vw, 22px);
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: #c9ffd3;
+  opacity: 0.95;
   z-index: 1;
 }
 
 .log-line { word-break: break-word; }
-.log-line .ok { color: var(--ok); }
-.log-line .hash { color: var(--accent-2); }
-.log-line .load { color: var(--accent); }
+.log-line .ok { color: #4dff7e; }
+.log-line .hash { color: #7dffb0; }
+.log-line .load { color: #6ff0ff; }
 
 #logo-container {
   position: absolute;
@@ -166,7 +167,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   display: none;
   justify-content: center;
   align-items: center;
-  background: #030303;
+  background: #000;
   z-index: 2;
 }
 

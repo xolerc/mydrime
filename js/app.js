@@ -5,6 +5,14 @@
 (function () {
   'use strict';
 
+  /* ─────────── ROUTE — open on #hero by default ─────────── */
+  try {
+    const hash = window.location.hash;
+    if (!hash || !document.querySelector(hash)) {
+      window.history.replaceState(null, '', '#hero');
+    }
+  } catch (e) { /* no-op: harmless when history is restricted */ }
+
   /* ─────────── CONFIG / TOKENS ─────────── */
   const CFG = {
     images: ['images/bg.png', 'images/main.png'],

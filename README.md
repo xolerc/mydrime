@@ -14,7 +14,7 @@
 
 ## What Is This?
 
-The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style **flashlight reveal** confined to the art box (a clear circle of `bg.png` opens over `main.png` only while the cursor is over the image), neon welcome letters, orbiting social icons, a WebGL liquid-chrome background and a **live GitHub projects grid** fed from the GitHub API.
+The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style **flashlight reveal** confined to the art box (a clear circle of `bg.webp` opens over `main.webp` only while the cursor is over the image), neon welcome letters, orbiting social icons, a WebGL liquid-chrome background and a **live GitHub projects grid** fed from the GitHub API.
 
 **No frameworks. No dependencies. No build steps.**
 
@@ -24,7 +24,7 @@ The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style
 
 | Area | What changed |
 |------|-------------|
-| **Hero art** | Corner 2-layer image: `main.png` fully visible; **V1 flashlight reveal** — a clear circle of `bg.png` opens over it only while the cursor is inside the art box |
+| **Hero art** | Corner 2-layer image: `main.webp` fully visible; **V1 flashlight reveal** — a clear circle of `bg.webp` opens over it only while the cursor is inside the art box |
 | **Layout** | Hero texts (eyebrow, welcome title, CTAs) moved **below** the art box; styled with the UI palette + contrast shadows |
 | **Welcome text** | Neon **`welcome to xoleric portfolio`** letters: staggered pop-in (45ms steps) — no cursor scattering |
 | **Cursor** | Custom cursor dot/halo, click splash, warp streaks and neural particles all **removed**; native cursor restored |
@@ -41,7 +41,7 @@ The v3.2 portfolio — **clean, content-first**: corner hero art with a V1-style
 
 | Feature | Description |
 |---------|-------------|
-| **Flashlight Reveal** | Clear circle of `bg.png` opens over `main.png` only while the cursor is over the art box |
+| **Flashlight Reveal** | Clear circle of `bg.webp` opens over `main.webp` only while the cursor is over the art box |
 | **Neon Welcome** | Staggered neon `welcome to xoleric portfolio` letters |
 | **Orbit Icons** | Social icons orbiting the hero, cloned from the footer |
 | **Live GitHub Grid** | Project cards fetched in real time from `api.github.com/users/xolerc/repos` |
@@ -88,8 +88,8 @@ mydrime/
 ├── js/
 │   └── webgl-bg.js     ← Mercury liquid-chrome background shader
 ├── images/
-│   ├── bg.png          ← hero background layer
-│   └── main.png        ← hero main art layer
+│   ├── bg.webp          ← hero background layer
+│   └── main.webp        ← hero main art layer
 └── README.md
 ```
 
@@ -97,8 +97,8 @@ mydrime/
 
 ## How It Works
 
-1. **Loader** preloads `bg.png` + `main.png` with real progress (8s failsafe), then particle-explodes into the scene.
-2. **Flashlight reveal** sets `mask-image: radial-gradient(circle …)` on the `.reveal` layer (clear `bg.png`) each frame; the circle radius lerps to `200px` desktop / `140px` touch only while the cursor is inside the art box — it never touches the rest of the UI.
+1. **Loader** preloads `bg.webp` + `main.webp` with real progress (8s failsafe), then particle-explodes into the scene.
+2. **Flashlight reveal** sets `mask-image: radial-gradient(circle …)` on the `.reveal` layer (clear `bg.webp`) each frame; the circle radius lerps to `200px` desktop / `140px` touch only while the cursor is inside the art box — it never touches the rest of the UI.
 3. **Neon letters** pop in one by one with a 45ms stagger.
 4. **Live GitHub grid** fetches `users/xolerc/repos` (non-fork, top 6 by updated) and renders cards with language/stars/forks; falls back to static cards offline.
 5. **Scroll** updates the progress bar, header state and active nav link; `IntersectionObserver` reveals cards and counts stats.

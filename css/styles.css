@@ -16,7 +16,6 @@
   --accent: #5aa7ff;
   --accent-2: #00d4ff;
   --accent-rgb: 90, 167, 255;
-  --accent-2-rgb: 0, 212, 255;
   --gold: #d2aa00;
   --ok: #4cd97b;
 
@@ -455,13 +454,13 @@ canvas#webgl-bg {
   will-change: transform, -webkit-mask-image, mask-image;
 }
 
-.hero-art .layer-bg { background-image: url('../images/bg.png'); opacity: 0.5; }
-.hero-art .layer-main { background-image: url('../images/main.png'); opacity: 1; }
+.hero-art .layer-bg { background-image: url('../images/bg.webp'); opacity: 0.5; }
+.hero-art .layer-main { background-image: url('../images/main.webp'); opacity: 1; }
 
-/* V1 flashlight reveal — clear bg.png opens in a circle inside the art box only */
+/* V1 flashlight reveal — clear bg.webp opens in a circle inside the art box only */
 .hero-art .reveal {
   z-index: 2;
-  background-image: url('../images/bg.png');
+  background-image: url('../images/bg.webp');
   opacity: 0.92;
   -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
   mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
@@ -518,18 +517,6 @@ canvas#webgl-bg {
 
 .hero-title .letter.visible { opacity: 1; }
 .hero-title .letter.space { width: 0.42em; }
-
-.hero-title .letter.glitch {
-  animation: glitch 0.28s steps(2) 2;
-}
-
-@keyframes glitch {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-2px, 1px); }
-  50% { transform: translate(2px, -1px); }
-  75% { transform: translate(-1px, -2px); }
-  100% { transform: translate(0, 0); }
-}
 
 .hero-cta {
   display: flex;
@@ -757,24 +744,6 @@ canvas#webgl-bg {
 .project-card:hover {
   border-color: rgba(var(--accent-rgb), 0.5);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-}
-
-.card-media { aspect-ratio: 16 / 10; overflow: hidden; position: relative; }
-
-.card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s var(--ease-out);
-}
-
-.project-card:hover .card-media img { transform: scale(1.07); }
-
-.card-media::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, color-mix(in srgb, var(--bg) 85%, transparent) 0%, transparent 55%);
 }
 
 .card-body { padding: var(--space-3); }

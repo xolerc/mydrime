@@ -15,7 +15,7 @@
 
   /* ─────────── CONFIG / TOKENS ─────────── */
   const CFG = {
-    images: ['images/bg.png', 'images/main.png'],
+    images: ['images/bg.webp', 'images/main.webp'],
     circle: 200,
     circleMobile: 140,
     githubUser: 'xolerc'
@@ -303,6 +303,7 @@
 
   const scrollProgress = $('scrollProgress');
   const siteHeader = $('siteHeader');
+  const navLinks = Array.prototype.slice.call(document.querySelectorAll('.site-nav a'));
 
   function onScroll() {
     const doc = document.documentElement;
@@ -312,15 +313,15 @@
     if (siteHeader) siteHeader.classList.toggle('scrolled', window.scrollY > 10);
 
     let current = '#hero';
-    document.querySelectorAll('.site-nav a').forEach((link) => {
+    for (const link of navLinks) {
       const sec = document.querySelector(link.getAttribute('href'));
-      if (!sec) return;
+      if (!sec) continue;
       const rect = sec.getBoundingClientRect();
       if (rect.top <= VH * 0.5 && rect.bottom > VH * 0.5) current = link.getAttribute('href');
-    });
-    document.querySelectorAll('.site-nav a').forEach((link) => {
+    }
+    for (const link of navLinks) {
       link.classList.toggle('active', link.getAttribute('href') === current);
-    });
+    }
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -384,13 +385,17 @@
     cursorX = lerp(cursorX, rawX, 0.12);
     cursorY = lerp(cursorY, rawY, 0.12);
 
-    const rect = revealEl.getBoundingClientRect();
-    const mx = cursorX - rect.left;
-    const my = cursorY - rect.top;
-    const inside = mx >= -24 && my >= -24 && mx <= rect.width + 24 && my <= rect.height + 24;
+    const inView = heroInView();
+    const rect = inView ? revealEl.getBoundingClientRect() : null;
+    let mx = 0, my = 0, inside = false;
+    if (rect) {
+      mx = cursorX - rect.left;
+      my = cursorY - rect.top;
+      inside = mx >= -24 && my >= -24 && mx <= rect.width + 24 && my <= rect.height + 24;
+    }
 
     let targetR = 0;
-    if (heroInView() && hasPointer && inside) {
+    if (inView && hasPointer && inside) {
       targetR = isFine ? CFG.circle : CFG.circleMobile;
       if (!isFine && !touchActiveRecently()) targetR = 0;
     }
@@ -398,7 +403,7 @@
     currentR = lerp(currentR, targetR, 0.1);
     if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
 
-    if (currentR > 0.5) {
+    if (currentR > 0.5 && rect) {
       const cx = clamp(mx, 0, rect.width);
       const cy = clamp(my, 0, rect.height);
       const mask =

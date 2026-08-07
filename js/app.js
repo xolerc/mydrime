@@ -441,16 +441,16 @@
      ═══════════════════════════════════════ */
 
   const LANG_COLORS = {
-    JavaScript: '#d4d4d4',
-    TypeScript: '#a0a0a0',
-    Dart: '#b8b8b8',
-    HTML: '#e0e0e0',
-    CSS: '#8f8f8f',
-    Python: '#c2c2c2',
-    'C++': '#9c9c9c',
-    Java: '#aaaaaa',
-    Go: '#b3b3b3',
-    Rust: '#c8c8c8'
+    JavaScript: '#f1e05a',
+    TypeScript: '#3178c6',
+    Dart: '#00b4ab',
+    HTML: '#e34c26',
+    CSS: '#563d7c',
+    Python: '#3572A5',
+    'C++': '#f34b7d',
+    Java: '#b07219',
+    Go: '#00ADD8',
+    Rust: '#dea584'
   };
 
   const FALLBACK_PROJECTS = [
@@ -475,7 +475,7 @@
     const frag = document.createDocumentFragment();
     list.forEach((r, i) => {
       const lang = r.language || 'Code';
-      const langColor = LANG_COLORS[r.language] || '#8a8a8a';
+      const langColor = LANG_COLORS[r.language] || '#8b949e';
       const desc = esc((r.description || 'No description provided.').slice(0, 130));
       const stars = r.stargazers_count || 0;
       const forks = r.forks_count || 0;

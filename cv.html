@@ -11,25 +11,25 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <style>
     :root {
-      --bg: #f4f6fb;
-      --surface: #ffffff;
-      --ink: #141821;
-      --muted: #5b6478;
-      --line: #e3e8f0;
-      --accent: #2563eb;
-      --accent-2: #7c5cff;
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --ink: #e8e8e8;
+      --muted: #8a8a8a;
+      --line: #1c1c1c;
+      --accent: #cccccc;
+      --accent-2: #8a8a8a;
       --font: 'Inter', system-ui, -apple-system, sans-serif;
       --font-display: 'Space Grotesk', 'Inter', sans-serif;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0a0c12;
-        --surface: #141821;
-        --ink: #eef1f8;
-        --muted: #98a1b5;
-        --line: #262c3a;
-        --accent: #4f8bff;
-        --accent-2: #a78bfa;
+        --bg: #000000;
+        --surface: #0a0a0a;
+        --ink: #e8e8e8;
+        --muted: #8a8a8a;
+        --line: #1c1c1c;
+        --accent: #cccccc;
+        --accent-2: #8a8a8a;
       }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -60,9 +60,9 @@
       background: var(--surface); color: var(--ink); text-decoration: none;
       cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18); }
-    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .btn-primary:hover { box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35); }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(204, 204, 204, 0.18); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #000; }
+    .btn-primary:hover { box-shadow: 0 8px 22px rgba(204, 204, 204, 0.35); }
     .contact-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 20px 0 8px; font-size: 13.5px; color: var(--muted); }
     .contact-links a { color: var(--accent); text-decoration: none; }
     .contact-links a:hover { text-decoration: underline; }
@@ -82,7 +82,7 @@
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip {
       font-size: 12px; font-weight: 600; padding: 4px 12px;
-      border-radius: 20px; border: 1px solid rgba(37, 99, 235, 0.3); color: var(--accent);
+      border-radius: 20px; border: 1px solid rgba(204, 204, 204, 0.3); color: var(--accent);
     }
     ul.tight { margin: 6px 0 0 18px; font-size: 13.5px; color: var(--muted); }
     ul.tight li { margin-bottom: 4px; }

@@ -24,6 +24,8 @@
   /* ─────────── DEVICE FLAGS ─────────── */
   const isFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) { /* noop */ }
 
   /* ─────────── DOM REFS ─────────── */
   const $ = (id) => document.getElementById(id);
@@ -55,28 +57,31 @@
 
   /* ═══════════════════════════════════════
      CONTENT PROTECTION — no select, no copy,
-     no screenshots (best effort)
+     no screenshots (best effort) — desktop only,
+     touch users keep native long-press behavior
      ═══════════════════════════════════════ */
 
-  document.addEventListener('contextmenu', (e) => e.preventDefault());
-  document.addEventListener('copy', (e) => e.preventDefault());
-  document.addEventListener('cut', (e) => e.preventDefault());
-  document.addEventListener('paste', (e) => e.preventDefault());
-  document.addEventListener('selectstart', (e) => e.preventDefault());
-  document.addEventListener('dragstart', (e) => e.preventDefault());
+  if (isFine) {
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('copy', (e) => e.preventDefault());
+    document.addEventListener('cut', (e) => e.preventDefault());
+    document.addEventListener('paste', (e) => e.preventDefault());
+    document.addEventListener('selectstart', (e) => e.preventDefault());
+    document.addEventListener('dragstart', (e) => e.preventDefault());
 
-  window.addEventListener('keydown', (e) => {
-    const k = (e.key || '').toLowerCase();
-    const mod = e.ctrlKey || e.metaKey;
-    if (mod && ['c', 'x', 'v', 's', 'p', 'u', 'a'].includes(k)) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (e.key === 'PrintScreen' || k === 'printscreen') {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
+    window.addEventListener('keydown', (e) => {
+      const k = (e.key || '').toLowerCase();
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && ['c', 'x', 'v', 's', 'p', 'u', 'a'].includes(k)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (e.key === 'PrintScreen' || k === 'printscreen') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  }
 
   /* ═══════════════════════════════════════
      LOADER — BIOS boot → XOLERIC logo
@@ -201,12 +206,14 @@
   } else {
     document.addEventListener('touchstart', (e) => {
       lastTouchTime = Date.now();
+      hasPointer = true;
       const t = e.touches[0];
       rawX = t.clientX;
       rawY = t.clientY;
     }, { passive: true });
     document.addEventListener('touchmove', (e) => {
       lastTouchTime = Date.now();
+      hasPointer = true;
       const t = e.touches[0];
       rawX = t.clientX;
       rawY = t.clientY;
@@ -375,13 +382,17 @@
     const els = document.querySelectorAll('.stat-number');
     const t0 = performance.now();
     const dur = 1400;
+    let statFrame = 0;
     (function step(now) {
       const p = clamp((now - t0) / dur, 0, 1);
       const ease = 1 - Math.pow(1 - p, 3);
-      els.forEach((el) => {
-        const target = parseInt(el.dataset.count, 10) || 0;
-        el.textContent = Math.round(target * ease) + '+';
-      });
+      statFrame++;
+      if (!coarse || statFrame % 2 === 0) {
+        els.forEach((el) => {
+          const target = parseInt(el.dataset.count, 10) || 0;
+          el.textContent = Math.round(target * ease) + '+';
+        });
+      }
       if (p < 1) requestAnimationFrame(step);
     })(t0);
   }
@@ -453,7 +464,13 @@
     rafId = requestAnimationFrame(masterLoop);
   }
 
+  let masterFrame = 0;
   function masterLoop() {
+    masterFrame++;
+    if (coarse && masterFrame % 2 === 0) {
+      rafId = requestAnimationFrame(masterLoop);
+      return;
+    }
     try {
       updateReveal();
     } catch (e) {

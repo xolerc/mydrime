@@ -1084,3 +1084,32 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   }
   .about, .work, .contact { padding-top: var(--space-6); padding-bottom: var(--space-6); }
 }
+
+/* ─────────── TOUCH DEVICES — strip heavy GPU work, never jank/freeze ─────────── */
+@media (pointer: coarse) {
+  html { scroll-snap-type: none; }
+
+  .site-header,
+  .contact-box,
+  .orbit-icon {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .chrome-accent {
+    filter: none;
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .grain-top { display: none; }
+
+  .orbit-ring,
+  .orbit-icon,
+  .orbit-icon .icon-inner,
+  .orbit-icon::after {
+    animation: none;
+  }
+
+  .orbit-icon::after { display: none; }
+}

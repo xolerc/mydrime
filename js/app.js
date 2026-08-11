@@ -319,12 +319,14 @@
     });
   }, { passive: true });
 
+  const hasIO = typeof IntersectionObserver !== 'undefined';
+
   function setActiveNav(id) {
     for (const t of navTargets) t.link.classList.toggle('active', t.link.getAttribute('href') === id);
   }
 
   function initNavSpy() {
-    if (!navTargets.length) return;
+    if (!navTargets.length || !hasIO) return;
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) setActiveNav('#' + entry.target.id);
@@ -335,7 +337,7 @@
   }
 
   function initViewportSpy() {
-    if (!heroEl) return;
+    if (!heroEl || !hasIO) return;
     const io = new IntersectionObserver((entries) => {
       heroVisible = entries.some((e) => e.isIntersecting);
       measureReveal();
@@ -345,6 +347,11 @@
 
   function initReveal() {
     if (reduceMotion) return;
+    const els = document.querySelectorAll('.reveal-up');
+    if (!hasIO) {
+      els.forEach((el) => el.classList.add('in-view'));
+      return;
+    }
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
@@ -353,7 +360,7 @@
         }
       }
     }, { threshold: 0.18 });
-    document.querySelectorAll('.reveal-up').forEach((el) => io.observe(el));
+    els.forEach((el) => io.observe(el));
   }
 
   let statsDone = false;
@@ -378,6 +385,10 @@
     if (reduceMotion) return;
     const about = document.getElementById('about');
     if (!about) return;
+    if (!hasIO) {
+      animateStats();
+      return;
+    }
     const io = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         animateStats();
@@ -391,6 +402,7 @@
      FLASHLIGHT REVEAL — V1 style, art box only
      ═══════════════════════════════════════ */
 
+  let lastMask = '';
   function updateReveal() {
     if (!revealEl || reduceMotion) return;
     cursorX = lerp(cursorX, rawX, 0.12);
@@ -409,22 +421,24 @@
     currentR = lerp(currentR, targetR, 0.1);
     if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
 
-    if (currentR > 0.5 && revealRect.width > 0) {
-      const cx = clamp(mx, 0, revealRect.width);
-      const cy = clamp(my, 0, revealRect.height);
-      const mask =
-        `radial-gradient(circle ${currentR.toFixed(1)}px at ${cx.toFixed(1)}px ${cy.toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`;
+    const mask =
+      currentR > 0.5 && revealRect.width > 0
+        ? `radial-gradient(circle ${currentR.toFixed(1)}px at ${clamp(mx, 0, revealRect.width).toFixed(1)}px ${clamp(my, 0, revealRect.height).toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`
+        : 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+
+    if (mask !== lastMask) {
+      lastMask = mask;
       revealEl.style.maskImage = mask;
       revealEl.style.webkitMaskImage = mask;
-    } else {
-      const zero = 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
-      revealEl.style.maskImage = zero;
-      revealEl.style.webkitMaskImage = zero;
     }
   }
 
   function masterLoop() {
-    updateReveal();
+    try {
+      updateReveal();
+    } catch (e) {
+      return;
+    }
     rafId = requestAnimationFrame(masterLoop);
   }
 
@@ -598,26 +612,26 @@
   });
 
   function initMainScene() {
-    vignette.classList.add('visible');
+    try { vignette.classList.add('visible'); } catch (e) { /* noop */ }
     if (heroEl) heroEl.classList.add('ready');
     if (siteHeader) siteHeader.classList.add('visible');
-    buildOrbit();
-    buildLetters();
-    buildProjectCards();
-    initStatsSpy();
-    initNavSpy();
-    initViewportSpy();
-    measureReveal();
+    try { buildOrbit(); } catch (e) { /* noop */ }
+    try { buildLetters(); } catch (e) { /* noop */ }
+    try { buildProjectCards(); } catch (e) { /* noop */ }
+    try { initStatsSpy(); } catch (e) { /* noop */ }
+    try { initNavSpy(); } catch (e) { /* noop */ }
+    try { initViewportSpy(); } catch (e) { /* noop */ }
+    try { measureReveal(); } catch (e) { /* noop */ }
 
-    if (!reduceMotion) {
+    if (!reduceMotion && revealEl) {
       rafId = requestAnimationFrame(masterLoop);
     }
-    revealLetters();
+    try { revealLetters(); } catch (e) { /* noop */ }
 
     const yearEl = $('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    onScroll();
+    try { onScroll(); } catch (e) { /* noop */ }
   }
 
   startLoading();

@@ -188,6 +188,20 @@
   <!-- ═══ TOAST ═══ -->
   <div class="ee-toast" id="eeToast" role="status" aria-live="polite">Konami Code Activated</div>
 
+  <!-- failsafe: never let the loader freeze the page -->
+  <script>
+    (function () {
+      var hide = function () {
+        var l = document.getElementById('loader');
+        if (l) l.classList.add('hidden');
+      };
+      if (window.addEventListener) {
+        window.addEventListener('load', hide);
+        setTimeout(hide, 9000);
+      }
+    })();
+  </script>
+
   <script src="js/webgl-bg.js"></script>
   <script src="js/app.js"></script>
 </body>

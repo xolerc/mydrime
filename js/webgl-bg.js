@@ -241,23 +241,36 @@
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(resize, 100);
+    resizeTimeout = setTimeout(() => {
+      try { resize(); } catch (e) { /* noop */ }
+    }, 100);
   }, { passive: true });
 
   function draw(now) {
     if (!gl || gl.isContextLost()) return;
     if (lastTime != null) elapsed += (now - lastTime) / 1000;
     lastTime = now;
-    if (!reduceMotion) {
-      updateShip();
-      gl.uniform2f(cursorLocation, shipX, shipY);
-      gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
+    try {
+      if (!reduceMotion) {
+        updateShip();
+        gl.uniform2f(cursorLocation, shipX, shipY);
+        gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
+      }
+      gl.uniform1f(timeLocation, elapsed);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    } catch (e) {
+      cancelAnimationFrame(animationId);
+      animationId = 0;
     }
-    gl.uniform1f(timeLocation, elapsed);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
+  let frameCount = 0;
   function render(now) {
+    frameCount++;
+    if (lowEnd && frameCount % 2 === 0) {
+      animationId = requestAnimationFrame(render);
+      return;
+    }
     draw(now);
     animationId = requestAnimationFrame(render);
   }
@@ -286,12 +299,17 @@
     }
   });
 
-  if (initWebGL() && setupProgram()) {
-    resize();
-    if (reduceMotion) {
-      draw(performance.now());
-    } else {
-      animationId = requestAnimationFrame(render);
+  try {
+    if (initWebGL() && setupProgram()) {
+      resize();
+      if (reduceMotion) {
+        draw(performance.now());
+      } else {
+        animationId = requestAnimationFrame(render);
+      }
     }
+  } catch (e) {
+    try { cancelAnimationFrame(animationId); } catch (e2) { /* noop */ }
+    animationId = 0;
   }
 })();

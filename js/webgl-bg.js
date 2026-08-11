@@ -5,6 +5,16 @@
    ripples and re-tints slowly toward the cursor — the pointer
    itself stays 1:1 and unaffected.
    Fullscreen quad · u_resolution + u_time + u_cursor · DPR-aware
+
+   SAFETY (universal no-hang):
+   - OFF by default — page works everywhere without WebGL.
+     app.js shows a small toggle for browsers that support it.
+   - Software renderers (SWGL/llvmpipe/SwiftShader) are detected
+     and skipped — they freeze the tab on CPU-heavy shaders.
+   - A frame watchdog auto-disables the loop if it ever runs
+     slower than ~12 slow frames or a single 500ms frame.
+   - DPR + max-side caps keep the fill-rate bounded on weak GPUs.
+   Exposed as window.xolericGL = { enable, disable, isOn, canRun }
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -12,14 +22,17 @@
   const canvas = document.getElementById('webgl-bg');
   if (!canvas) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* noop */ }
 
-  const lowEnd = (navigator.hardwareConcurrency || 4) <= 4 && ((navigator.deviceMemory || 8) <= 4);
-  const glDisabled = (function () {
-    try { return localStorage.getItem('xoleric-gl') === '0'; }
-    catch (e) { return false; }
-  })();
-  if (glDisabled) return;
+  let coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) { /* noop */ }
+
+  const smallScreen = (window.innerWidth || 800) < 768;
+  const hw = (navigator.hardwareConcurrency || 4);
+  let devMem = 8;
+  if (typeof navigator.deviceMemory === 'number') devMem = navigator.deviceMemory;
+  const lowEnd = coarse || smallScreen || hw <= 4 || devMem <= 4;
 
   let gl = null;
   let program = null;
@@ -31,6 +44,9 @@
   let animationId = 0;
   let lastTime = null;
   let elapsed = 0;
+  let running = false;
+  let disabled = false;
+  let wasRunning = false;
 
   const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -181,7 +197,6 @@
     gl.shaderSource(s, src);
     gl.compileShader(s);
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      console.warn('webgl-bg shader:', gl.getShaderInfoLog(s));
       gl.deleteShader(s);
       return null;
     }
@@ -189,9 +204,20 @@
   }
 
   function initWebGL() {
-    gl = canvas.getContext('webgl', { antialias: false })
+    gl = canvas.getContext('webgl', { antialias: false, failIfMajorPerformanceCaveat: false })
       || canvas.getContext('experimental-webgl', { antialias: false });
     return !!gl;
+  }
+
+  function isSoftwareRenderer(ctx) {
+    try {
+      const ext = ctx.getExtension('WEBGL_debug_renderer_info');
+      if (!ext) return false;
+      const renderer = String(ctx.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '').toLowerCase();
+      const vendor = String(ctx.getParameter(ext.UNMASKED_VENDOR_WEBGL) || '').toLowerCase();
+      return /swiftshader|llvmpipe|softpipe|software|basic render|basic output|microsoft.*basic/i.test(renderer)
+        || /swiftshader|microsoft|llvmpipe/i.test(vendor);
+    } catch (e) { return false; }
   }
 
   function setupProgram() {
@@ -204,7 +230,6 @@
     gl.attachShader(program, fs);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.warn('webgl-bg link:', gl.getProgramInfoLog(program));
       return false;
     }
     gl.useProgram(program);
@@ -230,86 +255,168 @@
 
   function resize() {
     if (!gl) return;
-    const maxPixelRatio = Math.min(window.devicePixelRatio || 1, lowEnd ? 1 : 1.5);
-    canvas.width = Math.round(window.innerWidth * maxPixelRatio);
-    canvas.height = Math.round(window.innerHeight * maxPixelRatio);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-    gl.uniform1f(qualityLocation, lowEnd ? 0.55 : 1.0);
+    const dpr = Math.min(window.devicePixelRatio || 1, lowEnd ? 1 : 1.5);
+    let w = Math.round(window.innerWidth * dpr);
+    let h = Math.round(window.innerHeight * dpr);
+    const longSide = Math.max(w, h);
+    const MAX_SIDE = 1800;
+    if (longSide > MAX_SIDE) {
+      const s = MAX_SIDE / longSide;
+      w = Math.round(w * s);
+      h = Math.round(h * s);
+    }
+    canvas.width = w;
+    canvas.height = h;
+    gl.viewport(0, 0, w, h);
+    gl.uniform2f(resolutionLocation, w, h);
+    gl.uniform1f(qualityLocation, lowEnd ? 0.4 : 1.0);
   }
 
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      try { resize(); } catch (e) { /* noop */ }
+      try { if (running) resize(); } catch (e) { /* noop */ }
     }, 100);
   }, { passive: true });
 
   function draw(now) {
-    if (!gl || gl.isContextLost()) return;
+    if (!gl || gl.isContextLost()) return false;
     if (lastTime != null) elapsed += (now - lastTime) / 1000;
     lastTime = now;
     try {
       if (!reduceMotion) {
         updateShip();
-        gl.uniform2f(cursorLocation, shipX, shipY);
-        gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
+        if (cursorLocation) gl.uniform2f(cursorLocation, shipX, shipY);
+        if (cursorVelLocation) gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
       }
-      gl.uniform1f(timeLocation, elapsed);
+      if (timeLocation) gl.uniform1f(timeLocation, elapsed);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+      return true;
     } catch (e) {
-      cancelAnimationFrame(animationId);
-      animationId = 0;
+      return false;
     }
   }
 
   let frameCount = 0;
+  let slowFrames = 0;
+  let lastFrameNow = null;
   function render(now) {
+    if (!running || !gl || gl.isContextLost()) return;
     frameCount++;
+    if (lastFrameNow != null) {
+      const dt = now - lastFrameNow;
+      if (dt > 500) { disableBackground(); return; }
+      if (dt > 80) slowFrames++;
+      else slowFrames = 0;
+      if (slowFrames >= 12) { disableBackground(); return; }
+    }
+    lastFrameNow = now;
     if (lowEnd && frameCount % 2 === 0) {
       animationId = requestAnimationFrame(render);
       return;
     }
-    draw(now);
+    if (!draw(now)) {
+      cancelAnimationFrame(animationId);
+      animationId = 0;
+      running = false;
+      return;
+    }
     animationId = requestAnimationFrame(render);
   }
 
-  canvas.addEventListener('webglcontextlost', (e) => {
-    e.preventDefault();
+  function stopLoop() {
     cancelAnimationFrame(animationId);
     animationId = 0;
+  }
+
+  function disableBackground() {
+    running = false;
+    disabled = true;
+    stopLoop();
+    try { sessionStorage.setItem('xoleric-gl-off', '1'); } catch (e) { /* noop */ }
+    try { canvas.style.display = 'none'; } catch (e) { /* noop */ }
+    try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) { /* noop */ }
+  }
+
+  function enableBackground() {
+    if (disabled || running || reduceMotion) return false;
+    try {
+      if (!initWebGL()) return false;
+      if (isSoftwareRenderer(gl)) {
+        disableBackground();
+        return false;
+      }
+      if (!setupProgram()) {
+        disableBackground();
+        return false;
+      }
+      resize();
+      wasRunning = true;
+      running = true;
+      lastTime = null;
+      animationId = requestAnimationFrame(render);
+      try { canvas.style.display = ''; } catch (e) { /* noop */ }
+      return true;
+    } catch (e) {
+      stopLoop();
+      running = false;
+      disabled = true;
+      return false;
+    }
+  }
+
+  function disableGl() {
+    running = false;
+    disabled = true;
+    stopLoop();
+    try { canvas.style.display = 'none'; } catch (e) { /* noop */ }
+  }
+
+  window.xolericGL = {
+    enable: enableBackground,
+    disable: disableGl,
+    isOn: function () { return running; },
+    canRun: function () { return typeof window.WebGLRenderingContext !== 'undefined' && !reduceMotion; },
+    onDisable: null
+  };
+
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    wasRunning = running;
+    running = false;
+    stopLoop();
     lastTime = null;
   }, false);
 
+  canvas.addEventListener('webglcontextcreationerror', () => {
+    disabled = true;
+  }, false);
+
   canvas.addEventListener('webglcontextrestored', () => {
-    if (initWebGL() && setupProgram()) {
-      resize();
-      if (!reduceMotion) animationId = requestAnimationFrame(render);
+    if (!wasRunning || disabled || reduceMotion) return;
+    wasRunning = false;
+    try {
+      if (initWebGL() && !isSoftwareRenderer(gl) && setupProgram()) {
+        resize();
+        running = true;
+        lastTime = null;
+        animationId = requestAnimationFrame(render);
+      } else {
+        disabled = true;
+      }
+    } catch (e) {
+      running = false;
+      disabled = true;
     }
   }, false);
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      cancelAnimationFrame(animationId);
-      animationId = 0;
+      stopLoop();
+    } else if (running) {
       lastTime = null;
-    } else if (!reduceMotion && !animationId) {
       animationId = requestAnimationFrame(render);
     }
   });
-
-  try {
-    if (initWebGL() && setupProgram()) {
-      resize();
-      if (reduceMotion) {
-        draw(performance.now());
-      } else {
-        animationId = requestAnimationFrame(render);
-      }
-    }
-  } catch (e) {
-    try { cancelAnimationFrame(animationId); } catch (e2) { /* noop */ }
-    animationId = 0;
-  }
 })();

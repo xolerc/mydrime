@@ -137,16 +137,18 @@
   }
 
   function preloadAssets(onDone) {
-    let count = 0;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      onDone();
+    };
     for (const src of CFG.images) {
       const img = new Image();
-      const resolve = () => {
-        count++;
-        if (count === CFG.images.length) onDone();
-      };
-      img.onload = resolve;
-      img.onerror = resolve;
+      img.onload = finish;
+      img.onerror = finish;
       img.src = src;
+      setTimeout(finish, 3000);
     }
   }
 
@@ -194,6 +196,7 @@
       rawX = e.clientX;
       rawY = e.clientY;
       hasPointer = true;
+      if (loaded && heroVisible && !reduceMotion && revealEl && !rafId) startMasterLoop();
     }, { passive: true });
   } else {
     document.addEventListener('touchstart', (e) => {
@@ -316,6 +319,7 @@
       scrollRaf = 0;
       onScroll();
       if (heroVisible) measureReveal();
+      if (heroVisible && !reduceMotion && revealEl && !rafId) startMasterLoop();
     });
   }, { passive: true });
 
@@ -341,6 +345,7 @@
     const io = new IntersectionObserver((entries) => {
       heroVisible = entries.some((e) => e.isIntersecting);
       measureReveal();
+      if (heroVisible) startMasterLoop();
     }, { threshold: 0 });
     io.observe(heroEl);
   }
@@ -403,10 +408,24 @@
      ═══════════════════════════════════════ */
 
   let lastMask = '';
+  const ZERO_MASK = 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+  function setMask(mask) {
+    if (mask === lastMask) return;
+    lastMask = mask;
+    revealEl.style.maskImage = mask;
+    revealEl.style.webkitMaskImage = mask;
+  }
+
   function updateReveal() {
     if (!revealEl || reduceMotion) return;
     cursorX = lerp(cursorX, rawX, 0.12);
     cursorY = lerp(cursorY, rawY, 0.12);
+
+    if (!heroVisible) {
+      currentR = 0;
+      setMask(ZERO_MASK);
+      return;
+    }
 
     const mx = cursorX - revealRect.left;
     const my = cursorY - revealRect.top;
@@ -424,13 +443,14 @@
     const mask =
       currentR > 0.5 && revealRect.width > 0
         ? `radial-gradient(circle ${currentR.toFixed(1)}px at ${clamp(mx, 0, revealRect.width).toFixed(1)}px ${clamp(my, 0, revealRect.height).toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`
-        : 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+        : ZERO_MASK;
 
-    if (mask !== lastMask) {
-      lastMask = mask;
-      revealEl.style.maskImage = mask;
-      revealEl.style.webkitMaskImage = mask;
-    }
+    setMask(mask);
+  }
+
+  function startMasterLoop() {
+    if (reduceMotion || !revealEl || rafId) return;
+    rafId = requestAnimationFrame(masterLoop);
   }
 
   function masterLoop() {
@@ -439,14 +459,19 @@
     } catch (e) {
       return;
     }
+    if (!heroVisible && currentR === 0) {
+      rafId = 0;
+      return;
+    }
     rafId = requestAnimationFrame(masterLoop);
   }
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       cancelAnimationFrame(rafId);
+      rafId = 0;
     } else if (loaded && !reduceMotion) {
-      rafId = requestAnimationFrame(masterLoop);
+      startMasterLoop();
     }
   });
 
@@ -531,6 +556,14 @@
   }
 
   function buildProjectCards() {
+    let done = false;
+    const finish = (fn) => (...args) => {
+      if (done) return;
+      done = true;
+      fn.apply(null, args);
+    };
+    setTimeout(finish(() => renderCards(FALLBACK_PROJECTS)), 6000);
+
     fetch(`https://api.github.com/users/${CFG.githubUser}/repos?sort=updated&per_page=100`)
       .then((res) => {
         if (!res.ok) throw new Error('GitHub fetch failed');
@@ -543,7 +576,7 @@
         if (!list.length) throw new Error('No repos');
         renderCards(list);
       })
-      .catch(() => renderCards(FALLBACK_PROJECTS));
+      .catch(finish(() => renderCards(FALLBACK_PROJECTS)));
   }
 
   /* ═══════════════════════════════════════
@@ -569,9 +602,26 @@
   function toggleEasterEgg() {
     eeActive = !eeActive;
     document.body.classList.toggle('ee-mode', eeActive);
+    if (!toastEl) return;
     toastEl.textContent = eeActive ? 'Konami Code Activated' : 'Konami Code Deactivated';
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), 2500);
+  }
+
+  function toggleFullscreen() {
+    try {
+      const el = document.documentElement;
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+      if (!isFs) {
+        const p = el.requestFullscreen ? el.requestFullscreen()
+          : el.webkitRequestFullscreen && el.webkitRequestFullscreen();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      } else {
+        const p = document.exitFullscreen ? document.exitFullscreen()
+          : document.webkitExitFullscreen && document.webkitExitFullscreen();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      }
+    } catch (e) { /* noop */ }
   }
 
   let zeroCount = 0;
@@ -583,14 +633,57 @@
       zeroTimer = setTimeout(() => { zeroCount = 0; }, 1500);
       if (zeroCount >= 4) {
         zeroCount = 0;
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        } else {
-          document.exitFullscreen().catch(() => {});
-        }
+        toggleFullscreen();
       }
     }
   });
+
+  /* ═══════════════════════════════════════
+     WEBGL BG TOGGLE — off by default; opt-in
+     ═══════════════════════════════════════ */
+
+  const bgToggle = $('bgToggle');
+  const glApi = window.xolericGL || null;
+  let glOn = false;
+
+  function applyBgToggle() {
+    if (!bgToggle) return;
+    bgToggle.classList.toggle('on', glOn);
+    bgToggle.setAttribute('aria-pressed', String(glOn));
+    bgToggle.textContent = 'background: ' + (glOn ? 'on' : 'off');
+    try { localStorage.setItem('xoleric-gl', glOn ? '1' : '0'); } catch (e) { /* noop */ }
+  }
+
+  function initBgToggle() {
+    if (!glApi || !glApi.canRun()) {
+      if (bgToggle) bgToggle.style.display = 'none';
+      return;
+    }
+    if (!bgToggle) return;
+    bgToggle.hidden = false;
+
+    let pref = null;
+    try { pref = localStorage.getItem('xoleric-gl'); } catch (e) { /* noop */ }
+    if (pref === '1') {
+      glOn = true;
+      if (!glApi.enable()) glOn = false;
+    }
+
+    bgToggle.addEventListener('click', () => {
+      glOn = !glOn;
+      if (glOn) {
+        if (!glApi.enable()) glOn = false;
+      } else {
+        glApi.disable();
+      }
+      applyBgToggle();
+    });
+    glApi.onDisable = () => {
+      glOn = false;
+      applyBgToggle();
+    };
+    applyBgToggle();
+  }
 
   /* ═══════════════════════════════════════
      INIT
@@ -622,9 +715,10 @@
     try { initNavSpy(); } catch (e) { /* noop */ }
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
+    try { initBgToggle(); } catch (e) { /* noop */ }
 
     if (!reduceMotion && revealEl) {
-      rafId = requestAnimationFrame(masterLoop);
+      startMasterLoop();
     }
     try { revealLetters(); } catch (e) { /* noop */ }
 

@@ -194,18 +194,28 @@
 
   /* ═══════════════════════════════════════
      INPUT — pointer + touch (passive)
+     Media-query detection can lie (touch laptops, some WebViews report
+     hover:none) — so pointermove is ALWAYS registered and a real mouse
+     event permanently flips fineOverride. Self-healing input.
      ═══════════════════════════════════════ */
 
   function touchActiveRecently() { return Date.now() - lastTouchTime < 700; }
+  let lastInputTime = 0;
+  let fineOverride = false;
+  function inputActiveRecently() {
+    return Date.now() - Math.max(lastInputTime, lastTouchTime) < 700;
+  }
 
-  if (isFine) {
-    window.addEventListener('pointermove', (e) => {
-      rawX = e.clientX;
-      rawY = e.clientY;
-      hasPointer = true;
-      if (loaded && heroVisible && !reduceMotion && revealEl && !rafId) startMasterLoop();
-    }, { passive: true });
-  } else {
+  window.addEventListener('pointermove', (e) => {
+    rawX = e.clientX;
+    rawY = e.clientY;
+    hasPointer = true;
+    lastInputTime = Date.now();
+    if (e.pointerType === 'mouse') fineOverride = true;
+    if (loaded && heroVisible && !reduceMotion && revealEl && !rafId) startMasterLoop();
+  }, { passive: true });
+
+  if (!isFine) {
     document.addEventListener('touchstart', (e) => {
       const t = e.touches && e.touches[0];
       if (!t) return;
@@ -458,12 +468,18 @@
     revealEl.style.webkitMaskImage = mask;
   }
 
-  /* Delta-time normalized lerp: animation speed is time-based, not FPS-based
-     (a 120Hz screen no longer plays the reveal 2x faster; a dropped frame
-     no longer makes it jump). dt is clamped so background tab jumps are safe. */
+  /* Delta-time normalized lerp: animation speed is time-based, not FPS-based.
+     dt is computed ONCE per frame (frameDt) and shared by every lerp in that
+     frame — otherwise the first consumer eats the whole delta and the rest
+     see dt=0 and never move. Clamped so background-tab jumps stay safe. */
   let lastLoopT = 0;
-  function frameLerp(current, target, base, now) {
-    const dt = lastLoopT ? Math.min((now - lastLoopT) / 16.666, 3) : 1;
+  function frameDt(now) {
+    if (!lastLoopT) { lastLoopT = now; return 1; }
+    const dt = Math.min((now - lastLoopT) / 16.666, 3);
+    lastLoopT = now;
+    return dt;
+  }
+  function frameLerp(current, target, base, dt) {
     const k = 1 - Math.pow(1 - base, dt);
     return current + (target - current) * k;
   }
@@ -475,8 +491,9 @@
 
   function updateReveal(now) {
     if (!revealEl || reduceMotion) return false;
-    cursorX = frameLerp(cursorX, rawX, 0.12, now);
-    cursorY = frameLerp(cursorY, rawY, 0.12, now);
+    const dt = frameDt(now);
+    cursorX = frameLerp(cursorX, rawX, 0.12, dt);
+    cursorY = frameLerp(cursorY, rawY, 0.12, dt);
 
     if (!heroVisible) {
       currentR = 0;
@@ -490,21 +507,21 @@
 
     let targetR = 0;
     if (heroVisible && hasPointer && inside) {
-      targetR = isFine ? CFG.circle : CFG.circleMobile;
-      if (!isFine && !touchActiveRecently()) targetR = 0;
+      const fineNow = isFine || fineOverride;
+      targetR = fineNow ? CFG.circle : CFG.circleMobile;
+      if (!fineNow && !inputActiveRecently()) targetR = 0;
     }
 
-    currentR = frameLerp(currentR, targetR, 0.1, now);
+    currentR = frameLerp(currentR, targetR, 0.1, dt);
     if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
 
-    /* Quantized to whole pixels: fewer unique strings → less GC churn */
-    const qmx = clamp(Math.round(mx), 0, Math.round(revealRect.width));
-    const qmy = clamp(Math.round(my), 0, Math.round(revealRect.height));
-    const qr = Math.round(currentR);
+    /* V1 falloff exactly: black core to 40%, smooth fade to the edge */
+    const smx = clamp(mx, 0, revealRect.width).toFixed(1);
+    const smy = clamp(my, 0, revealRect.height).toFixed(1);
 
     const mask =
-      qr > 0 && revealRect.width > 0
-        ? `radial-gradient(circle ${qr}px at ${qmx}px ${qmy}px, #000 0%, #000 38%, transparent 70%)`
+      currentR > 0.5 && revealRect.width > 0
+        ? `radial-gradient(circle ${currentR.toFixed(1)}px at ${smx}px ${smy}px, #000 0%, #000 40%, transparent 100%)`
         : ZERO_MASK;
 
     setMask(mask);
@@ -531,7 +548,6 @@
       rafId = requestAnimationFrame(masterLoop);
       return;
     }
-    lastLoopT = now;
     let active = true;
     try {
       active = updateReveal(now);

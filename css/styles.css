@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --bg: #000;
+  --bg: #0b101a;
   --bg-soft: #0a0d14;
   --surface: rgba(255, 255, 255, 0.03);
   --surface-2: rgba(255, 255, 255, 0.07);
@@ -57,10 +57,9 @@ html {
 }
 
 body {
-  /* near-black gradient fallback: when the animated WebGL chrome runs it
-     covers this completely; if WebGL is off/unavailable the page still
-     shows depth instead of a flat dead-black fill */
-  background: radial-gradient(ellipse at 50% 0%, #0c1016 0%, #000 75%);
+  /* NO pure black anywhere: this is only a fallback behind the animated
+     WebGL chrome (which covers it completely when running) */
+  background: radial-gradient(ellipse at 50% 0%, #161c28 0%, #0b0f18 75%);
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;
@@ -126,7 +125,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #000;
+  background: #0b101a;
   overflow: hidden;
   transition: opacity 0.7s ease, visibility 0.7s ease;
 }
@@ -170,7 +169,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   display: none;
   justify-content: center;
   align-items: center;
-  background: #000;
+  background: #0b101a;
   z-index: 2;
 }
 
@@ -381,7 +380,7 @@ canvas#webgl-bg {
   inset: 0;
   z-index: 26;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.9) 100%);
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(4, 6, 10, 0.55) 100%);
   opacity: 0;
   transition: opacity 1.2s ease;
 }
@@ -458,8 +457,8 @@ canvas#webgl-bg {
 
 .hero-art {
   position: relative;
-  width: min(34vw, 300px);
-  height: min(34vw, 300px);
+  width: min(42vw, 420px);
+  height: min(42vw, 420px);
   z-index: 1;
   overflow: hidden;
   border-radius: var(--radius);
@@ -1053,7 +1052,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 }
 
 @media (max-height: 620px) and (min-width: 769px) {
-  .hero-art { width: 150px; height: 150px; }
+  .hero-art { width: 220px; height: 220px; }
   .hero-title { font-size: clamp(26px, 4vw, 46px); }
   .hero { padding-bottom: calc(var(--space-6) / 2); }
 }
@@ -1070,9 +1069,9 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
      overlap the eyebrow/title/CTAs on phones. It now flows BELOW the content
      as a normal flex child — nothing can overlap anymore. */
   .hero-art {
-    width: min(46vw, 170px);
-    height: min(46vw, 170px);
-    margin-bottom: var(--space-4);
+    width: min(88vw, 340px);
+    height: min(88vw, 340px);
+    margin: 0 auto var(--space-4);
   }
   .hero-content { max-width: 100%; }
   .hero-orbit {
@@ -1094,8 +1093,8 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 /* very small phones — keep everything readable, nothing clipped */
 @media (max-width: 380px) {
   .hero-art {
-    width: min(52vw, 150px);
-    height: min(52vw, 150px);
+    width: min(92vw, 300px);
+    height: min(92vw, 300px);
   }
   .hero-orbit {
     width: 160px;

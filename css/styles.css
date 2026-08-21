@@ -57,7 +57,10 @@ html {
 }
 
 body {
-  background: var(--bg);
+  /* near-black gradient fallback: when the animated WebGL chrome runs it
+     covers this completely; if WebGL is off/unavailable the page still
+     shows depth instead of a flat dead-black fill */
+  background: radial-gradient(ellipse at 50% 0%, #0c1016 0%, #000 75%);
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;

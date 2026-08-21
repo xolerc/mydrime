@@ -340,8 +340,16 @@
     try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) { /* noop */ }
   }
 
+  function killedThisSession() {
+    /* the watchdog writes this flag right before disabling: if the shader
+       already froze/janked once in this browsing session, don't retry it
+       on every page load — the user keeps a flat fallback instead */
+    try { return sessionStorage.getItem('xoleric-gl-off') === '1'; } catch (e) { return false; }
+  }
+
   function enableBackground() {
     if (disabled || running || reduceMotion) return false;
+    if (killedThisSession()) { disabled = true; return false; }
     try {
       if (!initWebGL()) return false;
       if (isSoftwareRenderer(gl)) {
@@ -378,7 +386,11 @@
     enable: enableBackground,
     disable: disableGl,
     isOn: function () { return running; },
-    canRun: function () { return typeof window.WebGLRenderingContext !== 'undefined' && !reduceMotion; },
+    canRun: function () {
+      return typeof window.WebGLRenderingContext !== 'undefined'
+        && !reduceMotion
+        && !killedThisSession();
+    },
     onDisable: null
   };
 

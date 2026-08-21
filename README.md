@@ -20,6 +20,13 @@ The v3.3 portfolio — **clean, content-first**: corner hero art with a V1-style
 
 ---
 
+## v3.4.1 Changelog — animated background restored
+
+| Area | What changed |
+|------|-------------|
+| **WebGL bg** | Liquid-chrome shader **ON by default** again (opt-out instead of opt-in). Safety unchanged: software-GL detection, slow-frame watchdog auto-disables within ~1s on weak devices, session-kill flag prevents retry loops; toggle hides itself if the session can't support the shader |
+| **Fallback** | Flat black body fill → subtle dark radial gradient (visible only when WebGL is off/unavailable) |
+
 ## v3.4 Changelog — conversion polish
 
 | Area | What changed |

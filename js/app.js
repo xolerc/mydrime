@@ -756,9 +756,13 @@
     if (!bgToggle) return;
     bgToggle.hidden = false;
 
+    /* Animated liquid-chrome background is ON by default (restored look).
+       Only an explicit user opt-out ('0') keeps it off. All safety nets
+       (software-GL detection, slow-frame watchdog, low-end DPR cap) still
+       auto-disable it on devices that can't handle it. */
     let pref = null;
     try { pref = localStorage.getItem('xoleric-gl'); } catch (e) { /* noop */ }
-    if (pref === '1') {
+    if (pref !== '0') {
       glOn = true;
       if (!glApi.enable()) glOn = false;
     }
@@ -766,7 +770,12 @@
     bgToggle.addEventListener('click', () => {
       glOn = !glOn;
       if (glOn) {
-        if (!glApi.enable()) glOn = false;
+        if (!glApi.enable()) {
+          /* this session already proved the shader can't run here
+             (watchdog/software-GL) — a dead toggle would just confuse */
+          glOn = false;
+          bgToggle.hidden = true;
+        }
       } else {
         glApi.disable();
       }

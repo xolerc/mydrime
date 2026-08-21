@@ -326,7 +326,7 @@
     const ICON_INNERS = Array.prototype.slice.call(ringEl.querySelectorAll('.icon-inner'));
     const PAD = 14;           /* minimum distance from the viewport edge */
     let mode = false;
-    let rafId = 0, lastT = 0, lastScrollY = -1, idleFrames = 0, collectAt = 0;
+    let rafId = 0, lastT = 0, lastScrollY = -1, collectAt = 0;
     let curX = 0, curY = 0, curOp = 1, tgtX = 0, tgtY = 0, tgtOp = 1, firstFrame = true;
     let blocks = [], widest = null;
 
@@ -430,20 +430,15 @@
         ICON_INNERS[i].style.transform = 'rotate(' + (-ang).toFixed(2) + 'deg)';
       }
 
-      const settled =
-        Math.abs(tgtX - curX) < 0.4 &&
-        Math.abs(tgtY - curY) < 0.4 &&
-        curOp === tgtOp &&
-        sc === lastScrollY;
-      idleFrames = settled ? idleFrames + 1 : 0;
       lastScrollY = sc;
-      if (idleFrames >= 110) return; /* parked — scroll wakes us */
+      /* never park in travel mode: the ambient drift keeps the ring
+         spinning even after scrolling stops. Only a hidden tab pauses us,
+         and visibilitychange wakes the loop again. */
       rafId = requestAnimationFrame(loop);
     }
 
     function start() {
       if (!rafId && mode && !document.hidden) {
-        idleFrames = 0;
         lastT = 0;
         rafId = requestAnimationFrame(loop);
       }

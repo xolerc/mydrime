@@ -402,6 +402,15 @@
       return useRad;
     }
 
+    /* radius is measured once per adopt/resize — reading offsetWidth every
+       frame forces a reflow between style writes and janks the compositor
+       (enough to trip the WebGL watchdog on weaker machines) */
+    let radCache = 160;
+    function measureRad() {
+      radCache = Math.max(80, orbit.offsetWidth / 2);
+      return radCache;
+    }
+
     function loop(now) {
       rafId = 0;
       if (document.hidden) { lastT = 0; return; }
@@ -410,7 +419,7 @@
       if (now > collectAt) collectBlocks();
 
       const sc = window.scrollY;
-      const rad = pickTarget(Math.max(80, orbit.offsetWidth / 2));
+      const rad = pickTarget(radCache);
 
       if (firstFrame) { curX = tgtX; curY = tgtY; curOp = tgtOp; firstFrame = false; }
       const k = 1 - Math.pow(0.85, dt);
@@ -451,6 +460,7 @@
         layer.classList.add('active');
         layer.appendChild(orbit);
         orbit.classList.add('orbit-travel');
+        measureRad();
         collectBlocks();
         firstFrame = true;
         start();
@@ -465,7 +475,9 @@
     }
 
     window.addEventListener('scroll', () => { if (mode) start(); }, { passive: true });
-    window.addEventListener('resize', () => { if (mode) { collectBlocks(); start(); } }, { passive: true });
+    window.addEventListener('resize', () => {
+      if (mode) { measureRad(); collectBlocks(); start(); }
+    }, { passive: true });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); }, { passive: true });
     if (media.addEventListener) media.addEventListener('change', () => adopt(media.matches));
     else if (media.addListener) media.addListener(() => adopt(media.matches));

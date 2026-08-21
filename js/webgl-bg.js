@@ -338,16 +338,25 @@
     running = false;
     disabled = true;
     stopLoop();
-    try { sessionStorage.setItem('xoleric-gl-off', '1'); } catch (e) { /* noop */ }
+    try { sessionStorage.setItem('xoleric-gl-off', String(Date.now())); } catch (e) { /* noop */ }
     try { canvas.style.display = 'none'; } catch (e) { /* noop */ }
     try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) { /* noop */ }
   }
 
   function killedThisSession() {
-    /* the watchdog writes this flag right before disabling: if the shader
-       already froze/janked once in this browsing session, don't retry it
-       on every page load — the user keeps a flat fallback instead */
-    try { return sessionStorage.getItem('xoleric-gl-off') === '1'; } catch (e) { return false; }
+    /* The watchdog kill flag now EXPIRES: one bad patch (a long tab switch,
+       a temporary GPU spike) must not silence the waves for the whole
+       browsing session. After the cooldown a reload brings them back. */
+    try {
+      const v = parseInt(sessionStorage.getItem('xoleric-gl-off') || '0', 10);
+      if (!v) return false;
+      if (Date.now() - v > 8 * 60 * 1000) {
+        sessionStorage.removeItem('xoleric-gl-off');
+        disabled = false;
+        return false;
+      }
+      return true;
+    } catch (e) { return false; }
   }
 
   function enableBackground() {
@@ -417,6 +426,8 @@
         resize();
         running = true;
         lastTime = null;
+        lastFrameNow = null;
+        slowFrames = 0;
         animationId = requestAnimationFrame(render);
       } else {
         disabled = true;
@@ -431,6 +442,10 @@
     if (document.hidden) {
       stopLoop();
     } else if (running) {
+      /* resume cleanly: without resetting lastFrameNow the first frame back
+         carries the whole hidden gap as dt and the watchdog kills the waves */
+      lastFrameNow = null;
+      slowFrames = 0;
       lastTime = null;
       animationId = requestAnimationFrame(render);
     }

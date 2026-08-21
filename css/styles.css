@@ -457,8 +457,8 @@ canvas#webgl-bg {
 
 .hero-art {
   position: relative;
-  width: min(42vw, 420px);
-  height: min(42vw, 420px);
+  width: min(38vw, 372px);
+  height: min(38vw, 372px);
   z-index: 1;
   overflow: hidden;
   border-radius: var(--radius);
@@ -1080,8 +1080,8 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
      overlap the eyebrow/title/CTAs on phones. It now flows BELOW the content
      as a normal flex child — nothing can overlap anymore. */
   .hero-art {
-    width: min(88vw, 340px);
-    height: min(88vw, 340px);
+    width: min(82vw, 304px);
+    height: min(82vw, 304px);
     margin: 0 auto var(--space-4);
   }
   .hero-content { max-width: 100%; }

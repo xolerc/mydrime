@@ -749,59 +749,15 @@
   });
 
   /* ═══════════════════════════════════════
-     WEBGL BG TOGGLE — off by default; opt-in
-     ═══════════════════════════════════════ */
+      WEBGL WAVE BACKGROUND — the only background.
+      Always on when supported; no toggle UI. If it can't run,
+      the static body gradient shows instead (invisible fallback).
+      ═══════════════════════════════════════ */
 
-  const bgToggle = $('bgToggle');
-  const glApi = window.xolericGL || null;
-  let glOn = false;
-
-  function applyBgToggle() {
-    if (!bgToggle) return;
-    bgToggle.classList.toggle('on', glOn);
-    bgToggle.setAttribute('aria-pressed', String(glOn));
-    bgToggle.textContent = 'background: ' + (glOn ? 'on' : 'off');
-    try { localStorage.setItem('xoleric-gl-v2', glOn ? '1' : '0'); } catch (e) { /* noop */ }
-  }
-
-  function initBgToggle() {
-    if (!glApi || !glApi.canRun()) {
-      if (bgToggle) bgToggle.style.display = 'none';
-      return;
-    }
-    if (!bgToggle) return;
-    bgToggle.hidden = false;
-
-    /* Animated liquid-chrome background is ON by default (restored look).
-       Versioned pref key: anyone who toggled the old off-by-default build
-       gets the new visible default exactly once; only an explicit opt-out
-       on THIS key keeps it off. Safety nets unchanged. */
-    let pref = null;
-    try { pref = localStorage.getItem('xoleric-gl-v2'); } catch (e) { /* noop */ }
-    if (pref !== '0') {
-      glOn = true;
-      if (!glApi.enable()) glOn = false;
-    }
-
-    bgToggle.addEventListener('click', () => {
-      glOn = !glOn;
-      if (glOn) {
-        if (!glApi.enable()) {
-          /* this session already proved the shader can't run here
-             (watchdog/software-GL) — a dead toggle would just confuse */
-          glOn = false;
-          bgToggle.hidden = true;
-        }
-      } else {
-        glApi.disable();
-      }
-      applyBgToggle();
-    });
-    glApi.onDisable = () => {
-      glOn = false;
-      applyBgToggle();
-    };
-    applyBgToggle();
+  function initBg() {
+    const glApi = window.xolericGL || null;
+    if (!glApi || !glApi.canRun()) return;
+    glApi.enable();
   }
 
   /* ═══════════════════════════════════════
@@ -834,7 +790,7 @@
     try { initNavSpy(); } catch (e) { /* noop */ }
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
-    try { initBgToggle(); } catch (e) { /* noop */ }
+    try { initBg(); } catch (e) { /* noop */ }
 
     if (!reduceMotion && revealEl) {
       startMasterLoop();

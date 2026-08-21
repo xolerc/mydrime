@@ -7,8 +7,9 @@
    Fullscreen quad · u_resolution + u_time + u_cursor · DPR-aware
 
    SAFETY (universal no-hang):
-   - OFF by default — page works everywhere without WebGL.
-     app.js shows a small toggle for browsers that support it.
+   - The ONLY page background — app.js enables it whenever the
+     browser supports WebGL; the static body gradient is the
+     invisible fallback when it cannot run.
    - Software renderers (SWGL/llvmpipe/SwiftShader) are detected
      and skipped — they freeze the tab on CPU-heavy shaders.
    - A frame watchdog auto-disables the loop if it ever runs

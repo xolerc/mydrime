@@ -307,6 +307,177 @@
   }
 
   /* ═══════════════════════════════════════
+     ORBIT TRAVEL — on ≥1200px the social ring leaves the hero and
+     rolls down the page as you scroll. Each frame it picks the lane
+     with the fewest content collisions (gutter center → screen edge),
+     shrinks to a mini-ring if crowded, and hides completely when
+     nothing clear remains — panels and text are never covered.
+     Below 1200px (or reduced-motion) it stays inside the hero.
+     ═══════════════════════════════════════ */
+
+  function initOrbitTravel() {
+    const orbit = $('orbitContainer');
+    const ringEl = $('orbitRing');
+    const layer = $('orbitLayer');
+    const homeParent = orbit ? orbit.parentNode : null;
+    if (!orbit || !ringEl || !layer || !homeParent || reduceMotion) return;
+
+    const media = window.matchMedia('(min-width: 1200px)');
+    const ICON_INNERS = Array.prototype.slice.call(ringEl.querySelectorAll('.icon-inner'));
+    const PAD = 14;           /* minimum distance from the viewport edge */
+    let mode = false;
+    let rafId = 0, lastT = 0, lastScrollY = -1, idleFrames = 0, collectAt = 0;
+    let curX = 0, curY = 0, curOp = 1, tgtX = 0, tgtY = 0, tgtOp = 1, firstFrame = true;
+    let blocks = [], widest = null;
+
+    function collectBlocks() {
+      collectAt = performance.now() + 4000;
+      const sy = window.scrollY;
+      blocks = [];
+      widest = null;
+      document.querySelectorAll('main section, footer').forEach((sec) => {
+        const r = sec.getBoundingClientRect();
+        if (!widest || r.width > widest.width) widest = { left: r.left, right: r.right };
+      });
+      /* everything a reader must never lose sight of */
+      document.querySelectorAll('.section-title, .eyebrow, .card, .project-card, .stat, .contact-inner p')
+        .forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.width < 70 || r.height < 26) return;
+          blocks.push({ l: r.left, r: r.right, t: r.top + sy, b: r.bottom + sy });
+        });
+    }
+
+    /* how deeply would a circle at screen-space (cx,cy) overlap content?
+       blocks are stored in document coords — convert per query */
+    function costOf(cx, cy, rad) {
+      let cost = 0;
+      const rr = rad * 0.92;
+      const sy = window.scrollY;
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        const bt = b.t - sy, bb = b.b - sy;
+        if (bb < cy - rr || bt > cy + rr) continue;
+        const nx = Math.max(b.l, Math.min(cx, b.r));
+        const ny = Math.max(bt, Math.min(cy, bb));
+        const dx = cx - nx, dy = cy - ny;
+        const d = dx * dx + dy * dy;
+        if (d < rr * rr) cost += rr - Math.sqrt(d);
+      }
+      return cost;
+    }
+
+    function pickTarget(rad) {
+      const vh = VH;
+      const docH = document.documentElement.scrollHeight;
+      const prog = Math.min(1, Math.max(0, window.scrollY / Math.max(1, docH - vh)));
+      tgtY = vh * (0.38 + 0.24 * prog);
+
+      /* lanes: screen-edge hugs always exist; gutter centers when wide enough */
+      const cands = [
+        { x: VW - PAD - rad },
+        { x: PAD + rad }
+      ];
+      if (widest) {
+        const gl = widest.left, gr = VW - widest.right;
+        if (gl > rad * 1.7) cands.push({ x: gl / 2 });
+        if (gr > rad * 1.7) cands.push({ x: VW - gr / 2 });
+      }
+      let best = null;
+      for (const c of cands) {
+        c.cost = costOf(c.x, tgtY, rad);
+        if (!best || c.cost < best.cost) best = c;
+      }
+      let useRad = rad;
+      if (best.cost > 3) {
+        /* crowded → try a mini ring hugging the edge before giving up */
+        const small = rad * 0.6;
+        for (const x of [VW - PAD - small, PAD + small]) {
+          const c = costOf(x, tgtY, small);
+          if (c < best.cost) { best = { x: x, cost: c }; useRad = small; }
+        }
+      }
+      tgtX = best.x;
+      tgtOp = best.cost > 6 ? 0 : 1;
+      return useRad;
+    }
+
+    function loop(now) {
+      rafId = 0;
+      if (document.hidden) { lastT = 0; return; }
+      const dt = lastT ? Math.min((now - lastT) / 16.666, 3) : 1;
+      lastT = now;
+      if (now > collectAt) collectBlocks();
+
+      const sc = window.scrollY;
+      const rad = pickTarget(Math.max(80, orbit.offsetWidth / 2));
+
+      if (firstFrame) { curX = tgtX; curY = tgtY; curOp = tgtOp; firstFrame = false; }
+      const k = 1 - Math.pow(0.85, dt);
+      curX += (tgtX - curX) * k;
+      curY += (tgtY - curY) * k;
+      curOp += (tgtOp - curOp) * Math.min(1, 0.14 * dt);
+      if (curOp < 0.03 && tgtOp === 0) curOp = 0;
+      if (curOp > 0.97 && tgtOp === 1) curOp = 1;
+
+      /* scroll-linked roll + slow ambient drift so it never looks dead */
+      const ang = sc * 0.18 + now * 0.004;
+      orbit.style.transform = 'translate3d(' + (curX - rad).toFixed(1) + 'px,' + (curY - rad).toFixed(1) + 'px,0)';
+      orbit.style.opacity = curOp.toFixed(3);
+      orbit.style.visibility = curOp <= 0.04 ? 'hidden' : 'visible';
+      ringEl.style.transform = 'rotate(' + ang.toFixed(2) + 'deg)';
+      for (let i = 0; i < ICON_INNERS.length; i++) {
+        ICON_INNERS[i].style.transform = 'rotate(' + (-ang).toFixed(2) + 'deg)';
+      }
+
+      const settled =
+        Math.abs(tgtX - curX) < 0.4 &&
+        Math.abs(tgtY - curY) < 0.4 &&
+        curOp === tgtOp &&
+        sc === lastScrollY;
+      idleFrames = settled ? idleFrames + 1 : 0;
+      lastScrollY = sc;
+      if (idleFrames >= 110) return; /* parked — scroll wakes us */
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (!rafId && mode && !document.hidden) {
+        idleFrames = 0;
+        lastT = 0;
+        rafId = requestAnimationFrame(loop);
+      }
+    }
+
+    function adopt(on) {
+      if (on === mode) return;
+      mode = on;
+      if (on) {
+        layer.classList.add('active');
+        layer.appendChild(orbit);
+        orbit.classList.add('orbit-travel');
+        collectBlocks();
+        firstFrame = true;
+        start();
+      } else {
+        orbit.classList.remove('orbit-travel');
+        orbit.style.cssText = '';
+        ringEl.style.transform = '';
+        for (let i = 0; i < ICON_INNERS.length; i++) ICON_INNERS[i].style.transform = '';
+        homeParent.appendChild(orbit);
+        layer.classList.remove('active');
+      }
+    }
+
+    window.addEventListener('scroll', () => { if (mode) start(); }, { passive: true });
+    window.addEventListener('resize', () => { if (mode) { collectBlocks(); start(); } }, { passive: true });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); }, { passive: true });
+    if (media.addEventListener) media.addEventListener('change', () => adopt(media.matches));
+    else if (media.addListener) media.addListener(() => adopt(media.matches));
+    adopt(media.matches);
+  }
+
+  /* ═══════════════════════════════════════
      SCROLL — progress, header, scroll spy, reveals
      ═══════════════════════════════════════ */
 
@@ -784,6 +955,7 @@
     if (heroEl) heroEl.classList.add('ready');
     if (siteHeader) siteHeader.classList.add('visible');
     try { buildOrbit(); } catch (e) { /* noop */ }
+    try { initOrbitTravel(); } catch (e) { /* noop */ }
     try { buildLetters(); } catch (e) { /* noop */ }
     try { buildProjectCards(); } catch (e) { /* noop */ }
     try { initStatsSpy(); } catch (e) { /* noop */ }

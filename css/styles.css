@@ -689,6 +689,40 @@ canvas#webgl-bg {
   to { transform: rotate(360deg); }
 }
 
+/* ─────────── ORBIT TRAVEL (≥1200px) ───────────
+   The social ring leaves the hero and rolls down the page with scroll,
+   riding the empty side zones. JS picks the clearest lane per frame
+   (gutter center → edge hug → hidden) so it never covers panels/text. */
+.orbit-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3; /* above page background, below header/toasts */
+  pointer-events: none;
+  display: none;
+}
+
+.orbit-layer.active { display: block; }
+
+.hero-orbit.orbit-travel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: auto;
+  width: var(--orbit-d, 320px);
+  height: var(--orbit-d, 320px);
+  transform: translate3d(-999px, -999px, 0);
+  will-change: transform, opacity;
+  transition: opacity 0.35s ease;
+}
+
+/* scroll drives rotation in travel mode — the CSS spin animations stop */
+.hero-orbit.orbit-travel .orbit-ring,
+.hero-orbit.orbit-travel .icon-inner { animation: none; }
+
+@media (max-width: 1199.98px) {
+  .orbit-layer { display: none !important; }
+}
+
 /* ─────────── ABOUT ─────────── */
 .about {
   display: grid;

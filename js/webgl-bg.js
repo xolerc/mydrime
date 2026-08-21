@@ -204,7 +204,8 @@
   }
 
   function initWebGL() {
-    gl = canvas.getContext('webgl', { antialias: false, failIfMajorPerformanceCaveat: false })
+    const attrs = { antialias: false, failIfMajorPerformanceCaveat: false, powerPreference: 'low-power' };
+    gl = canvas.getContext('webgl', attrs)
       || canvas.getContext('experimental-webgl', { antialias: false });
     return !!gl;
   }

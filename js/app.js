@@ -148,12 +148,13 @@
       done = true;
       onDone();
     };
+    /* one overall timeout instead of one per image */
+    setTimeout(finish, 3000);
     for (const src of CFG.images) {
       const img = new Image();
       img.onload = finish;
       img.onerror = finish;
       img.src = src;
-      setTimeout(finish, 3000);
     }
   }
 
@@ -169,6 +170,7 @@
     setTimeout(() => { if (mainLogo) mainLogo.classList.add('stable'); }, logoWait);
     setTimeout(() => {
       loaded = true;
+      window.__xolericLoaded = true; /* tells the inline failsafe we're alive */
       loaderEl.classList.add('hidden');
       initMainScene();
     }, hideWait);
@@ -205,18 +207,22 @@
     }, { passive: true });
   } else {
     document.addEventListener('touchstart', (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
       lastTouchTime = Date.now();
       hasPointer = true;
-      const t = e.touches[0];
       rawX = t.clientX;
       rawY = t.clientY;
+      if (loaded && heroVisible && !reduceMotion && revealEl) startMasterLoop();
     }, { passive: true });
     document.addEventListener('touchmove', (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
       lastTouchTime = Date.now();
       hasPointer = true;
-      const t = e.touches[0];
       rawX = t.clientX;
       rawY = t.clientY;
+      if (loaded && heroVisible && !reduceMotion && revealEl) startMasterLoop();
     }, { passive: true });
     document.addEventListener('touchend', () => {
       lastTouchTime = Date.now();
@@ -375,14 +381,24 @@
     els.forEach((el) => io.observe(el));
   }
 
+  function setStatsFinal() {
+    const els = document.querySelectorAll('.stat-number');
+    els.forEach((el) => {
+      const target = parseInt(el.dataset.count, 10) || 0;
+      el.textContent = target + '+';
+    });
+  }
+
   let statsDone = false;
   function animateStats() {
-    if (statsDone || reduceMotion) return;
+    if (statsDone) return;
     statsDone = true;
+    if (reduceMotion) { setStatsFinal(); return; }
     const els = document.querySelectorAll('.stat-number');
     const t0 = performance.now();
     const dur = 1400;
     let statFrame = 0;
+    let lastT = t0;
     (function step(now) {
       const p = clamp((now - t0) / dur, 0, 1);
       const ease = 1 - Math.pow(1 - p, 3);
@@ -394,24 +410,39 @@
         });
       }
       if (p < 1) requestAnimationFrame(step);
-    })(t0);
+      else els.forEach((el) => {
+        const target = parseInt(el.dataset.count, 10) || 0;
+        el.textContent = target + '+';
+      });
+    })(lastT);
   }
 
   function initStatsSpy() {
-    if (reduceMotion) return;
     const about = document.getElementById('about');
-    if (!about) return;
-    if (!hasIO) {
-      animateStats();
-      return;
-    }
+    if (!about && !document.querySelector('.about-stats')) { animateStats(); return; }
+    if (!hasIO) { animateStats(); return; }
+    if (reduceMotion) { setStatsFinal(); return; }
+
+    /* FIX: threshold 0.4 on the tall #about section can never be reached on
+       mobile (section height >> viewport height → max ratio < 0.4), so the
+       counters stayed at 0 forever. Observe the small .about-stats block
+       instead, with a low threshold + bottom rootMargin as a safety net. */
+    const statsEl = document.querySelector('.about-stats');
     const io = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         animateStats();
         io.disconnect();
       }
-    }, { threshold: 0.4 });
-    io.observe(about);
+    }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+    if (statsEl) io.observe(statsEl);
+
+    const ioAbout = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        animateStats();
+        ioAbout.disconnect();
+      }
+    }, { threshold: 0 });
+    ioAbout.observe(about);
   }
 
   /* ═══════════════════════════════════════
@@ -427,15 +458,30 @@
     revealEl.style.webkitMaskImage = mask;
   }
 
-  function updateReveal() {
-    if (!revealEl || reduceMotion) return;
-    cursorX = lerp(cursorX, rawX, 0.12);
-    cursorY = lerp(cursorY, rawY, 0.12);
+  /* Delta-time normalized lerp: animation speed is time-based, not FPS-based
+     (a 120Hz screen no longer plays the reveal 2x faster; a dropped frame
+     no longer makes it jump). dt is clamped so background tab jumps are safe. */
+  let lastLoopT = 0;
+  function frameLerp(current, target, base, now) {
+    const dt = lastLoopT ? Math.min((now - lastLoopT) / 16.666, 3) : 1;
+    const k = 1 - Math.pow(1 - base, dt);
+    return current + (target - current) * k;
+  }
+
+  /* Idle auto-stop: while nothing moves we stop the rAF loop entirely
+     (zero CPU/GPU on a static hero) and restart it from input events. */
+  const IDLE_STOP_FRAMES = 40;
+  let idleFrames = 0;
+
+  function updateReveal(now) {
+    if (!revealEl || reduceMotion) return false;
+    cursorX = frameLerp(cursorX, rawX, 0.12, now);
+    cursorY = frameLerp(cursorY, rawY, 0.12, now);
 
     if (!heroVisible) {
       currentR = 0;
       setMask(ZERO_MASK);
-      return;
+      return true;
     }
 
     const mx = cursorX - revealRect.left;
@@ -448,33 +494,59 @@
       if (!isFine && !touchActiveRecently()) targetR = 0;
     }
 
-    currentR = lerp(currentR, targetR, 0.1);
+    currentR = frameLerp(currentR, targetR, 0.1, now);
     if (Math.abs(currentR - targetR) < 0.5) currentR = targetR;
 
+    /* Quantized to whole pixels: fewer unique strings → less GC churn */
+    const qmx = clamp(Math.round(mx), 0, Math.round(revealRect.width));
+    const qmy = clamp(Math.round(my), 0, Math.round(revealRect.height));
+    const qr = Math.round(currentR);
+
     const mask =
-      currentR > 0.5 && revealRect.width > 0
-        ? `radial-gradient(circle ${currentR.toFixed(1)}px at ${clamp(mx, 0, revealRect.width).toFixed(1)}px ${clamp(my, 0, revealRect.height).toFixed(1)}px, #000 0%, #000 38%, transparent 70%)`
+      qr > 0 && revealRect.width > 0
+        ? `radial-gradient(circle ${qr}px at ${qmx}px ${qmy}px, #000 0%, #000 38%, transparent 70%)`
         : ZERO_MASK;
 
     setMask(mask);
+
+    /* settled? → report idle so the loop can park itself */
+    return !(
+      Math.abs(rawX - cursorX) < 0.35 &&
+      Math.abs(rawY - cursorY) < 0.35 &&
+      currentR === targetR
+    );
   }
 
   function startMasterLoop() {
     if (reduceMotion || !revealEl || rafId) return;
+    idleFrames = 0;
+    lastLoopT = 0;
     rafId = requestAnimationFrame(masterLoop);
   }
 
   let masterFrame = 0;
-  function masterLoop() {
+  function masterLoop(now) {
     masterFrame++;
     if (coarse && masterFrame % 2 === 0) {
       rafId = requestAnimationFrame(masterLoop);
       return;
     }
+    lastLoopT = now;
+    let active = true;
     try {
-      updateReveal();
+      active = updateReveal(now);
     } catch (e) {
+      rafId = 0;
       return;
+    }
+    if (!active) {
+      idleFrames++;
+      if (idleFrames >= IDLE_STOP_FRAMES) {
+        rafId = 0; /* parked — any pointer/touch/scroll event restarts us */
+        return;
+      }
+    } else {
+      idleFrames = 0;
     }
     if (!heroVisible && currentR === 0) {
       rafId = 0;
@@ -579,21 +651,26 @@
       done = true;
       fn.apply(null, args);
     };
-    setTimeout(finish(() => renderCards(FALLBACK_PROJECTS)), 6000);
+    const renderFallback = finish(() => renderCards(FALLBACK_PROJECTS));
+    setTimeout(renderFallback, 6000);
 
-    fetch(`https://api.github.com/users/${CFG.githubUser}/repos?sort=updated&per_page=100`)
+    /* Abort after 5s so a hanging request can't delay the grid */
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    if (ctrl) setTimeout(() => ctrl.abort(), 5000);
+
+    fetch(`https://api.github.com/users/${CFG.githubUser}/repos?sort=updated&per_page=100`, ctrl ? { signal: ctrl.signal } : undefined)
       .then((res) => {
         if (!res.ok) throw new Error('GitHub fetch failed');
         return res.json();
       })
-      .then((repos) => {
+      .then(finish((repos) => {
         const list = (repos || [])
           .filter((r) => !r.fork)
           .slice(0, 6);
         if (!list.length) throw new Error('No repos');
         renderCards(list);
-      })
-      .catch(finish(() => renderCards(FALLBACK_PROJECTS)));
+      }))
+      .catch(renderFallback);
   }
 
   /* ═══════════════════════════════════════

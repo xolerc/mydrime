@@ -351,12 +351,13 @@ canvas#webgl-bg {
   height: 55%;
   z-index: -1;
   pointer-events: none;
+  /* soft radial gradient only — no CSS blur filter: an already-soft gradient
+     gains nothing from blur(14px) but it forces full re-raster every frame */
   background: radial-gradient(ellipse at 65% 25%,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(120, 120, 120, 0.015) 40%,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(120, 120, 120, 0.02) 40%,
     transparent 72%);
   border-radius: 0 0 55% 35%;
-  filter: blur(14px);
   animation: accentDrift 20s ease-in-out infinite alternate;
   will-change: transform, opacity;
 }
@@ -366,19 +367,10 @@ canvas#webgl-bg {
   100% { transform: translate(-6%, 4%) scale(1.12) rotate(3deg); opacity: 0.7; }
 }
 
-.grain-top {
-  position: fixed;
-  top: -8%;
-  right: -8%;
-  width: 80%;
-  height: 65%;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  border-radius: 0 0 60% 30%;
-}
+/* film grain removed from render path: at 3% opacity under mix-blend-mode
+   it forced a full-region re-blend every frame on every device for zero
+   visible benefit — kept as markup for potential future static use */
+.grain-top { display: none; }
 
 /* ─────────── VIGNETTE ─────────── */
 .vignette {
@@ -452,6 +444,7 @@ canvas#webgl-bg {
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh; /* iOS URL-bar safe viewport */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -477,7 +470,7 @@ canvas#webgl-bg {
   inset: 0;
   background-size: cover;
   background-position: center;
-  will-change: transform, -webkit-mask-image, mask-image;
+  will-change: transform;
 }
 
 .hero-art .layer-bg { background-image: url('../images/bg.webp'); opacity: 0.5; }
@@ -604,16 +597,19 @@ canvas#webgl-bg {
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px dashed rgba(var(--accent-rgb), 0.28);
+  /* solid hairline (not dashed): a rotating dashed border must re-raster
+     every frame, a solid one is a pure compositor transform */
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
   border-radius: 50%;
   animation: orbitSpin 48s linear infinite;
+  will-change: transform;
 }
 
 .orbit-ring::before {
   content: '';
   position: absolute;
   inset: 22%;
-  border: 1px dashed rgba(var(--accent-rgb), 0.16);
+  border: 1px solid rgba(var(--accent-rgb), 0.12);
   border-radius: 50%;
 }
 
@@ -630,18 +626,18 @@ canvas#webgl-bg {
   justify-content: center;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: #0a0d14;
-  background: color-mix(in srgb, var(--bg-soft) 82%, transparent);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  background: rgba(10, 13, 20, 0.82);
+  /* no backdrop-filter here: the icons rotate continuously, and per-frame
+     backdrop sampling is one of the most expensive GPU ops on weak devices */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
   transform: rotate(var(--a)) translateX(var(--orbit-r, 160px)) rotate(calc(-1 * var(--a)));
   color: var(--accent);
-  animation: iconColor 9s linear infinite;
   transition: border-color 0.2s, box-shadow 0.2s;
+  will-change: transform;
 }
 
-/* soft mist trail sweeping behind each icon along its orbit */
+/* soft mist trail sweeping behind each icon along its orbit
+   (gradient-only softness — a blur filter here re-rasters every frame) */
 .orbit-icon::after {
   content: '';
   position: absolute;
@@ -651,8 +647,11 @@ canvas#webgl-bg {
   height: 14px;
   margin-top: -7px;
   border-radius: 8px;
-  background: linear-gradient(to right, transparent, color-mix(in srgb, currentColor 55%, transparent) 65%, color-mix(in srgb, currentColor 25%, transparent));
-  filter: blur(4px);
+  background: linear-gradient(to right,
+    transparent,
+    color-mix(in srgb, currentColor 30%, transparent) 45%,
+    color-mix(in srgb, currentColor 14%, transparent) 75%,
+    transparent);
   transform: rotate(calc(var(--a) - 90deg));
   transform-origin: left center;
   opacity: 0.4;
@@ -666,6 +665,7 @@ canvas#webgl-bg {
   width: 100%;
   height: 100%;
   animation: orbitSpin 48s linear infinite reverse;
+  will-change: transform;
 }
 
 .orbit-icon svg { width: 18px; height: 18px; fill: currentColor; transition: color 0.2s; }
@@ -687,15 +687,6 @@ canvas#webgl-bg {
   to { transform: rotate(360deg); }
 }
 
-@keyframes iconColor {
-  0%   { color: #5aa7ff; }
-  20%  { color: #00d4ff; }
-  40%  { color: #e1306c; }
-  60%  { color: #d2aa00; }
-  80%  { color: #22cf8f; }
-  100% { color: #5aa7ff; }
-}
-
 /* ─────────── ABOUT ─────────── */
 .about {
   display: grid;
@@ -712,7 +703,7 @@ canvas#webgl-bg {
 
 .about-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: var(--space-3);
 }
 
@@ -1070,19 +1061,45 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .projects-grid { grid-template-columns: 1fr; }
   .hero { align-items: flex-start; text-align: left; }
   .hero-title { font-size: clamp(16px, 5vw, 44px); }
+  .eyebrow { letter-spacing: 0.22em; font-size: 11px; }
+
+  /* FIX: the orbit used to stay absolutely centered over the hero text and
+     overlap the eyebrow/title/CTAs on phones. It now flows BELOW the content
+     as a normal flex child — nothing can overlap anymore. */
   .hero-art {
     width: min(46vw, 170px);
     height: min(46vw, 170px);
+    margin-bottom: var(--space-4);
   }
-  .hero-scroll { display: none; }
+  .hero-content { max-width: 100%; }
   .hero-orbit {
-    right: 50%;
-    transform: translate(50%, -50%);
-    width: 200px;
-    height: 200px;
-    opacity: 0.55;
+    position: static;
+    transform: none;
+    width: 190px;
+    height: 190px;
+    margin: var(--space-5) auto 0;
+    opacity: 0.85;
+    --orbit-r: 76px;
+    flex-shrink: 0;
   }
+  .orbit-icon { width: 40px; height: 40px; margin: -20px; }
+
+  .hero-scroll { display: none; }
   .about, .work, .contact { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+}
+
+/* very small phones — keep everything readable, nothing clipped */
+@media (max-width: 380px) {
+  .hero-art {
+    width: min(52vw, 150px);
+    height: min(52vw, 150px);
+  }
+  .hero-orbit {
+    width: 160px;
+    height: 160px;
+    --orbit-r: 62px;
+  }
+  .orbit-icon { width: 36px; height: 36px; margin: -18px; }
 }
 
 /* ─────────── TOUCH DEVICES — strip heavy GPU work, never jank/freeze ─────────── */

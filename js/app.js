@@ -745,7 +745,7 @@
     bgToggle.classList.toggle('on', glOn);
     bgToggle.setAttribute('aria-pressed', String(glOn));
     bgToggle.textContent = 'background: ' + (glOn ? 'on' : 'off');
-    try { localStorage.setItem('xoleric-gl', glOn ? '1' : '0'); } catch (e) { /* noop */ }
+    try { localStorage.setItem('xoleric-gl-v2', glOn ? '1' : '0'); } catch (e) { /* noop */ }
   }
 
   function initBgToggle() {
@@ -757,11 +757,11 @@
     bgToggle.hidden = false;
 
     /* Animated liquid-chrome background is ON by default (restored look).
-       Only an explicit user opt-out ('0') keeps it off. All safety nets
-       (software-GL detection, slow-frame watchdog, low-end DPR cap) still
-       auto-disable it on devices that can't handle it. */
+       Versioned pref key: anyone who toggled the old off-by-default build
+       gets the new visible default exactly once; only an explicit opt-out
+       on THIS key keeps it off. Safety nets unchanged. */
     let pref = null;
-    try { pref = localStorage.getItem('xoleric-gl'); } catch (e) { /* noop */ }
+    try { pref = localStorage.getItem('xoleric-gl-v2'); } catch (e) { /* noop */ }
     if (pref !== '0') {
       glOn = true;
       if (!glApi.enable()) glOn = false;

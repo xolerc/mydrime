@@ -343,6 +343,10 @@ canvas#webgl-bg {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+  /* GPU compositing: promotes the canvas to its own hardware layer so it
+     never forces the page to re-paint under it (scroll stays 60fps) */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .chrome-accent {
@@ -1099,6 +1103,15 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 
   .hero-scroll { display: none; }
   .about, .work, .contact { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+
+  /* strip heavy GPU blur on small screens — mobile GPUs re-sample
+     backdrop-filter every frame and it fights the WebGL background */
+  .site-header,
+  .contact-box {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(11, 16, 26, 0.92);
+  }
 }
 
 /* very small phones — keep everything readable, nothing clipped */

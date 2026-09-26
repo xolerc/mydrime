@@ -13,9 +13,9 @@
   --muted: #8a93a3;
   --faint: rgba(255, 255, 255, 0.35);
   --line: rgba(255, 255, 255, 0.09);
-  --accent: #5aa7ff;
-  --accent-2: #00d4ff;
-  --accent-rgb: 90, 167, 255;
+  --accent: #f5c518;
+  --accent-2: #ffdf6b;
+  --accent-rgb: 245, 197, 24;
   --gold: #d2aa00;
   --gold-2: #f5c518;
   --gold-deep: #8a6d00;
@@ -855,7 +855,7 @@ canvas#webgl-bg {
   right: -25%;
   width: 75%;
   height: 130%;
-  background: radial-gradient(circle at 30% 35%, rgba(143, 215, 255, 0.22), transparent 60%);
+  background: radial-gradient(circle at 30% 35%, rgba(245, 197, 24, 0.20), transparent 60%);
 }
 
 .card-art-lang {

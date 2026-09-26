@@ -10,10 +10,11 @@
    - The ONLY page background — app.js enables it whenever the
      browser supports WebGL; the static body gradient is the
      invisible fallback when it cannot run.
-   - Software renderers (SWGL/llvmpipe/SwiftShader) are detected
-     and skipped — they freeze the tab on CPU-heavy shaders.
-   - A frame watchdog auto-disables the loop if it ever runs
-     slower than ~12 slow frames or a single 500ms frame.
+    - Har qanday brauzerda bir xil: renderer/vendor nomi tekshirilmaydi,
+      faqat real kadr tezligi o'lchanadi (xatti-harakat bo'yicha qaror).
+    - A frame watchdog auto-disables the loop after sustained slowness
+      (~12 slow frames per tier) or 3 consecutive 500ms+ frames.
+      Start/resume dan keyingi ilk 8 kadr warmup - hisoblanmaydi.
    - DPR + max-side caps keep the fill-rate bounded on weak GPUs.
    Exposed as window.xolericGL = { enable, disable, isOn, canRun }
    ═══════════════════════════════════════════════════════════ */
@@ -217,21 +218,11 @@
   }
 
   function initWebGL() {
-    const attrs = { antialias: false, failIfMajorPerformanceCaveat: false, powerPreference: 'low-power' };
+    /* standart atributlar — hech qanday brauzerga xos kalit yo'q */
+    const attrs = { antialias: false, failIfMajorPerformanceCaveat: false };
     gl = canvas.getContext('webgl', attrs)
       || canvas.getContext('experimental-webgl', { antialias: false });
     return !!gl;
-  }
-
-  function isSoftwareRenderer(ctx) {
-    try {
-      const ext = ctx.getExtension('WEBGL_debug_renderer_info');
-      if (!ext) return false;
-      const renderer = String(ctx.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '').toLowerCase();
-      const vendor = String(ctx.getParameter(ext.UNMASKED_VENDOR_WEBGL) || '').toLowerCase();
-      return /swiftshader|llvmpipe|softpipe|software|basic render|basic output|microsoft.*basic/i.test(renderer)
-        || /swiftshader|microsoft|llvmpipe/i.test(vendor);
-    } catch (e) { return false; }
   }
 
   function setupProgram() {
@@ -323,6 +314,8 @@
   let frameCount = 0;
   let slowFrames = 0;
   let fastFrames = 0;
+  let hugeFrames = 0;
+  let warmingUp = 0;
   let lastFrameNow = null;
   const FPS_TIERS = isMobile ? [2, 4] : [1, 2, 4];
   let fpsTier = 0;
@@ -332,7 +325,19 @@
     frameCount++;
     if (lastFrameNow != null) {
       const dt = now - lastFrameNow;
-      if (dt > 500) { disableBackground(); return; }
+      if (warmingUp > 0) {
+        /* start/resume dan keyingi ilk kadrlar — tab switch bo'shlig'i
+           watchdog ni aldamasligi uchun hisoblanmaydi (barcha brauzerda bir xil) */
+        warmingUp--;
+        hugeFrames = 0;
+      } else if (dt > 500) {
+        /* bitta og'ir kadr (shader compile, tab switch) uchun o'chirmaymiz —
+           faqat ketma-ket 3 ta ulkan kadrda, xatti-harakat bo'yicha */
+        hugeFrames++;
+        if (hugeFrames >= 3) { disableBackground(); return; }
+      } else {
+        hugeFrames = 0;
+      }
       if (dt > 80) {
         slowFrames++;
         fastFrames = 0;
@@ -380,6 +385,8 @@
           lastFrameNow = null;
           slowFrames = 0;
           fastFrames = 0;
+          hugeFrames = 0;
+          warmingUp = 8;
           lastTime = null;
           animationId = requestAnimationFrame(render);
         }
@@ -404,13 +411,13 @@
   }
 
   function killedThisSession() {
-    /* The watchdog kill flag now EXPIRES: one bad patch (a long tab switch,
-       a temporary GPU spike) must not silence the waves for the whole
-       browsing session. After the cooldown a reload brings them back. */
+    /* The watchdog kill flag EXPIRES quickly: one bad patch must not silence
+       the glow for long — 3 daqiqadan keyin reload qayta urinadi.
+       Har bir page load o'z imkoniyatini oladi (brauzerdan qat'i nazar). */
     try {
       const v = parseInt(sessionStorage.getItem('xoleric-gl-off') || '0', 10);
       if (!v) return false;
-      if (Date.now() - v > 8 * 60 * 1000) {
+      if (Date.now() - v > 3 * 60 * 1000) {
         sessionStorage.removeItem('xoleric-gl-off');
         disabled = false;
         return false;
@@ -424,10 +431,6 @@
     if (killedThisSession()) { disabled = true; return false; }
     try {
       if (!initWebGL()) return false;
-      if (isSoftwareRenderer(gl)) {
-        disableBackground();
-        return false;
-      }
       if (!setupProgram()) {
         disableBackground();
         return false;
@@ -436,6 +439,12 @@
       wasRunning = true;
       running = true;
       lastTime = null;
+      /* yangi start — ilk 8 kadr watchdog dan xoli (warmup) */
+      warmingUp = 8;
+      hugeFrames = 0;
+      slowFrames = 0;
+      fastFrames = 0;
+      fpsTier = 0;
       animationId = requestAnimationFrame(render);
       try { canvas.style.display = ''; } catch (e) { /* noop */ }
       return true;
@@ -482,13 +491,15 @@
     if (!wasRunning || disabled || reduceMotion) return;
     wasRunning = false;
     try {
-      if (initWebGL() && !isSoftwareRenderer(gl) && setupProgram()) {
+      if (initWebGL() && setupProgram()) {
         resize();
         running = true;
         lastTime = null;
         lastFrameNow = null;
         slowFrames = 0;
         fastFrames = 0;
+        hugeFrames = 0;
+        warmingUp = 8;
         fpsTier = 0;
         animationId = requestAnimationFrame(render);
       } else {
@@ -509,6 +520,8 @@
       lastFrameNow = null;
       slowFrames = 0;
       fastFrames = 0;
+      hugeFrames = 0;
+      warmingUp = 8;
       fpsTier = 0;
       lastTime = null;
       animationId = requestAnimationFrame(render);

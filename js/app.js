@@ -84,61 +84,75 @@
   }
 
   /* ═══════════════════════════════════════
-     LOADER — BIOS boot → XOLERIC logo
-     Real preload + failsafe
+     LOADER — xoleric-ai chat uslubi
+     Input qolgan holda yozilgandek teriladi,
+     keyin XOLERIC logosi chiqadi. Real preload + failsafe.
      ═══════════════════════════════════════ */
 
   const TERMINAL_MAX = 24;
   let bootTimer = 0;
-  let bootIdx = 0;
-  let fillIdx = 0;
   let loaderDone = false;
+  let aiLine = 0;
+  let aiChar = 0;
+  const aiTypedEl = $('ai-typed');
+  const aiWrap = document.querySelector('.ai-loader-wrap');
 
-  const bootScript = [
-    'BIOS version 3.3.0',
-    'Copyright (C) 2026 XOLERIC SYSTEMS',
-    '',
-    'CPU : XOLERIC-CORE @ 5.2GHz',
-    'Memory Test : 65536K ... <span class="ok">OK</span>',
-    'SATA : /dev/sda1 AHCI',
-    'USB : 3 devices detected',
-    'NETWORK : initialized ... <span class="ok">OK</span>',
-    'MOUNT /sys/fs/cgroup ... <span class="ok">OK</span>',
-    'DAEMON XOLERIC-CORE ... <span class="ok">OK</span>',
-    'UI_MODULE : loaded',
-    'Booting xoleric portfolio ...'
+  const aiScript = [
+    { who: 'ai', text: 'Salom! Men xoleric-ai man. Portfolioni tayyorlayapman…' },
+    { who: 'ai', text: 'Dizayn-tokenlar yuklandi: ranglar, shriftlar, gold glow <span class="ok">✓</span>' },
+    { who: 'ai', text: 'WebGL fon va rasmlar tayyorlanmoqda…' },
+    { who: 'user', text: 'Tezroq och, hammasi o‘zbekcha bo‘lsin' },
+    { who: 'ai', text: 'Tushundim! Barcha matnlar o‘zbekchaga o‘tkazildi <span class="ok">✓</span>' },
+    { who: 'ai', text: 'Loyihalar GitHub’dan ulanmoqda…' },
+    { who: 'ai', text: 'Tayyor! XOLERIC’ga xush kelibsiz ✦' }
   ];
 
-  const bootFillers = [
-    'validating core registry ... <span class="ok">OK</span>',
-    'synchronizing clock ... <span class="ok">OK</span>',
-    'scanning socket_buffer ... <span class="ok">OK</span>',
-    'checking encrypted_payload ... <span class="ok">OK</span>',
-    'reloading security policies ... <span class="ok">OK</span>'
-  ];
-
-  function nextBootLine() {
-    if (bootIdx < bootScript.length) return bootScript[bootIdx++];
-    const line = bootFillers[fillIdx % bootFillers.length];
-    fillIdx++;
-    return line;
-  }
-
-  function appendLog(html) {
+  function trimTerminal() {
     if (!terminalEl) return;
-    const div = document.createElement('div');
-    div.className = 'log-line';
-    div.innerHTML = html;
-    terminalEl.appendChild(div);
     while (terminalEl.childNodes.length > TERMINAL_MAX) {
       terminalEl.removeChild(terminalEl.firstChild);
     }
   }
 
-  function bootTick() {
+  function appendAiLine(who, html) {
+    if (!terminalEl) return null;
+    const div = document.createElement('div');
+    div.className = 'log-line ' + who;
+    div.innerHTML = html;
+    terminalEl.appendChild(div);
+    trimTerminal();
+    return div;
+  }
+
+  function setAiInput(text) {
+    if (aiTypedEl) aiTypedEl.textContent = text;
+  }
+
+  function aiTick() {
     if (loaderDone) return;
-    appendLog(nextBootLine());
-    bootTimer = setTimeout(bootTick, reduceMotion ? 5 : 130 + Math.random() * 140);
+    if (reduceMotion) {
+      aiScript.forEach((l) => appendAiLine(l.who, l.text));
+      setAiInput('');
+      return;
+    }
+    if (aiLine >= aiScript.length) {
+      setAiInput('');
+      bootTimer = setTimeout(aiTick, 700);
+      return;
+    }
+    const line = aiScript[aiLine];
+    const full = line.text.replace(/<[^>]*>/g, '');
+    aiChar += 1 + (Math.random() < 0.3 ? 1 : 0);
+    setAiInput(full.slice(0, aiChar));
+    if (aiChar >= full.length) {
+      appendAiLine(line.who, line.text);
+      setAiInput('');
+      aiLine++;
+      aiChar = 0;
+      bootTimer = setTimeout(aiTick, line.who === 'user' ? 550 : 380);
+    } else {
+      bootTimer = setTimeout(aiTick, 18 + Math.random() * 34);
+    }
   }
 
   function preloadAssets(onDone) {
@@ -162,7 +176,9 @@
     if (loaderDone) return;
     clearTimeout(bootTimer);
     loaderDone = true;
-    if (terminalEl) terminalEl.style.display = 'none';
+    setAiInput('');
+    if (aiWrap) aiWrap.style.display = 'none';
+    else if (terminalEl) terminalEl.style.display = 'none';
     if (logoContainer) logoContainer.style.display = 'flex';
 
     const logoWait = reduceMotion ? 250 : 900;
@@ -177,16 +193,13 @@
   }
 
   function startLoading() {
-    appendLog('XOLERIC BIOS v3.3.0');
-    appendLog('Copyright (C) 2026 xoleric systems');
-    appendLog('');
-    bootTick();
+    aiTick();
 
     setTimeout(() => {
       if (!loaded) finishLoading();
-    }, 8000);
+    }, 9000);
 
-    const minTime = reduceMotion ? 150 : 2600;
+    const minTime = reduceMotion ? 150 : 3400;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
     });
@@ -243,7 +256,7 @@
      NEON WELCOME LETTERS
      ═══════════════════════════════════════ */
 
-  const WELCOME_TEXT = 'I build web experiences that drive real results';
+  const WELCOME_TEXT = 'Men natija beradigan veb-tajribalar yarataman';
   const welcomeEl = $('welcomeText');
   const letterEls = [];
 
@@ -776,12 +789,12 @@
   };
 
   const FALLBACK_PROJECTS = [
-    { name: 'Mydrime', language: 'HTML', role: 'Creator', impact: 'this portfolio, live on GitHub Pages', description: 'This very portfolio — creative coding, WebGL background and a neon welcome.', html_url: 'https://github.com/xolerc/mydrime', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Music', language: 'Dart', role: 'Creator', impact: 'cross-platform music app prototype', description: 'Music application experiment.', html_url: 'https://github.com/xolerc/music', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'xolericc', language: 'TypeScript', role: 'Creator', impact: 'TypeScript experiments', description: 'Experiments and snippets.', html_url: 'https://github.com/xolerc/xolericc', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Savodhon', language: 'Python', role: 'Creator', impact: 'utility tooling', description: 'Utility project.', html_url: 'https://github.com/xolerc/Savodhon', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'Abdullo-usta', language: 'JavaScript', role: 'Creator', impact: 'client project', description: 'Craft project.', html_url: 'https://github.com/xolerc/Abdullo-usta', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
-    { name: 'xoleric-globe', language: 'CSS', role: 'Creator', impact: 'WebGL globe experiment', description: 'Globe experiment.', html_url: 'https://github.com/xolerc/xoleric-globe', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() }
+    { name: 'Mydrime', language: 'HTML', role: 'Muallif', impact: 'shu portfolio, GitHub Pages’da jonli', description: 'Aynan shu portfolio — kreativ kod, WebGL fon va neon kutib olish.', html_url: 'https://github.com/xolerc/mydrime', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Music', language: 'Dart', role: 'Muallif', impact: 'kross-platforma musiqa prototipi', description: 'Musiqa ilovasi tajribasi.', html_url: 'https://github.com/xolerc/music', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'xolericc', language: 'TypeScript', role: 'Muallif', impact: 'TypeScript tajribalar', description: 'Tajribalar va snippetlar.', html_url: 'https://github.com/xolerc/xolericc', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Savodhon', language: 'Python', role: 'Muallif', impact: 'yordamchi uskunalar', description: 'Yordamchi loyiha.', html_url: 'https://github.com/xolerc/Savodhon', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'Abdullo-usta', language: 'JavaScript', role: 'Muallif', impact: 'mijoz loyihasi', description: 'Hunarmandchilik loyihasi.', html_url: 'https://github.com/xolerc/Abdullo-usta', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() },
+    { name: 'xoleric-globe', language: 'CSS', role: 'Muallif', impact: 'WebGL globus tajribasi', description: 'Globus tajribasi.', html_url: 'https://github.com/xolerc/xoleric-globe', stargazers_count: 0, forks_count: 0, updated_at: new Date().toISOString() }
   ];
 
   function esc(str) {
@@ -796,19 +809,19 @@
     grid.textContent = '';
     const frag = document.createDocumentFragment();
     list.forEach((r, i) => {
-      const lang = r.language || 'Code';
+      const lang = r.language || 'Kod';
       const langColor = LANG_COLORS[r.language] || '#8b949e';
-      const desc = esc((r.description || 'No description provided.').slice(0, 130));
+      const desc = esc((r.description || 'Tavsif berilmagan.').slice(0, 130));
       const stars = r.stargazers_count || 0;
       const forks = r.forks_count || 0;
-      const date = new Date(r.updated_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      const date = new Date(r.updated_at || Date.now()).toLocaleDateString('uz-UZ', { year: 'numeric', month: 'short' });
       const role = r.role || '';
       const impact = r.impact || '';
       const impactLine = (role || impact)
         ? '<div class="card-impact">' +
-          (role ? '<span>Role: ' + esc(role) + '</span>' : '') +
+          (role ? '<span>Rol: ' + esc(role) + '</span>' : '') +
           (role && impact ? ' · ' : '') +
-          (impact ? '<span>Impact: ' + esc(impact) + '</span>' : '') +
+          (impact ? '<span>Ta’siri: ' + esc(impact) + '</span>' : '') +
           '</div>'
         : '';
 
@@ -830,7 +843,7 @@
         `<span class="meta-forks">⑂ ${forks}</span>` +
         `<span class="meta-updated">${date}</span>` +
         '</div>' +
-        `<a class="card-link" href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub →</a>` +
+        `<a class="card-link" href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">GitHub'da ochish →</a>` +
         '</div>';
       frag.appendChild(card);
     });
@@ -891,7 +904,7 @@
     eeActive = !eeActive;
     document.body.classList.toggle('ee-mode', eeActive);
     if (!toastEl) return;
-    toastEl.textContent = eeActive ? 'Konami Code Activated' : 'Konami Code Deactivated';
+    toastEl.textContent = eeActive ? 'Konami Kodi Faollashdi' : 'Konami Kodi O‘chirildi';
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), 2500);
   }

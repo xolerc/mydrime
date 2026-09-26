@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0b101a">
   <meta name="color-scheme" content="dark">
-  <title>xoleric — Frontend Developer</title>
+  <title>xoleric — Frontend Dasturchi</title>
 
   <link rel="icon" type="image/png" href="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
   <link rel="apple-touch-icon" href="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
@@ -19,33 +19,37 @@
   <link rel="dns-prefetch" href="https://api.github.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
 
-  <meta name="description" content="Product-focused frontend engineer — building fast, accessible web experiences that drive measurable engagement and revenue. Case studies included.">
+  <meta name="description" content="Mahsulotga yo'naltirilgan frontend muhandis — tez, qulay veb-tajribalar yarataman, faollik va daromadni oshiraman. Keyslar bilan.">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="xoleric">
-  <meta property="og:title" content="xoleric — Frontend Developer">
-  <meta property="og:description" content="Frontend engineer delivering fast, accessible interfaces with measurable UX and conversion lifts.">
+  <meta property="og:title" content="xoleric — Frontend Dasturchi">
+  <meta property="og:description" content="Tez, qulay interfeyslar bilan UX va konversiyani oshiradigan frontend muhandis.">
   <meta property="og:image" content="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
   <meta property="og:url" content="https://xolerc.github.io/mydrime/">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="xoleric — Frontend Developer">
-  <meta name="twitter:description" content="Frontend engineer delivering fast, accessible interfaces with measurable UX and conversion lifts.">
+  <meta name="twitter:title" content="xoleric — Frontend Dasturchi">
+  <meta name="twitter:description" content="Tez, qulay interfeyslar bilan UX va konversiyani oshiradigan frontend muhandis.">
   <meta name="twitter:image" content="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
 
-  <link rel="stylesheet" href="css/styles.css?v=20260828m">
+  <link rel="stylesheet" href="css/styles.css?v=20260927uz">
 </head>
 <body>
   <canvas id="webgl-bg" aria-hidden="true"></canvas>
   <div class="orbit-layer" id="orbitLayer" aria-hidden="true"></div>
   <div class="chrome-accent" aria-hidden="true"></div>
   <div class="grain-top" aria-hidden="true"></div>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">Asosiy kontentga o'tish</a>
 
-  <!-- ═══ LOADER — terminal boot → XOLERIC logo ═══ -->
+  <!-- ═══ LOADER — xoleric-ai chat uslubi ═══ -->
   <div id="loader" aria-hidden="true">
     <div class="scanlines" aria-hidden="true"></div>
-    <div id="terminal-container" aria-hidden="true"></div>
+    <div class="ai-loader-wrap" aria-hidden="true">
+      <div class="ai-loader-head" aria-hidden="true"><span class="ai-orb"></span><span>xoleric-ai</span><span class="ai-badge">online</span></div>
+      <div id="terminal-container" aria-hidden="true"></div>
+      <div id="ai-input" aria-hidden="true"><span class="ai-prompt">✦</span><span id="ai-typed"></span><span class="ai-caret"></span></div>
+    </div>
     <div id="logo-container" aria-hidden="true">
       <div class="xoleric-logo" id="mainLogo">XOLERIC</div>
     </div>
@@ -55,14 +59,15 @@
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <header class="site-header" id="siteHeader">
-    <a class="logo" href="#hero">xoleric<span class="logo-dot"></</span></a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="#work">work</a>
-      <a href="#about">about</a>
-      <a href="#contact">contact</a>
+    <a class="logo" href="#hero">xoleric<span class="logo-dot">.</span></a>
+    <nav class="site-nav" aria-label="Asosiy">
+      <a href="#work">ishlar</a>
+      <a href="#about">men haqimda</a>
+      <a href="#contact">aloqa</a>
+      <a href="cv.html">CV</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="#contact">Hire Me</a>
+      <a class="btn btn-primary btn-sm" href="#contact">Meni yolla</a>
     </div>
   </header>
 
@@ -72,7 +77,7 @@
   <main id="main">
 
     <!-- ═══ HERO — corner art (blur reveal) + neon welcome + orbit ═══ -->
-    <section id="hero" class="section hero" role="region" aria-label="Introduction">
+    <section id="hero" class="section hero" role="region" aria-label="Kirish">
       <div class="hero-art" aria-hidden="true">
         <div class="hero-art-layer layer-bg"></div>
         <div class="hero-art-layer layer-main" id="layerMain"></div>
@@ -80,80 +85,80 @@
         <div class="hero-art-sheen"></div>
       </div>
       <div class="hero-content">
-        <p class="eyebrow">my core</p>
-        <h1 class="hero-title" id="welcomeText" aria-label="fuck you">welcome to xoleric portfolio</h1>
+        <p class="eyebrow">mening mohiyatim</p>
+        <h1 class="hero-title" id="welcomeText" aria-label="Men natija beradigan veb-tajribalar yarataman">Men natija beradigan veb-tajribalar yarataman</h1>
         <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="#contact">Work with me</a>
-          <a class="btn btn-ghost btn-lg" href="#work">See my work</a>
+          <a class="btn btn-primary btn-lg" href="#contact">Men bilan ishlash</a>
+          <a class="btn btn-ghost btn-lg" href="#work">Ishlarimni ko'rish</a>
         </div>
       </div>
       <div class="hero-orbit" id="orbitContainer" aria-hidden="true">
         <div class="orbit-ring" id="orbitRing"></div>
       </div>
       <div class="hero-scroll" aria-hidden="true">
-        <span>scroll</span>
+        <span>pastga</span>
         <div class="arrow"></div>
       </div>
     </section>
 
     <!-- ═══ ABOUT ═══ -->
-    <section id="about" class="section about" role="region" aria-label="About me">
+    <section id="about" class="section about" role="region" aria-label="Men haqimda">
       <div class="about-sticky">
-        <p class="eyebrow">about me</p>
-        <h2 class="section-title">Turning ideas into <span class="highlight">living</span> interfaces</h2>
+        <p class="eyebrow">men haqimda</p>
+        <h2 class="section-title">G'oyalarni <span class="highlight">jonli</span> interfeysga aylantiraman</h2>
         <div class="about-stats">
           <div class="stat">
             <div class="stat-number" data-count="50">0</div>
-            <div class="stat-label">Projects shipped</div>
+            <div class="stat-label">Yakunlangan loyihalar</div>
           </div>
           <div class="stat">
             <div class="stat-number" data-count="3">0</div>
-            <div class="stat-label">Years of craft</div>
+            <div class="stat-label">Yillik tajriba</div>
           </div>
           <div class="stat">
             <div class="stat-number" data-count="100">0</div>
-            <div class="stat-label">Cups of coffee</div>
+            <div class="stat-label">Kofe piyolasi</div>
           </div>
         </div>
       </div>
       <div class="about-content">
-        <p class="about-lead">Frontend developer — zamonaviy va interaktiv veb-ilovalar yaratishga ixtisoslashgan. Har bir pixel, har bir animatsiya ehtiros bilan yaratiladi. Creative coding orqali oddiy veb-sahifalarni san'at asariga aylantiraman.</p>
+        <p class="about-lead">Frontend dasturchiman — zamonaviy va interaktiv veb-ilovalar yaratishga ixtisoslashganman. Har bir piksel, har bir animatsiya mehr bilan yaratiladi. Kreativ kod orqali oddiy sahifalarni san'at asariga aylantiraman.</p>
         <div class="about-blurbs">
           <div class="blurb">
-            <h3>Skills</h3>
-            <p>Clean semantic HTML, modern CSS systems, vanilla + framework JavaScript, and motion design that stays performant on every device.</p>
+            <h3>Ko'nikmalar</h3>
+            <p>Toza semantik HTML, zamonaviy CSS tizimlar, vanilla va framework JavaScript hamda har qanday qurilmada tez ishlaydigan motion-dizayn.</p>
           </div>
           <div class="blurb">
-            <h3>Process</h3>
-            <p>Design tokens → component thinking → interaction choreography → Lighthouse. I ship interfaces that feel as good as they look.</p>
+            <h3>Jarayon</h3>
+            <p>Dizayn-tokenlar → komponentli fikrlash → interaksiya xoreografiyasi → Lighthouse. Ko'rinishi kabi his qilinishi ham yoqimli interfeyslar topshiraman.</p>
           </div>
           <div class="blurb">
-            <h3>Availability</h3>
-            <p>Open for freelance projects, collaborations and full-time roles. Fast communication over Telegram or email.</p>
+            <h3>Mavjudlik</h3>
+            <p>Freelance loyihalar, hamkorlik va full-time rollar uchun ochiqman. Telegram yoki email orqali tez javob beraman.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ═══ WORK ═══ -->
-    <section id="work" class="section work" role="region" aria-label="Projects">
+    <section id="work" class="section work" role="region" aria-label="Loyihalar">
       <header class="section-head">
-        <p class="eyebrow">selected work</p>
-        <h2 class="section-title">Projects</h2>
-        <p class="section-sub"><span class="dot-live"></span>Live from GitHub — auto-updates with every push</p>
+        <p class="eyebrow">tanlangan ishlar</p>
+        <h2 class="section-title">Loyihalar</h2>
+        <p class="section-sub"><span class="dot-live"></span>GitHub'dan jonli — har push bilan yangilanadi</p>
       </header>
       <div class="projects-grid" id="projectsGrid"></div>
     </section>
 
     <!-- ═══ CONTACT ═══ -->
-    <section id="contact" class="section contact" role="region" aria-label="Contact">
+    <section id="contact" class="section contact" role="region" aria-label="Aloqa">
       <div class="contact-box">
-        <p class="eyebrow">contact</p>
-        <h2 class="section-title">Let's create <span class="highlight">together</span></h2>
-        <p class="contact-lead">Got a project idea, a collaboration, or just want to say hi? Reach out anytime.</p>
+        <p class="eyebrow">aloqa</p>
+        <h2 class="section-title">Keling, <span class="highlight">birga</span> yaratamiz</h2>
+        <p class="contact-lead">Loyiha g'oyangiz, hamkorlik taklifi bormi yoki shunchaki salomlashmoqchimisiz? Istalgan vaqtda yozing.</p>
         <div class="contact-links">
           <a class="btn btn-primary btn-lg" href="https://t.me/Wxoleric" target="_blank" rel="noopener noreferrer">Telegram</a>
-          <a class="btn btn-ghost btn-lg" href="mailto:hello@xoleric.dev">Email me</a>
+          <a class="btn btn-ghost btn-lg" href="mailto:hello@xoleric.dev">Email yozish</a>
         </div>
       </div>
     </section>
@@ -182,12 +187,12 @@
         <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
       </a>
     </div>
-    <p class="footer-note">© <span id="year">2026</span> xoleric · built with curiosity &amp; caffeine</p>
-    <a class="footer-top" href="#hero">back to top ↑</a>
+    <p class="footer-note">© <span id="year">2026</span> xoleric · qiziqish va kofe bilan yaratilgan</p>
+    <a class="footer-top" href="#hero">yuqoriga qaytish ↑</a>
   </footer>
 
   <!-- ═══ TOAST ═══ -->
-  <div class="ee-toast" id="eeToast" role="status" aria-live="polite">Konami Code Activated</div>
+  <div class="ee-toast" id="eeToast" role="status" aria-live="polite">Konami Kodi Faollashdi</div>
 
   <!-- failsafe: never let the loader freeze the page.
        If app.js ever dies, this still reveals the content. -->
@@ -214,7 +219,7 @@
     })();
   </script>
 
-  <script src="js/webgl-bg.js?v=20260828m"></script>
-  <script src="js/app.js?v=20260828m"></script>
+  <script src="js/webgl-bg.js?v=20260927uz"></script>
+  <script src="js/app.js?v=20260927uz"></script>
 </body>
 </html>

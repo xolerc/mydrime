@@ -173,10 +173,16 @@
     '  vec3 midChrome  = vec3(0.130, 0.140, 0.165);',
     '  vec3 pureSilver = vec3(0.320, 0.350, 0.420);',
     '  vec3 whiteGlow  = vec3(0.570, 0.600, 0.680);',
+    '  // toq sariq / gold — orqa fon glow uchun iliq aksent',
+    '  vec3 goldDeep   = vec3(0.420, 0.300, 0.060);',
+    '  vec3 goldGlow   = vec3(0.950, 0.720, 0.180);',
 
     '  vec3 color = mix(darkSteel, midChrome, smoothstep(0.0, 0.45, chromeVal));',
     '  color = mix(color, pureSilver, smoothstep(0.45, 0.85, chromeVal));',
     '  color = mix(color, whiteGlow, smoothstep(0.85, 1.0, chromeVal));',
+    '  // yorqin zonalarga yupqa gold parda — chrome ustida iliq jilo',
+    '  float goldBand = smoothstep(0.55, 1.0, chromeVal);',
+    '  color = mix(color, goldDeep, goldBand * 0.28);',
 
     '  // the sea harmonizes with the ship — gray accents swell around it',
     '  vec3 seaA = vec3(0.038, 0.042, 0.052);',
@@ -185,10 +191,13 @@
     '  color = mix(color, seaB, clamp(u_cursor.x * 0.5 + u_cursor.y * 0.2, 0.0, 0.6) * 0.28);',
     '  color += seaB * (spec * 0.45 + ripple * 0.12);',
 
-    '  // soft moonlight glow on the water at the ship',
+    '  // soft moonlight glow on the water at the ship + warm gold halo',
     '  float glow = exp(-dist * dist * 5.0);',
     '  color += vec3(0.14, 0.15, 0.18) * glow * 0.25;',
     '  color += seaB * glow * 0.12;',
+    '  color += goldGlow * glow * 0.22;',
+    '  color += goldGlow * spec * 0.16;',
+    '  color += goldDeep * ripple * 0.10;',
 
     '  color += vec3(spec * 0.10);',
     '',

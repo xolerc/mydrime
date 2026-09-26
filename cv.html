@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>xoleric — CV / Résumé</title>
-  <meta name="description" content="Frontend Developer & creative coder — CV of xoleric.">
+  <title>xoleric — CV / Rezyume</title>
+  <meta name="description" content="Frontend dasturchi va kreativ kod muallifi — xoleric CVsi.">
   <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,7 @@
       --line: #e3e8f0;
       --accent: #2563eb;
       --accent-2: #7c5cff;
+      --gold: #8a6d00;
       --font: 'Inter', system-ui, -apple-system, sans-serif;
       --font-display: 'Space Grotesk', 'Inter', sans-serif;
     }
@@ -30,6 +31,7 @@
         --line: #262c3a;
         --accent: #4f8bff;
         --accent-2: #a78bfa;
+        --gold: #f5c518;
       }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,7 +52,7 @@
     }
     .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
     h1 { font-family: var(--font-display); font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
-    .name-dot { color: var(--accent-2); }
+    .name-dot { color: var(--gold); }
     .role { color: var(--accent); font-weight: 600; font-size: 15px; margin-top: 4px; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn {
@@ -100,11 +102,11 @@
     <div class="top">
       <div>
         <h1>xoleric<span class="name-dot">.</span></h1>
-        <p class="role">Frontend Developer &amp; Creative Coder</p>
+        <p class="role">Frontend Dasturchi va Kreativ Kod Muallifi</p>
       </div>
       <div class="actions">
-        <button type="button" class="btn" onclick="window.print()">Print / Save PDF</button>
-        <a class="btn btn-primary" href="index.html">← Back to portfolio</a>
+        <button type="button" class="btn" onclick="window.print()">Chop etish / PDF saqlash</button>
+        <a class="btn btn-primary" href="index.html">← Portfolioga qaytish</a>
       </div>
     </div>
 
@@ -115,10 +117,10 @@
       <a href="https://xolerc.github.io/mydrime/" target="_blank" rel="noopener noreferrer">xolerc.github.io/mydrime</a>
     </div>
 
-    <p class="summary">Frontend developer specializing in interactive, performant interfaces. I blend clean engineering with creative coding — turning ordinary web pages into living, animated experiences while keeping every device at 60fps.</p>
+    <p class="summary">Interaktiv va tez interfeyslarga ixtisoslashgan frontend dasturchiman. Toza muhandislikni kreativ kod bilan birlashtiraman — oddiy sahifalarni jonli, animatsiyali tajribaga aylantiraman va har qanday qurilmada 60fps ni saqlayman.</p>
 
     <section>
-      <h2>Skills</h2>
+      <h2>Ko'nikmalar</h2>
       <div class="grid">
         <div class="item">
           <h3>Frontend</h3>
@@ -128,7 +130,7 @@
           </div>
         </div>
         <div class="item">
-          <h3>Creative &amp; Tooling</h3>
+          <h3>Kreativ va Uskunalar</h3>
           <div class="chips" style="margin-top:8px">
             <span class="chip">Canvas</span><span class="chip">GSAP</span><span class="chip">WebGL</span>
             <span class="chip">Figma</span><span class="chip">Node.js</span><span class="chip">Git</span>
@@ -138,55 +140,55 @@
     </section>
 
     <section>
-      <h2>Experience</h2>
+      <h2>Tajriba</h2>
       <div class="item">
-        <h3>Frontend Developer</h3>
-        <div class="meta">Freelance &middot; Remote &middot; 2023 — present</div>
+        <h3>Frontend Dasturchi</h3>
+        <div class="meta">Freelance &middot; Masofaviy &middot; 2023 — hozirgacha</div>
         <ul class="tight">
-          <li>Shipped interactive marketing sites and web apps with scroll-driven storytelling and canvas effects.</li>
-          <li>Built design-token systems that keep interfaces consistent and themeable in both light and dark.</li>
-          <li>Maintained Lighthouse budgets — sub-200KB JS, 90+ performance on mid-range devices.</li>
-          <li>Turned PWA features (offline, haptics, installable) into product-level wins for clients.</li>
+          <li>Scroll-hikoyali va canvas effektli interaktiv saytlar hamda veb-ilovalarni topshirdim.</li>
+          <li>Interfeyslarni izchil va mavzuli (yorug'/tungi) saqlaydigan dizayn-token tizimlarini qurdum.</li>
+          <li>Lighthouse byudjetlarini saqladim — 200KB dan kam JS, o'rta telefonlarda 90+ tezlik.</li>
+          <li>PWA imkoniyatlarini (offlayn, o'rnatiladigan) mijozlar uchun mahsulot yutug'iga aylantirdim.</li>
         </ul>
       </div>
     </section>
 
     <section>
-      <h2>Selected Projects</h2>
+      <h2>Tanlangan Loyihalar</h2>
       <div class="grid">
         <div class="item">
           <h3>Nebula Finance</h3>
           <div class="meta">React · TypeScript · GSAP</div>
-          <p>Real-time trading dashboard with animated charts and sub-100ms interactions. <strong>+38% conversion</strong>.</p>
+          <p>Animatsiyali grafikali real-time savdo paneli, 100ms dan tez interaksiya. <strong>+38% konversiya</strong>.</p>
         </div>
         <div class="item">
           <h3>Aurora Studio</h3>
           <div class="meta">Canvas · GSAP ScrollTrigger</div>
-          <p>Immersive scroll-driven brand story, 60fps on mid-range phones. <strong>+52% time on page</strong>.</p>
+          <p>Scroll bilan boshqariladigan brend hikoya, o'rta telefonlarda 60fps. <strong>+52% sahifada qolish</strong>.</p>
         </div>
         <div class="item">
           <h3>Pulse Fitness</h3>
           <div class="meta">React · Service Worker · IndexedDB</div>
-          <p>Installable offline workout tracker. <strong>4.8★</strong> after relaunch.</p>
+          <p>O'rnatiladigan offlayn mashq kuzatuvchisi. Qayta ishga tushgandan keyin <strong>4.8★</strong>.</p>
         </div>
         <div class="item">
           <h3>Mono Marketplace</h3>
           <div class="meta">React · Node.js · Stripe</div>
-          <p>Headless storefront with instant search. <strong>−41% checkout time</strong>.</p>
+          <p>Tezkor qidiruvli headless do'kon. <strong>−41% checkout vaqti</strong>.</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Education</h2>
+      <h2>Ta'lim</h2>
       <div class="item">
-        <h3>Self-taught &amp; always shipping</h3>
-        <p>Continuous learning through real projects — creative coding, web performance, and modern JS ecosystem.</p>
+        <h3>Mustaqil o'rgangan va doim yaratuvchi</h3>
+        <p>Real loyihalar orqali uzluksiz o'rganaman — kreativ kod, veb-tezlik va zamonaviy JS ekotizimi.</p>
       </div>
     </section>
 
     <div class="footer">
-      © 2026 xoleric · available for freelance &amp; collaboration — say hi on <a href="https://t.me/Wxoleric" target="_blank" rel="noopener noreferrer">Telegram</a>
+      © 2026 xoleric · freelance va hamkorlik uchun ochiqman — <a href="https://t.me/Wxoleric" target="_blank" rel="noopener noreferrer">Telegram</a>da yozing
     </div>
   </div>
 </body>

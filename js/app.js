@@ -30,7 +30,6 @@
   /* ─────────── DOM REFS ─────────── */
   const $ = (id) => document.getElementById(id);
   const loaderEl = $('loader');
-  const terminalEl = $('terminal-container');
   const logoContainer = $('logo-container');
   const mainLogo = $('mainLogo');
   const vignette = $('vignette');
@@ -84,75 +83,89 @@
   }
 
   /* ═══════════════════════════════════════
-     LOADER — xoleric-ai chat uslubi
-     Input qolgan holda yozilgandek teriladi,
-     keyin XOLERIC logosi chiqadi. Real preload + failsafe.
+     LOADER — matrix shamol (full qora fon, oq raqamlar)
+     Raqamlar chapdan o'ngga shamoldek uchadi.
+     Tez: ~1.4s matrix + qisqa logo, keyin sahna.
      ═══════════════════════════════════════ */
 
-  const TERMINAL_MAX = 24;
-  let bootTimer = 0;
   let loaderDone = false;
-  let aiLine = 0;
-  let aiChar = 0;
-  const aiTypedEl = $('ai-typed');
-  const aiWrap = document.querySelector('.ai-loader-wrap');
+  let matrixRAF = 0;
+  const matrixCanvas = $('matrix-canvas');
 
-  const aiScript = [
-    { who: 'ai', text: 'Salom! Men xoleric-ai man. Portfolioni tayyorlayapman…' },
-    { who: 'ai', text: 'Dizayn-tokenlar yuklandi: ranglar, shriftlar, gold glow <span class="ok">✓</span>' },
-    { who: 'ai', text: 'WebGL fon va rasmlar tayyorlanmoqda…' },
-    { who: 'user', text: 'Tezroq och, hammasi o‘zbekcha bo‘lsin' },
-    { who: 'ai', text: 'Tushundim! Barcha matnlar o‘zbekchaga o‘tkazildi <span class="ok">✓</span>' },
-    { who: 'ai', text: 'Loyihalar GitHub’dan ulanmoqda…' },
-    { who: 'ai', text: 'Tayyor! XOLERIC’ga xush kelibsiz ✦' }
-  ];
-
-  function trimTerminal() {
-    if (!terminalEl) return;
-    while (terminalEl.childNodes.length > TERMINAL_MAX) {
-      terminalEl.removeChild(terminalEl.firstChild);
+  function stopMatrix() {
+    if (matrixRAF) {
+      cancelAnimationFrame(matrixRAF);
+      matrixRAF = 0;
     }
   }
 
-  function appendAiLine(who, html) {
-    if (!terminalEl) return null;
-    const div = document.createElement('div');
-    div.className = 'log-line ' + who;
-    div.innerHTML = html;
-    terminalEl.appendChild(div);
-    trimTerminal();
-    return div;
-  }
+  function startMatrix() {
+    if (!matrixCanvas || reduceMotion) return;
+    let ctx = null;
+    try {
+      ctx = matrixCanvas.getContext('2d');
+    } catch (e) { return; }
+    if (!ctx) return;
 
-  function setAiInput(text) {
-    if (aiTypedEl) aiTypedEl.textContent = text;
-  }
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    const W = Math.max(320, Math.round(window.innerWidth * DPR));
+    const H = Math.max(320, Math.round(window.innerHeight * DPR));
+    try {
+      matrixCanvas.width = W;
+      matrixCanvas.height = H;
+    } catch (e) { return; }
 
-  function aiTick() {
-    if (loaderDone) return;
-    if (reduceMotion) {
-      aiScript.forEach((l) => appendAiLine(l.who, l.text));
-      setAiInput('');
-      return;
+    const FONT = Math.max(14, Math.round(16 * DPR));
+    const ROW_H = Math.round(FONT * 1.35);
+    const CELL = Math.max(8, Math.round(FONT * 0.62));
+    const rows = Math.max(8, Math.floor(H / ROW_H));
+    const lanes = [];
+    for (let i = 0; i < rows; i++) {
+      lanes.push({
+        x: -Math.random() * W * 0.6,
+        v: (14 + Math.random() * 16) * DPR,
+        len: 8 + Math.floor(Math.random() * 14),
+        y: i * ROW_H + FONT
+      });
     }
-    if (aiLine >= aiScript.length) {
-      setAiInput('');
-      bootTimer = setTimeout(aiTick, 700);
-      return;
-    }
-    const line = aiScript[aiLine];
-    const full = line.text.replace(/<[^>]*>/g, '');
-    aiChar += 1 + (Math.random() < 0.3 ? 1 : 0);
-    setAiInput(full.slice(0, aiChar));
-    if (aiChar >= full.length) {
-      appendAiLine(line.who, line.text);
-      setAiInput('');
-      aiLine++;
-      aiChar = 0;
-      bootTimer = setTimeout(aiTick, line.who === 'user' ? 550 : 380);
-    } else {
-      bootTimer = setTimeout(aiTick, 18 + Math.random() * 34);
-    }
+    const glyphs = '0123456789';
+    const pick = () => glyphs[(Math.random() * glyphs.length) | 0];
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = FONT + 'px ui-monospace, Menlo, Consolas, monospace';
+
+    (function frame() {
+      matrixRAF = 0;
+      if (loaderDone) return;
+      if (document.hidden) {
+        matrixRAF = requestAnimationFrame(frame);
+        return;
+      }
+      /* iz qoldirib o'chirish — shamol dumi effekti */
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < lanes.length; i++) {
+        const L = lanes[i];
+        L.x += L.v;
+        if (L.x - L.len * CELL > W) {
+          /* qayta chapdan — uzluksiz shamol */
+          L.x = -L.len * CELL - Math.random() * W * 0.25;
+          L.v = (14 + Math.random() * 16) * DPR;
+          L.len = 8 + Math.floor(Math.random() * 14);
+          continue;
+        }
+        for (let j = 0; j < L.len; j++) {
+          const cx = Math.round(L.x - j * CELL);
+          if (cx < -CELL || cx > W + CELL) continue;
+          const fade = 1 - j / L.len;
+          const bright = Math.round(120 + 135 * fade);
+          ctx.fillStyle = 'rgb(' + bright + ',' + bright + ',' + bright + ')';
+          ctx.fillText(pick(), cx, L.y);
+        }
+      }
+      matrixRAF = requestAnimationFrame(frame);
+    })();
   }
 
   function preloadAssets(onDone) {
@@ -163,7 +176,7 @@
       onDone();
     };
     /* one overall timeout instead of one per image */
-    setTimeout(finish, 3000);
+    setTimeout(finish, 2000);
     for (const src of CFG.images) {
       const img = new Image();
       img.onload = finish;
@@ -174,15 +187,12 @@
 
   function finishLoading() {
     if (loaderDone) return;
-    clearTimeout(bootTimer);
     loaderDone = true;
-    setAiInput('');
-    if (aiWrap) aiWrap.style.display = 'none';
-    else if (terminalEl) terminalEl.style.display = 'none';
+    stopMatrix();
     if (logoContainer) logoContainer.style.display = 'flex';
 
-    const logoWait = reduceMotion ? 250 : 900;
-    const hideWait = reduceMotion ? 500 : 1750;
+    const logoWait = reduceMotion ? 150 : 400;
+    const hideWait = reduceMotion ? 300 : 950;
     setTimeout(() => { if (mainLogo) mainLogo.classList.add('stable'); }, logoWait);
     setTimeout(() => {
       loaded = true;
@@ -193,13 +203,13 @@
   }
 
   function startLoading() {
-    aiTick();
+    startMatrix();
 
     setTimeout(() => {
       if (!loaded) finishLoading();
-    }, 9000);
+    }, 6000);
 
-    const minTime = reduceMotion ? 150 : 3400;
+    const minTime = reduceMotion ? 120 : 1400;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
     });

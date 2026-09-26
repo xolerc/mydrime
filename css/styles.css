@@ -124,190 +124,25 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .skip-link:focus-visible { transform: translateY(0); }
 
-/* ─────────── LOADER — BIOS boot → XOLERIC logo ─────────── */
+/* ─────────── LOADER — matrix shamol (full qora fon, oq raqamlar) ─────────── */
 #loader {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #0b101a;
+  background: #000;
   overflow: hidden;
-  transition: opacity 0.7s ease, visibility 0.7s ease;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
 }
 
 #loader.hidden { opacity: 0; visibility: hidden; }
 
-.scanlines {
+#matrix-canvas {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.12));
-  background-size: 100% 4px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* ─────────── LOADER — xoleric-ai chat uslubi ─────────── */
-#loader {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background:
-    radial-gradient(ellipse 55% 30% at 50% 0%, rgba(245, 197, 24, 0.08) 0%, transparent 70%),
-    #0b101a;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  transition: opacity 0.7s ease, visibility 0.7s ease;
-}
-
-#loader.hidden { opacity: 0; visibility: hidden; }
-
-.ai-loader-wrap {
-  position: relative;
-  z-index: 2;
-  width: min(640px, 100%);
-  background: rgba(13, 17, 26, 0.92);
-  border: 1px solid rgba(245, 197, 24, 0.28);
-  border-radius: 18px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 60px rgba(245, 197, 24, 0.08);
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.ai-loader-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--text-2);
-}
-
-.ai-orb {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffe9a8, var(--gold-2) 55%, var(--gold-deep));
-  box-shadow: 0 0 14px rgba(245, 197, 24, 0.8);
-  animation: aiOrbPulse 2s ease-in-out infinite;
-}
-
-@keyframes aiOrbPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.25); opacity: 0.75; }
-}
-
-.ai-badge {
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--gold-2);
-  border: 1px solid rgba(245, 197, 24, 0.4);
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: rgba(245, 197, 24, 0.08);
-}
-
-#terminal-container {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 220px;
-  max-height: 42vh;
-  overflow: hidden;
-  padding: 18px 18px 6px;
-  font-family: var(--font);
-  font-size: 14px;
-  line-height: 1.6;
-  color: #dfe5f0;
-  z-index: 1;
-}
-
-.log-line {
-  word-break: break-word;
-  padding: 9px 13px;
-  border-radius: 12px;
-  max-width: 92%;
-  animation: aiMsgIn 0.35s var(--ease-out);
-}
-
-@keyframes aiMsgIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-
-.log-line.ai {
-  align-self: flex-start;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-left: 3px solid var(--gold-2);
-}
-
-.log-line.user {
-  align-self: flex-end;
-  background: linear-gradient(135deg, rgba(245, 197, 24, 0.18), rgba(245, 197, 24, 0.08));
-  border: 1px solid rgba(245, 197, 24, 0.35);
-  color: #ffe9a8;
-}
-
-.log-line .ok { color: var(--gold-2); font-weight: 700; }
-.log-line .hash { color: #7dffb0; }
-.log-line .load { color: #6ff0ff; }
-
-#ai-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 14px 14px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(245, 197, 24, 0.4);
-  background: rgba(255, 255, 255, 0.045);
-  box-shadow: inset 0 0 24px rgba(245, 197, 24, 0.05);
-  min-height: 48px;
-  font-size: 14px;
-  color: #ffe9a8;
-}
-
-.ai-prompt {
-  color: var(--gold-2);
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-#ai-typed {
-  flex: 1;
-  min-height: 1.4em;
-  word-break: break-word;
-  color: #f2f5fa;
-}
-
-#ai-typed:empty::before {
-  content: 'xoleric-ai yozmoqda…';
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.ai-caret {
-  width: 2px;
-  height: 1.25em;
-  background: var(--gold-2);
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(245, 197, 24, 0.9);
-  animation: aiBlink 0.9s steps(1) infinite;
-  flex-shrink: 0;
-}
-
-@keyframes aiBlink {
-  0%, 55% { opacity: 1; }
-  56%, 100% { opacity: 0; }
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000;
 }
 
 #logo-container {
@@ -316,7 +151,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   display: none;
   justify-content: center;
   align-items: center;
-  background: #0b101a;
+  background: #000;
   z-index: 3;
 }
 

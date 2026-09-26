@@ -62,7 +62,7 @@ html {
 body {
   /* WebGL chrome ortidagi fallback — pastda iliq gold shu'la bilan */
   background:
-    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(245, 197, 24, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(245, 197, 24, 0.11) 0%, transparent 70%),
     radial-gradient(ellipse at 50% 0%, #161c28 0%, #0b0f18 75%);
   color: var(--text);
   font-family: var(--font);
@@ -342,8 +342,8 @@ canvas#webgl-bg {
   /* sovuq chrome + iliq gold — ikki qavatli yumshoq glow */
   background:
     radial-gradient(ellipse 42% 38% at 72% 30%,
-      rgba(245, 197, 24, 0.075) 0%,
-      rgba(210, 170, 0, 0.04) 42%,
+      rgba(245, 197, 24, 0.14) 0%,
+      rgba(210, 170, 0, 0.07) 42%,
       transparent 70%),
     radial-gradient(ellipse at 65% 25%,
       rgba(255, 255, 255, 0.03) 0%,
@@ -357,6 +357,33 @@ canvas#webgl-bg {
 @keyframes accentDrift {
   0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.35; }
   100% { transform: translate(-6%, 4%) scale(1.12) rotate(3deg); opacity: 0.7; }
+}
+
+/* ─────────── GOLD GLOW — WebGL o'chsa ham ko'rinadigan iliq aura ─────────── */
+.gold-glow {
+  position: fixed;
+  top: -22%;
+  left: 50%;
+  width: min(1100px, 130vw);
+  height: min(620px, 72vh);
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 38%,
+    rgba(245, 197, 24, 0.14) 0%,
+    rgba(210, 170, 0, 0.07) 42%,
+    transparent 70%);
+  animation: goldBreathe 12s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes goldBreathe {
+  0% { opacity: 0.65; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-glow { animation: none; opacity: 0.85; }
 }
 
 /* film grain removed from render path: at 3% opacity under mix-blend-mode
@@ -1130,6 +1157,8 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
     animation: none;
     opacity: 0.5;
   }
+
+  .gold-glow { animation: none; opacity: 0.8; }
 
   .grain-top { display: none; }
 

@@ -58,6 +58,7 @@
     <a class="logo" href="#hero">xoleric<span class="logo-dot">.</span></a>
     <nav class="site-nav" aria-label="Asosiy">
       <a href="#work">ishlar</a>
+      <a href="#store">store</a>
       <a href="#about">men haqimda</a>
       <a href="#contact">aloqa</a>
       <a href="cv.html">CV</a>
@@ -146,6 +147,16 @@
       <div class="projects-grid" id="projectsGrid"></div>
     </section>
 
+    <!-- ═══ APK STORE — shaxsiy store ═══ -->
+    <section id="store" class="section store" role="region" aria-label="APK Store">
+      <header class="section-head reveal-up">
+        <p class="eyebrow">shaxsiy store</p>
+        <h2 class="section-title">APK <span class="highlight">Store</span></h2>
+        <p class="section-sub"><span class="dot-live"></span>QR ni skanerlang yoki tugmani bosing — to'g'ridan-to'g'ri yuklanadi</p>
+      </header>
+      <div class="store-grid" id="storeGrid"></div>
+    </section>
+
     <!-- ═══ CONTACT ═══ -->
     <section id="contact" class="section contact" role="region" aria-label="Aloqa">
       <div class="contact-box">
@@ -186,6 +197,18 @@
     <p class="footer-note">© <span id="year">2026</span> xoleric · qiziqish va kofe bilan yaratilgan</p>
     <a class="footer-top" href="#hero">yuqoriga qaytish ↑</a>
   </footer>
+
+  <!-- ═══ QR MODAL — kattalashtirilgan QR ═══ -->
+  <div class="qr-modal" id="qrModal" aria-hidden="true" role="dialog" aria-label="QR kod">
+    <div class="qr-backdrop" data-qr-close></div>
+    <div class="qr-box" role="document">
+      <button class="qr-x" data-qr-close aria-label="Yopish">✕</button>
+      <img class="qr-big" id="qrBig" src="" alt="QR kod">
+      <div class="qr-name" id="qrName"></div>
+      <div class="qr-ver" id="qrVer"></div>
+      <a class="btn btn-primary" id="qrDl" href="#" download>⬇ Yuklab olish</a>
+    </div>
+  </div>
 
   <!-- ═══ TOAST ═══ -->
   <div class="ee-toast" id="eeToast" role="status" aria-live="polite">Konami Kodi Faollashdi</div>

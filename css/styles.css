@@ -1171,3 +1171,32 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 
   .orbit-icon::after { display: none; }
 }
+
+/* ═══ APK STORE — neon glass golden ═══ */
+.store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:28px}
+.store-card{position:relative;border-radius:22px;padding:22px;background:var(--surface);border:1px solid rgba(var(--accent-rgb),.28);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 0 0 rgba(0,0,0,0),0 0 24px var(--gold-glow);overflow:hidden;opacity:0;transform:translateX(48px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out),box-shadow .3s}
+.store-card.in-view{opacity:1;transform:none}
+.store-card:hover{box-shadow:0 14px 44px rgba(0,0,0,.45),0 0 40px var(--gold-glow)}
+.store-card::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.8),transparent)}
+.store-top{display:flex;align-items:center;gap:14px}
+.store-icon{font-size:40px;line-height:1;filter:drop-shadow(0 0 12px var(--gold-glow))}
+.store-name{font-weight:700;font-size:16px}
+.store-ver{font-size:12px;color:var(--muted);margin-top:3px}
+.store-desc{font-size:13px;color:var(--text-2);margin:12px 0 16px;line-height:1.55}
+.store-qr{display:flex;align-items:center;gap:14px}
+.qr-thumb{width:96px;height:96px;border-radius:14px;background:#fff;padding:6px;cursor:zoom-in;border:1px solid rgba(var(--accent-rgb),.5);box-shadow:0 0 18px var(--gold-glow);transition:transform .25s var(--ease-out)}
+.qr-thumb:hover{transform:scale(1.05)}
+.store-hint{font-size:12px;color:var(--muted);line-height:1.5}
+.store-dl{margin-top:16px;display:flex;gap:10px}
+/* QR modal */
+.qr-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:opacity .3s,visibility .3s}
+.qr-modal.open{visibility:visible;opacity:1}
+.qr-backdrop{position:absolute;inset:0;background:rgba(4,6,10,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.qr-box{position:relative;text-align:center;border-radius:26px;padding:30px 34px;background:rgba(255,255,255,.05);border:1px solid rgba(var(--accent-rgb),.45);backdrop-filter:blur(20px);box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 60px var(--gold-glow);transform:scale(.9);transition:transform .3s var(--ease-out);max-width:min(92vw,360px)}
+.qr-modal.open .qr-box{transform:scale(1)}
+.qr-big{width:min(64vw,260px);height:min(64vw,260px);border-radius:18px;background:#fff;padding:10px}
+.qr-name{font-weight:800;margin-top:14px;font-size:17px}
+.qr-ver{font-size:12px;color:var(--muted);margin:4px 0 16px}
+.qr-x{position:absolute;top:10px;right:12px;border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer}
+.qr-x:hover{color:var(--text)}
+@media (prefers-reduced-motion:reduce){.store-card{opacity:1;transform:none;transition:none}}

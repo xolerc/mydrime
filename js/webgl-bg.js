@@ -189,12 +189,12 @@
     '  float wave2 = sin(wavePhase2) * 0.5 + 0.5;',
     '  float cursorField = clamp((u_cursor.x + (1.0 - u_cursor.y)) * 0.5, 0.0, 1.0);',
     '  // #111921 butun sirtda bir xil: asos + tolqin + kursor maydoni',
-    '  float uniGold = 0.20 + 0.14 * wave + 0.08 * wave2 + 0.10 * cursorField;',
-    '  color = mix(color, goldDeep, clamp(uniGold, 0.0, 0.5));',
-    '  color += goldGlow * (wave * 0.045 + wave2 * 0.03 + cursorField * 0.05);',
+    '  float uniGold = 0.38 + 0.22 * wave + 0.14 * wave2 + 0.16 * cursorField;',
+    '  color = mix(color, goldDeep, clamp(uniGold, 0.0, 0.75));',
+    '  color += goldGlow * (wave * 0.10 + wave2 * 0.07 + cursorField * 0.12);',
     '  // yorqin zonalarga yupqa #111921 parda - chrome ustida sovuq jilo',
     '  float goldBand = smoothstep(0.45, 1.0, chromeVal);',
-    '  color = mix(color, goldDeep, goldBand * 0.22);',
+    '  color = mix(color, goldDeep, goldBand * 0.5);',
 
     '  // the sea harmonizes with the ship — gray accents swell around it',
     '  vec3 seaA = vec3(0.038, 0.042, 0.052);',
@@ -207,9 +207,9 @@
     '  float glow = exp(-dist * dist * 5.0);',
     '  color += vec3(0.14, 0.15, 0.18) * glow * 0.25;',
     '  color += seaB * glow * 0.12;',
-    '  color += goldGlow * glow * 0.22;',
-    '  color += goldGlow * spec * 0.16;',
-    '  color += goldDeep * ripple * 0.10;',
+    '  color += goldGlow * glow * 0.45;',
+    '  color += goldGlow * spec * 0.34;'
+    '  color += goldDeep * ripple * 0.22;'
 
     '  color += vec3(spec * 0.10);',
     '',

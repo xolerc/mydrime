@@ -13,13 +13,13 @@
   --muted: #8a93a3;
   --faint: rgba(255, 255, 255, 0.35);
   --line: rgba(255, 255, 255, 0.09);
-  --accent: #f5c518;
-  --accent-2: #ffdf6b;
-  --accent-rgb: 245, 197, 24;
-  --gold: #d2aa00;
-  --gold-2: #f5c518;
-  --gold-deep: #8a6d00;
-  --gold-glow: rgba(245, 197, 24, 0.22);
+  --accent: #111921;
+  --accent-2: #111921;
+  --accent-rgb: 17, 25, 33;
+  --gold: #111921;
+  --gold-2: #111921;
+  --gold-deep: #111921;
+  --gold-glow: rgba(17, 25, 33, 0.22);
   --ok: #4cd97b;
 
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -62,7 +62,7 @@ html {
 body {
   /* WebGL chrome ortidagi fallback — pastda iliq gold shu'la bilan */
   background:
-    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(245, 197, 24, 0.11) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(17, 25, 33, 0.11) 0%, transparent 70%),
     radial-gradient(ellipse at 50% 0%, #161c28 0%, #0b0f18 75%);
   color: var(--text);
   font-family: var(--font);
@@ -220,11 +220,11 @@ img, svg, canvas { display: block; max-width: 100%; }
   max-width: calc(100vw - 20px);
   padding: 7px 10px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(245, 197, 24, 0.20), rgba(245, 197, 24, 0.07) 55%, rgba(255, 223, 107, 0.14));
+  background: linear-gradient(135deg, rgba(17, 25, 33, 0.20), rgba(17, 25, 33, 0.07) 55%, rgba(17, 25, 33, 0.14));
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 197, 24, 0.45);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 28px rgba(245, 197, 24, 0.35), inset 0 0 18px rgba(245, 197, 24, 0.12);
+  border: 1px solid rgba(17, 25, 33, 0.45);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 28px rgba(17, 25, 33, 0.35), inset 0 0 18px rgba(17, 25, 33, 0.12);
   opacity: 0;
   transform: translateX(-50%) translateY(-12px);
   transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
@@ -234,7 +234,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 .site-header::-webkit-scrollbar { display: none; }
 
 .site-header.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-.site-header.scrolled { border-color: rgba(255, 223, 107, 0.7); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 44px rgba(245, 197, 24, 0.5), inset 0 0 22px rgba(245, 197, 24, 0.16); }
+.site-header.scrolled { border-color: rgba(17, 25, 33, 0.7); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 44px rgba(17, 25, 33, 0.5), inset 0 0 22px rgba(17, 25, 33, 0.16); }
 
 .logo {
   font-family: var(--font-display);
@@ -247,7 +247,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   white-space: nowrap;
 }
 
-.logo-dot { color: var(--accent-2); }
+.logo-dot { color: #ffffff; }
 
 .site-nav { display: flex; gap: 4px; align-items: center; }
 
@@ -268,7 +268,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .site-nav a:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
 .site-nav a.active {
-  color: #191100;
+  color: #ffffff;
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
   box-shadow: 0 0 14px var(--gold-glow);
   font-weight: 700;
@@ -298,7 +298,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #041018;
+  color: #ffffff;
   box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.32);
 }
 
@@ -345,8 +345,8 @@ canvas#webgl-bg {
   /* sovuq chrome + iliq gold — ikki qavatli yumshoq glow */
   background:
     radial-gradient(ellipse 42% 38% at 72% 30%,
-      rgba(245, 197, 24, 0.14) 0%,
-      rgba(210, 170, 0, 0.07) 42%,
+      rgba(17, 25, 33, 0.14) 0%,
+      rgba(17, 25, 33, 0.07) 42%,
       transparent 70%),
     radial-gradient(ellipse at 65% 25%,
       rgba(255, 255, 255, 0.03) 0%,
@@ -373,8 +373,8 @@ canvas#webgl-bg {
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(ellipse at 50% 38%,
-    rgba(245, 197, 24, 0.14) 0%,
-    rgba(210, 170, 0, 0.07) 42%,
+    rgba(17, 25, 33, 0.14) 0%,
+    rgba(17, 25, 33, 0.07) 42%,
     transparent 70%);
   animation: goldBreathe 12s ease-in-out infinite alternate;
   will-change: opacity;
@@ -441,7 +441,7 @@ canvas#webgl-bg {
   font-weight: 600;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: var(--accent-2);
+  color: #e8ecf4;
   margin-bottom: var(--space-2);
 }
 
@@ -455,11 +455,11 @@ canvas#webgl-bg {
 }
 
 .highlight {
-  background: linear-gradient(120deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
 }
 
 /* ─────────── HERO ─────────── */
@@ -525,7 +525,7 @@ canvas#webgl-bg {
 }
 
 .hero .eyebrow {
-  color: var(--accent-2);
+  color: #e8ecf4;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 0, 0, 0.4);
 }
 
@@ -653,7 +653,7 @@ canvas#webgl-bg {
      backdrop sampling is one of the most expensive GPU ops on weak devices */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
   transform: rotate(var(--a)) translateX(var(--orbit-r, 160px)) rotate(calc(-1 * var(--a)));
-  color: var(--accent);
+  color: #e8ecf4;
   transition: border-color 0.2s, box-shadow 0.2s;
   will-change: transform;
 }
@@ -769,7 +769,7 @@ canvas#webgl-bg {
   font-family: var(--font-display);
   font-size: clamp(28px, 3.4vw, 44px);
   font-weight: 700;
-  color: var(--accent-2);
+  color: #ffffff;
 }
 
 .stat-label { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
@@ -790,7 +790,7 @@ canvas#webgl-bg {
 
 .blurb:hover { transform: translateY(-3px); border-color: rgba(var(--accent-rgb), 0.4); }
 
-.blurb h3 { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.blurb h3 { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 6px; }
 
 .blurb p { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
@@ -830,7 +830,7 @@ canvas#webgl-bg {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent-2);
+  color: #cbd5e1;
 }
 
 .card-body h3 {
@@ -858,7 +858,7 @@ canvas#webgl-bg {
   right: -25%;
   width: 75%;
   height: 130%;
-  background: radial-gradient(circle at 30% 35%, rgba(245, 197, 24, 0.20), transparent 60%);
+  background: radial-gradient(circle at 30% 35%, rgba(17, 25, 33, 0.20), transparent 60%);
 }
 
 .card-art-lang {
@@ -894,7 +894,7 @@ canvas#webgl-bg {
   font-size: 12.5px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--gold);
+  color: #cbd5e1;
 }
 
 .card-meta {
@@ -907,18 +907,18 @@ canvas#webgl-bg {
 }
 
 .card-meta span { display: inline-flex; align-items: center; gap: 5px; }
-.card-meta .meta-stars { color: var(--accent-2); }
+.card-meta .meta-stars { color: #ffffff; }
 
 .card-link {
   display: inline-block;
   margin-top: 14px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent);
+  color: #ffffff;
   transition: transform 0.2s var(--ease-out), color 0.2s;
 }
 
-.project-card:hover .card-link { transform: translateX(4px); color: var(--accent-2); }
+.project-card:hover .card-link { transform: translateX(4px); color: #cbd5e1; }
 
 /* ─────────── CONTACT ─────────── */
 .contact {
@@ -1008,7 +1008,7 @@ canvas#webgl-bg {
 .footer-note { font-size: 13px; color: var(--muted); }
 
 .footer-top {
-  color: var(--accent);
+  color: #ffffff;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
@@ -1016,7 +1016,7 @@ canvas#webgl-bg {
   transition: color 0.2s;
 }
 
-.footer-top:hover { color: var(--accent-2); }
+.footer-top:hover { color: #cbd5e1; }
 
 /* ─────────── EASTER EGG ─────────── */
 .ee-toast {
@@ -1126,8 +1126,8 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .site-header {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: linear-gradient(135deg, rgba(84, 64, 10, 0.95), rgba(46, 34, 6, 0.95));
-    border-color: rgba(245, 197, 24, 0.5);
+    background: linear-gradient(135deg, rgba(17, 25, 33, 0.95), rgba(17, 25, 33, 0.95));
+    border-color: rgba(255, 255, 255, 0.14);
   }
   .contact-box {
     -webkit-backdrop-filter: none;

@@ -208,8 +208,8 @@
     '  color += vec3(0.14, 0.15, 0.18) * glow * 0.25;',
     '  color += seaB * glow * 0.12;',
     '  color += goldGlow * glow * 0.45;',
-    '  color += goldGlow * spec * 0.34;'
-    '  color += goldDeep * ripple * 0.22;'
+    '  color += goldGlow * spec * 0.34;',
+    '  color += goldDeep * ripple * 0.22;',
 
     '  color += vec3(spec * 0.10);',
     '',

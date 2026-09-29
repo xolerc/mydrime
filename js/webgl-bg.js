@@ -174,9 +174,9 @@
     '  vec3 midChrome  = vec3(0.130, 0.140, 0.165);',
     '  vec3 pureSilver = vec3(0.320, 0.350, 0.420);',
     '  vec3 whiteGlow  = vec3(0.570, 0.600, 0.680);',
-    '  // #111921 - butun fonga bir xil uygynlashgan sovuq aksent',
+    '  // #111921 chuqurligi + uning och po\'lat shu\'lasi (#8ea0b8) - sovuq aksent',
     '  vec3 goldDeep   = vec3(0.067, 0.098, 0.129);',
-    '  vec3 goldGlow   = vec3(0.067, 0.098, 0.129);',
+    '  vec3 goldGlow   = vec3(0.557, 0.627, 0.722);',
 
     '  vec3 color = mix(darkSteel, midChrome, smoothstep(0.0, 0.45, chromeVal));',
     '  color = mix(color, pureSilver, smoothstep(0.45, 0.85, chromeVal));',
@@ -203,7 +203,7 @@
     '  color = mix(color, seaB, clamp(u_cursor.x * 0.5 + u_cursor.y * 0.2, 0.0, 0.6) * 0.28);',
     '  color += seaB * (spec * 0.45 + ripple * 0.12);',
 
-    '  // soft moonlight glow on the water at the ship + #111921 halo',
+    '  // soft moonlight glow on the water at the ship + steel #8ea0b8 halo',
     '  float glow = exp(-dist * dist * 5.0);',
     '  color += vec3(0.14, 0.15, 0.18) * glow * 0.25;',
     '  color += seaB * glow * 0.12;',

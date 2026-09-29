@@ -62,7 +62,7 @@ html {
 body {
   /* WebGL chrome ortidagi fallback — pastda kuchaytirilgan #111921 shu'la bilan */
   background:
-    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(142, 160, 184, 0.20) 0%, rgba(17, 25, 33, 0.30) 48%, transparent 70%),
+    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(142, 160, 184, 0.32) 0%, rgba(17, 25, 33, 0.30) 52%, transparent 70%),
     radial-gradient(ellipse at 50% 0%, #161c28 0%, #0b0f18 75%);
   color: var(--text);
   font-family: var(--font);
@@ -224,7 +224,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(17, 25, 33, 0.9);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 44px rgba(17, 25, 33, 0.65), 0 0 70px rgba(142, 160, 184, 0.16), inset 0 0 24px rgba(17, 25, 33, 0.30);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 44px rgba(17, 25, 33, 0.65), 0 0 70px rgba(142, 160, 184, 0.28), inset 0 0 24px rgba(17, 25, 33, 0.30);
   opacity: 0;
   transform: translateX(-50%) translateY(-12px);
   transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
@@ -234,7 +234,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 .site-header::-webkit-scrollbar { display: none; }
 
 .site-header.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-.site-header.scrolled { border-color: rgba(17, 25, 33, 0.95); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 60px rgba(17, 25, 33, 0.8), 0 0 80px rgba(142, 160, 184, 0.22), inset 0 0 28px rgba(17, 25, 33, 0.35); }
+.site-header.scrolled { border-color: rgba(17, 25, 33, 0.95); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 60px rgba(17, 25, 33, 0.8), 0 0 80px rgba(142, 160, 184, 0.34), inset 0 0 28px rgba(17, 25, 33, 0.35); }
 
 .logo {
   font-family: var(--font-display);
@@ -347,7 +347,7 @@ canvas#webgl-bg {
   /* sovuq chrome + kuchli #111921 — ikki qavatli yumshoq glow */
   background:
     radial-gradient(ellipse 42% 38% at 72% 30%,
-      rgba(142, 160, 184, 0.16) 0%,
+      rgba(142, 160, 184, 0.28) 0%,
       rgba(17, 25, 33, 0.34) 48%,
       transparent 70%),
     radial-gradient(ellipse at 65% 25%,
@@ -375,8 +375,8 @@ canvas#webgl-bg {
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(ellipse at 50% 38%,
-    rgba(142, 160, 184, 0.22) 0%,
-    rgba(17, 25, 33, 0.36) 48%,
+    rgba(142, 160, 184, 0.34) 0%,
+    rgba(17, 25, 33, 0.36) 52%,
     transparent 70%);
   animation: goldBreathe 12s ease-in-out infinite alternate;
   will-change: opacity;

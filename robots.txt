@@ -14,4 +14,4 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: https://xoleric.eu.org/sitemap.xml
+Sitemap: https://xolerc.github.io/mydrime/sitemap.xml

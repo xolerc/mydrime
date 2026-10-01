@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://xoleric.eu.org/</loc>
+    <loc>https://xolerc.github.io/mydrime/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://xoleric.eu.org/cv.html</loc>
+    <loc>https://xolerc.github.io/mydrime/cv.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://xoleric.eu.org/store.html</loc>
+    <loc>https://xolerc.github.io/mydrime/store.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

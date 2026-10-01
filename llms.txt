@@ -5,9 +5,9 @@
 
 ## Rasmiy sahifalar
 
-- Portfolio: [https://xoleric.eu.org/](https://xoleric.eu.org/)
-- CV / Rezyume: [https://xoleric.eu.org/cv.html](https://xoleric.eu.org/cv.html)
-- APK Store: [https://xoleric.eu.org/store.html](https://xoleric.eu.org/store.html)
+- Portfolio: [https://xolerc.github.io/mydrime/](https://xolerc.github.io/mydrime/)
+- CV / Rezyume: [https://xolerc.github.io/mydrime/cv.html](https://xolerc.github.io/mydrime/cv.html)
+- APK Store: [https://xolerc.github.io/mydrime/store.html](https://xolerc.github.io/mydrime/store.html)
 
 ## Xoleric kim?
 

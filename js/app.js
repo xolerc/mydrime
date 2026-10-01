@@ -994,6 +994,58 @@
   }
 
   /* ═══════════════════════════════════════
+     CINEMA HUD — timecode, scena yorlig'i, proyektor nuri.
+     Hammasi arzon: matn yangilash + transform.
+     ═══════════════════════════════════════ */
+
+  function initTimecode() {
+    const el = $('timecode');
+    if (!el) return;
+    const t0 = Date.now();
+    const pad = (n) => String(n).padStart(2, '0');
+    const step = reduceMotion ? 1000 : 1000 / 24;
+    setInterval(() => {
+      const ms = Date.now() - t0;
+      const f = Math.floor(ms / 1000 * 24) % 24;
+      const s = Math.floor(ms / 1000) % 60;
+      const m = Math.floor(ms / 60000) % 60;
+      const h = Math.floor(ms / 3600000);
+      el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
+    }, step);
+  }
+
+  function initSceneSpy() {
+    const label = $('sceneLabel');
+    if (!label || typeof IntersectionObserver === 'undefined') return;
+    const names = {
+      hero: 'SCENE 01 — HERO',
+      about: 'SCENE 02 — ABOUT',
+      work: 'SCENE 03 — WORK',
+      contact: 'SCENE 04 — CONTACT'
+    };
+    const secs = document.querySelectorAll('.section[id]');
+    if (!secs.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting && names[en.target.id]) {
+          label.textContent = names[en.target.id];
+        }
+      });
+    }, { threshold: 0.35 });
+    secs.forEach((s) => io.observe(s));
+  }
+
+  function initSpotlight() {
+    if (reduceMotion) return;
+    const sp = $('spotlight');
+    if (!sp) return;
+    window.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      sp.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    }, { passive: true });
+  }
+
+  /* ═══════════════════════════════════════
      INIT
      ═══════════════════════════════════════ */
 
@@ -1025,6 +1077,9 @@
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
     try { initBg(); } catch (e) { /* noop */ }
+    try { initTimecode(); } catch (e) { /* noop */ }
+    try { initSceneSpy(); } catch (e) { /* noop */ }
+    try { initSpotlight(); } catch (e) { /* noop */ }
 
     if (!reduceMotion && revealEl) {
       startMasterLoop();

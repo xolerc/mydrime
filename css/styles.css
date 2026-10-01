@@ -205,6 +205,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   top: 34px;
   left: 0;
   height: 2px;
+  box-shadow: 0 0 8px rgba(142, 160, 184, 0.6);
   width: 100%;
   background: linear-gradient(90deg, var(--accent), #8ea0b8);
   transform: scaleX(0);
@@ -230,7 +231,7 @@ img, svg, canvas { display: block; max-width: 100%; }
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(236, 239, 244, 0.12);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 34px rgba(142, 160, 184, 0.20);
   opacity: 0;
   transform: translateX(-50%) translateY(-12px);
   transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
@@ -240,7 +241,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 .site-header::-webkit-scrollbar { display: none; }
 
 .site-header.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-.site-header.scrolled { border-color: rgba(142, 160, 184, 0.45); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.65); }
+.site-header.scrolled { border-color: rgba(142, 160, 184, 0.45); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.65), 0 0 34px rgba(142, 160, 184, 0.25); }
 
 .logo {
   font-family: var(--font-display);
@@ -308,10 +309,10 @@ img, svg, canvas { display: block; max-width: 100%; }
   background: var(--bone);
   color: var(--ink);
   border-color: var(--bone);
-  box-shadow: none;
+  box-shadow: 0 0 18px rgba(236, 239, 244, 0.12);
 }
 
-.btn-primary:hover { transform: translateY(-2px); background: #ffffff; box-shadow: 0 10px 30px rgba(236, 239, 244, 0.18); }
+.btn-primary:hover { transform: translateY(-2px); background: #ffffff; box-shadow: 0 10px 30px rgba(236, 239, 244, 0.18), 0 0 34px rgba(236, 239, 244, 0.25); }
 
 .btn-ghost {
   background: transparent;
@@ -382,7 +383,7 @@ canvas#webgl-bg {
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(ellipse at 50% 38%,
-    rgba(142, 160, 184, 0.34) 0%,
+    rgba(142, 160, 184, 0.42) 0%,
     rgba(17, 25, 33, 0.36) 52%,
     transparent 70%);
   animation: goldBreathe 12s ease-in-out infinite alternate;
@@ -701,7 +702,7 @@ canvas#webgl-bg {
   line-height: 0.85;
   letter-spacing: 0.02em;
   color: var(--bone);
-  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.7), 0 0 90px rgba(142, 160, 184, 0.30);
   margin: 0 0 10px -4px;
 }
 .hero-title {

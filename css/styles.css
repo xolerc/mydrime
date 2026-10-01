@@ -396,6 +396,59 @@ canvas#webgl-bg {
    visible benefit — kept as markup for potential future static use */
 .grain-top { display: none; }
 
+/* ─────────── CROSSHAIR — kursor joylashuv nishoni (faqat sichqoncha) ─────────── */
+.crosshair {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  overflow: hidden;
+}
+.crosshair.on { opacity: 1; }
+.ch-x, .ch-y { position: absolute; will-change: transform; }
+.ch-x {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  transform: translateY(-100px);
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(142, 160, 184, 0.45) 20%,
+    rgba(142, 160, 184, 0.45) 80%,
+    transparent);
+}
+.ch-y {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  transform: translateX(-100px);
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(142, 160, 184, 0.45) 20%,
+    rgba(142, 160, 184, 0.45) 80%,
+    transparent);
+}
+.ch-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px;
+  border-radius: 50%;
+  border: 1px solid rgba(142, 160, 184, 0.9);
+  box-shadow: 0 0 10px rgba(142, 160, 184, 0.6), 0 0 22px rgba(17, 25, 33, 0.8);
+  transform: translate(-100px, -100px);
+  will-change: transform;
+}
+@media (pointer: coarse) {
+  .crosshair { display: none; }
+}
+
 /* ─────────── VIGNETTE ─────────── */
 .vignette {
   position: fixed;
@@ -1108,6 +1161,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 /* ─────────── REDUCED MOTION ─────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-snap-type: none; }
+  .crosshair { display: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

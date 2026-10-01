@@ -251,22 +251,21 @@
     const chY = ch.querySelector('.ch-y');
     const chDot = ch.querySelector('.ch-dot');
     if (!chX || !chY || !chDot) return;
-    let cx = -100, cy = -100, queued = false;
+    let shown = false;
     window.addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;
-      cx = e.clientX;
-      cy = e.clientY;
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => {
-        queued = false;
-        chX.style.transform = 'translateY(' + cy + 'px)';
-        chY.style.transform = 'translateX(' + cx + 'px)';
-        chDot.style.transform = 'translate(' + cx + 'px,' + cy + 'px)';
+      /* rAF siz — har bir harakatda darhol transform (nol kechikish) */
+      const x = e.clientX, y = e.clientY;
+      chX.style.transform = 'translateY(' + y + 'px)';
+      chY.style.transform = 'translateX(' + x + 'px)';
+      chDot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      if (!shown) {
+        shown = true;
         ch.classList.add('on');
-      });
+      }
     }, { passive: true });
     document.documentElement.addEventListener('mouseleave', () => {
+      shown = false;
       ch.classList.remove('on');
     });
   })();

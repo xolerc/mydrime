@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /images/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://xoleric.eu.org/sitemap.xml

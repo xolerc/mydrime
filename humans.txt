@@ -1,0 +1,8 @@
+/* TEAM */
+Developer: Xoleric
+Contact: https://t.me/Wxoleric
+Site: https://xoleric.eu.org/
+
+/* SITE */
+Portfolio of Xoleric — frontend developer from Uzbekistan.
+Stack: HTML, CSS, JavaScript, React, WebGL.

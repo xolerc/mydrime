@@ -1,0 +1,29 @@
+# Xoleric
+
+> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi.
+> Tez, jonli va interaktiv veb-interfeyslar yaratadi: HTML, CSS, JavaScript, React, WebGL.
+
+## Rasmiy sahifalar
+
+- Portfolio: [https://xoleric.eu.org/](https://xoleric.eu.org/)
+- CV / Rezyume: [https://xoleric.eu.org/cv.html](https://xoleric.eu.org/cv.html)
+- APK Store: [https://xoleric.eu.org/store.html](https://xoleric.eu.org/store.html)
+
+## Xoleric kim?
+
+Xoleric — O'zbekistondan frontend dasturchi. Kreativ kod, WebGL fonlar,
+scroll-hikoyalar va 60fps animatsiyalar bilan oddiy sahifalarni jonli
+tajribaga aylantiradi. Freelance loyihalar va hamkorlik uchun ochiq.
+
+## Aloqa
+
+- Telegram: [@Wxoleric](https://t.me/Wxoleric)
+- Email: devxoleric@gmail.com
+- GitHub: [@xolerc](https://github.com/xolerc)
+- Instagram: [@ixoleric](https://www.instagram.com/ixoleric)
+- YouTube: [@xoleric](https://youtube.com/@xoleric)
+
+## Ko'nikmalar
+
+HTML5, CSS3, JavaScript, TypeScript, React, Tailwind, Canvas, WebGL,
+GSAP, Figma, Node.js, Git.

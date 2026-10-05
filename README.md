@@ -7,7 +7,7 @@ Mahsulotga yo'naltirilgan frontend portfolio — tez, qulay, kreativ kod bilan.
 ## Stek
 - Statik `HTML + CSS + vanilla JS` — buildsiz, bog'liqliksiz
 - `js/webgl-bg.js` — Mercury Liquid Chrome WebGL foni (fullscreen quad, simplex noise, kursorga sezgir, DPR cheklov, FPS pog'onalari, software-renderer himoyasi, watchdog) + **to'q sariq / gold glow**
-- `js/app.js` — loader (qo'lda yozuv: Caveat siyoh + WebAudio qalam ovozi va chime, tez ~3s), neon sarlavha, flashlight reveal, orbit ijtimoiy halqa + travel rejimi (≥1200px), GitHub jonli loyihalar, scroll spy, statistika, Konami sirli rejimi
+- `js/app.js` — loader (matrix shamol: full qora fonda oq raqamlar chapdan o'ngga, tez ~2.4s), neon sarlavha, flashlight reveal, orbit ijtimoiy halqa + travel rejimi (≥1200px), GitHub jonli loyihalar, scroll spy, statistika, Konami sirli rejimi
 - `css/styles.css` — dizayn-tokenlar, tungi mavzu, gold aksentlar, responsiv (960px / 768px / 380px), `prefers-reduced-motion` qo'llab-quvvatlash
 - `cv.html` — chop etiladigan CV / rezyume (yorug' + tungi, chop CSS)
 - Rasmlar: `images/bg.webp`, `images/main.webp` (oldindan yuklanadi)

@@ -547,6 +547,8 @@
       a.href = icon.getAttribute('href') || '#';
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
+      /* orbit nusxalari dekorativ — footer ikonlarining takrori bo'lgani uchun
+         ko'ruvchidan yashirin va tab tartibidan chiqarilgan (fokus takrorlanmaydi) */
       a.setAttribute('aria-hidden', 'true');
       a.tabIndex = -1;
       a.style.setProperty('--a', Math.round(i * (360 / icons.length)) + 'deg');
@@ -1098,6 +1100,14 @@
       fn.apply(null, args);
     };
     const renderFallback = finish(() => renderCards(FALLBACK_PROJECTS));
+    /* 24-soatlik localStorage keshi — xato bo'lsa eski oqim ishlayveradi */
+    try {
+      const cached = JSON.parse(localStorage.getItem('xol_gh_cache') || 'null');
+      if (cached && cached.t && (Date.now() - cached.t) < 86400000 && Array.isArray(cached.repos) && cached.repos.length) {
+        renderCards(cached.repos);
+        return;
+      }
+    } catch (e) { /* cache miss — tarmoqdan davom etadi */ }
     setTimeout(renderFallback, 6000);
 
     /* Abort after 5s so a hanging request can't delay the grid */
@@ -1114,6 +1124,7 @@
           .filter((r) => !r.fork)
           .slice(0, 6);
         if (!list.length) throw new Error('No repos');
+        try { localStorage.setItem('xol_gh_cache', JSON.stringify({ t: Date.now(), repos: list })); } catch (e) { /* quota/xatoda jim o'tadi */ }
         renderCards(list);
       }))
       .catch(renderFallback);
@@ -1190,48 +1201,6 @@
     glApi.enable();
   }
 
-  /* ═══════════════════════════════════════
-     CINEMA HUD — timecode, scena yorlig'i, proyektor nuri.
-     Hammasi arzon: matn yangilash + transform.
-     ═══════════════════════════════════════ */
-
-  function initTimecode() {
-    const el = $('timecode');
-    if (!el) return;
-    const t0 = Date.now();
-    const pad = (n) => String(n).padStart(2, '0');
-    const step = reduceMotion ? 1000 : 1000 / 24;
-    setInterval(() => {
-      const ms = Date.now() - t0;
-      const f = Math.floor(ms / 1000 * 24) % 24;
-      const s = Math.floor(ms / 1000) % 60;
-      const m = Math.floor(ms / 60000) % 60;
-      const h = Math.floor(ms / 3600000);
-      el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
-    }, step);
-  }
-
-  function initSceneSpy() {
-    const label = $('sceneLabel');
-    if (!label || typeof IntersectionObserver === 'undefined') return;
-    const names = {
-      hero: 'SCENE 01 — HERO',
-      about: 'SCENE 02 — ABOUT',
-      work: 'SCENE 03 — WORK',
-      contact: 'SCENE 04 — CONTACT'
-    };
-    const secs = document.querySelectorAll('.section[id]');
-    if (!secs.length) return;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting && names[en.target.id]) {
-          label.textContent = names[en.target.id];
-        }
-      });
-    }, { threshold: 0.35 });
-    secs.forEach((s) => io.observe(s));
-  }
-
   function initSpotlight() {
     if (reduceMotion) return;
     const sp = $('spotlight');
@@ -1274,8 +1243,6 @@
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
     try { initBg(); } catch (e) { /* noop */ }
-    try { initTimecode(); } catch (e) { /* noop */ }
-    try { initSceneSpy(); } catch (e) { /* noop */ }
     try { initSpotlight(); } catch (e) { /* noop */ }
 
     if (!reduceMotion && revealEl) {

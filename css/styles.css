@@ -15,7 +15,7 @@
   --surface-2: rgba(255, 255, 255, 0.07);
   --text: #e8ecf4;
   --text-2: #b6becb;
-  --muted: #8a93a3;
+  --muted: #aab6c9;
   --faint: rgba(255, 255, 255, 0.35);
   --line: rgba(255, 255, 255, 0.09);
   --accent: #111921;
@@ -107,7 +107,7 @@ a {
 img, svg, canvas { display: block; max-width: 100%; }
 
 :focus-visible {
-  outline: 2px solid var(--accent-2);
+  outline: 2px solid #e8ecf4;
   outline-offset: 3px;
 }
 
@@ -352,7 +352,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 .btn-sm { padding: 9px 16px; font-size: 13px; }
 
 .btn:focus-visible {
-  outline: 3px solid var(--accent-2);
+  outline: 3px solid #e8ecf4;
   outline-offset: 3px;
 }
 

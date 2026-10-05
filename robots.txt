@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /images/
+Allow: /images/
 
 User-agent: GPTBot
 Allow: /

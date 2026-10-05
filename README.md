@@ -32,7 +32,7 @@ python3 -m http.server 8000
 `npm install` ham, build ham kerak emas. Istalgan statik server bo'ladi (VS Code Live Server, `npx serve`, GitHub Pages).
 
 ## Nashr (deploy)
-`main` ga push qiling — GitHub Pages ildizdan xizmat qiladi. Kesh `?v=20260927mx` orqali yangilanadi.
+`main` ga push qiling — GitHub Pages ildizdan xizmat qiladi. Kesh `?v=20261005-handwrite` orqali yangilanadi.
 
 ## Loyihalar bo'limi
 `https://api.github.com/users/xolerc/repos` dan jonli (eng so'nggi 6 ta, forklarsiz). Oflayn / API xatoda — zaxira kartalar chiqadi. Token kerak emas. GitHub'dagi tavsiflar asl tilda keladi, karta interfeysi (Rol, Ta'siri, tugma) o'zbekcha.

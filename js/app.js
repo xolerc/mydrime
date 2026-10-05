@@ -94,7 +94,6 @@
   let loaderDone = false;
   let handRAF = 0;
   const handCanvas = $('handwrite-canvas');
-  const soundBtn = $('loaderSound');
   const handFallback = $('handwriteFallback');
 
   function showHandFallback() {
@@ -108,10 +107,6 @@
     enabled: true,
     stopped: false
   };
-  try {
-    const saved = window.localStorage ? window.localStorage.getItem('xol_loaderSound') : null;
-    if (saved === 'off') loaderSound.enabled = false;
-  } catch (e) { /* private mode — default on */ }
 
   function soundEnsure() {
     if (!loaderSound.enabled || loaderSound.stopped || reduceMotion) return null;
@@ -189,26 +184,6 @@
   /* brauzer autoplay siyosati: ovoz birinchi gestdan keyin ochiladi */
   window.addEventListener('pointerdown', function () { soundEnsure(); }, { passive: true });
   window.addEventListener('keydown', function () { soundEnsure(); });
-
-  function soundRefreshBtn() {
-    if (!soundBtn) return;
-    soundBtn.textContent = loaderSound.enabled ? '🔊' : '🔇';
-    soundBtn.setAttribute('aria-pressed', loaderSound.enabled ? 'true' : 'false');
-    soundBtn.setAttribute('aria-label', loaderSound.enabled ? 'Loader ovozini o\u2019chirish' : 'Loader ovozini yoqish');
-  }
-
-  if (soundBtn) {
-    soundRefreshBtn();
-    soundBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      loaderSound.enabled = !loaderSound.enabled;
-      try {
-        if (window.localStorage) window.localStorage.setItem('xol_loaderSound', loaderSound.enabled ? 'on' : 'off');
-      } catch (err) { /* saqlanmasa ham ishlaydi */ }
-      if (loaderSound.enabled) soundEnsure();
-      soundRefreshBtn();
-    });
-  }
 
   function stopHandwrite() {
     if (handRAF) {

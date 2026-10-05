@@ -83,89 +83,311 @@
   }
 
   /* ═══════════════════════════════════════
-     LOADER — matrix shamol (full qora fon, oq raqamlar)
-     Raqamlar chapdan o'ngga shamoldek uchadi.
-     Tez: ~1.4s matrix + qisqa logo, keyin sahna.
+     LOADER — qo'lda yozuv (siyoh + qalam ovozi)
+     "Xoleric" qo'lyozmadek yoziladi, tagiga imzo
+     chizig'i tortiladi, keyin kichikroq
+     "frontend dasturchi" qo'shiladi.
+     Ovoz WebAudio bilan sintezlanadi (faylsiz):
+     harf sari qalam shivirlashi + yakunda chime.
      ═══════════════════════════════════════ */
 
   let loaderDone = false;
-  let matrixRAF = 0;
-  const matrixCanvas = $('matrix-canvas');
+  let handRAF = 0;
+  const handCanvas = $('handwrite-canvas');
+  const soundBtn = $('loaderSound');
+  const handFallback = $('handwriteFallback');
 
-  function stopMatrix() {
-    if (matrixRAF) {
-      cancelAnimationFrame(matrixRAF);
-      matrixRAF = 0;
-    }
+  function showHandFallback() {
+    if (handFallback) handFallback.classList.add('show');
   }
 
-  function startMatrix() {
-    if (!matrixCanvas || reduceMotion) return;
+  /* ─────────── LOADER OVOZI (WebAudio, tashqi faylsiz) ─────────── */
+  const loaderSound = {
+    ctx: null,
+    master: null,
+    enabled: true,
+    stopped: false
+  };
+  try {
+    const saved = window.localStorage ? window.localStorage.getItem('xol_loaderSound') : null;
+    if (saved === 'off') loaderSound.enabled = false;
+  } catch (e) { /* private mode — default on */ }
+
+  function soundEnsure() {
+    if (!loaderSound.enabled || loaderSound.stopped || reduceMotion) return null;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!loaderSound.ctx) {
+        loaderSound.ctx = new AC();
+        loaderSound.master = loaderSound.ctx.createGain();
+        loaderSound.master.gain.value = 0.14;
+        loaderSound.master.connect(loaderSound.ctx.destination);
+      }
+      if (loaderSound.ctx.state === 'suspended') {
+        loaderSound.ctx.resume().catch(function () { /* keyingi gestda */ });
+        return null;
+      }
+      return loaderSound.ctx;
+    } catch (e) { return null; }
+  }
+
+  /* qalam shivirlashi — bitta harf uchun qisqa filtrlangan shovqin */
+  function soundScratch() {
+    const ctx = soundEnsure();
+    if (!ctx) return;
+    try {
+      const dur = 0.07 + Math.random() * 0.06;
+      const len = Math.max(1, Math.floor(ctx.sampleRate * dur));
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 1700 + Math.random() * 1500;
+      bp.Q.value = 1.1;
+      const g = ctx.createGain();
+      const t = ctx.currentTime;
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.exponentialRampToValueAtTime(0.35 + Math.random() * 0.3, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      src.connect(bp);
+      bp.connect(g);
+      g.connect(loaderSound.master);
+      src.start(t);
+      src.stop(t + dur + 0.02);
+    } catch (e) { /* ovoz bo'lmasa animatsiya davom etadi */ }
+  }
+
+  /* yakuniy mayin chime — ikki nota */
+  function soundChime() {
+    const ctx = soundEnsure();
+    if (!ctx) return;
+    try {
+      const notes = [659.25, 987.77];
+      notes.forEach(function (f, i) {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        const t = ctx.currentTime + i * 0.16;
+        o.type = 'sine';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(0.5, t + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+        o.connect(g);
+        g.connect(loaderSound.master);
+        o.start(t);
+        o.stop(t + 0.75);
+      });
+    } catch (e) { /* jim davom */ }
+  }
+
+  /* brauzer autoplay siyosati: ovoz birinchi gestdan keyin ochiladi */
+  window.addEventListener('pointerdown', function () { soundEnsure(); }, { passive: true });
+  window.addEventListener('keydown', function () { soundEnsure(); });
+
+  function soundRefreshBtn() {
+    if (!soundBtn) return;
+    soundBtn.textContent = loaderSound.enabled ? '🔊' : '🔇';
+    soundBtn.setAttribute('aria-pressed', loaderSound.enabled ? 'true' : 'false');
+    soundBtn.setAttribute('aria-label', loaderSound.enabled ? 'Loader ovozini o\u2019chirish' : 'Loader ovozini yoqish');
+  }
+
+  if (soundBtn) {
+    soundRefreshBtn();
+    soundBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      loaderSound.enabled = !loaderSound.enabled;
+      try {
+        if (window.localStorage) window.localStorage.setItem('xol_loaderSound', loaderSound.enabled ? 'on' : 'off');
+      } catch (err) { /* saqlanmasa ham ishlaydi */ }
+      if (loaderSound.enabled) soundEnsure();
+      soundRefreshBtn();
+    });
+  }
+
+  function stopHandwrite() {
+    if (handRAF) {
+      cancelAnimationFrame(handRAF);
+      handRAF = 0;
+    }
+    loaderSound.stopped = true;
+  }
+
+  function startHandwrite() {
+    if (!handCanvas || reduceMotion) return;
     let ctx = null;
     try {
-      ctx = matrixCanvas.getContext('2d');
-    } catch (e) { return; }
-    if (!ctx) return;
+      ctx = handCanvas.getContext('2d');
+    } catch (e) { showHandFallback(); return; }
+    if (!ctx) { showHandFallback(); return; }
 
     const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
     const W = Math.max(320, Math.round(window.innerWidth * DPR));
     const H = Math.max(320, Math.round(window.innerHeight * DPR));
     try {
-      matrixCanvas.width = W;
-      matrixCanvas.height = H;
-    } catch (e) { return; }
+      handCanvas.width = W;
+      handCanvas.height = H;
+    } catch (e) { showHandFallback(); return; }
 
-    const FONT = Math.max(14, Math.round(16 * DPR));
-    const ROW_H = Math.round(FONT * 1.35);
-    const CELL = Math.max(8, Math.round(FONT * 0.62));
-    const rows = Math.max(8, Math.floor(H / ROW_H));
-    const lanes = [];
-    for (let i = 0; i < rows; i++) {
-      lanes.push({
-        x: -Math.random() * W * 0.6,
-        v: (14 + Math.random() * 16) * DPR,
-        len: 8 + Math.floor(Math.random() * 14),
-        y: i * ROW_H + FONT
-      });
+    /* Caveat shrifti yuklanguncha kutish (taym-aut bilan) */
+    let fontReady = false;
+    try {
+      if (document.fonts && document.fonts.load) {
+        Promise.race([
+          Promise.all([
+            document.fonts.load('700 100px Caveat'),
+            document.fonts.load('500 100px Caveat')
+          ]),
+          new Promise(function (res) { setTimeout(res, 1200); })
+        ]).then(function () { fontReady = true; });
+        setTimeout(function () { fontReady = true; }, 1400);
+      } else {
+        fontReady = true;
+      }
+    } catch (e) { fontReady = true; }
+
+    const INK = '#f7f1de';
+    const INK_DIM = 'rgba(216, 207, 184, 0.9)';
+    const word = 'Xoleric';
+    const sub = 'frontend dasturchi';
+    const cx = W / 2;
+    const baseY = H / 2 - Math.min(H * 0.04, 40 * DPR);
+    const mainSize = Math.min(W * 0.17, H * 0.16, 150 * DPR);
+    const subSize = Math.min(W * 0.055, 34 * DPR);
+    const ROT = -0.06;
+
+    /* vaqt jadvali: asosiy so'z sekin, taglavha tez */
+    const t0 = performance.now();
+    const WORD_MS = 1000;
+    const GAP_MS = 120;
+    const SUB_MS = 550;
+    const FLOUR_MS = 400;
+    const total = WORD_MS + GAP_MS + SUB_MS + FLOUR_MS;
+
+    let prevWn = -1;
+    let prevSn = -1;
+    let flourishVoiced = false;
+    let endVoiced = false;
+
+    function inkFont(size, weight) {
+      return weight + ' ' + size + 'px Caveat, "Segoe Script", "Bradley Hand", cursive';
     }
-    const glyphs = '0123456789';
-    const pick = () => glyphs[(Math.random() * glyphs.length) | 0];
 
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-    ctx.font = FONT + 'px ui-monospace, Menlo, Consolas, monospace';
+    function drawPen(x, y, r) {
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      glow.addColorStop(0, 'rgba(247, 241, 222, 0.9)');
+      glow.addColorStop(1, 'rgba(247, 241, 222, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 3, 0, 6.2832);
+      ctx.fill();
+      ctx.fillStyle = INK;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 6.2832);
+      ctx.fill();
+    }
 
-    (function frame() {
-      matrixRAF = 0;
+    (function frame(now) {
+      handRAF = 0;
       if (loaderDone) return;
       if (document.hidden) {
-        matrixRAF = requestAnimationFrame(frame);
+        handRAF = requestAnimationFrame(frame);
         return;
       }
-      /* iz qoldirib o'chirish — shamol dumi effekti */
-      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      const t = (now || performance.now()) - t0;
+
+      ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, W, H);
-      for (let i = 0; i < lanes.length; i++) {
-        const L = lanes[i];
-        L.x += L.v;
-        if (L.x - L.len * CELL > W) {
-          /* qayta chapdan — uzluksiz shamol */
-          L.x = -L.len * CELL - Math.random() * W * 0.25;
-          L.v = (14 + Math.random() * 16) * DPR;
-          L.len = 8 + Math.floor(Math.random() * 14);
-          continue;
-        }
-        for (let j = 0; j < L.len; j++) {
-          const cx = Math.round(L.x - j * CELL);
-          if (cx < -CELL || cx > W + CELL) continue;
-          const fade = 1 - j / L.len;
-          const bright = Math.round(120 + 135 * fade);
-          ctx.fillStyle = 'rgb(' + bright + ',' + bright + ',' + bright + ')';
-          ctx.fillText(pick(), cx, L.y);
+
+      /* mayin markaziy yoritish — siyoh diqqat markazi */
+      const vg = ctx.createRadialGradient(cx, baseY, 0, cx, baseY, Math.max(W, H) * 0.45);
+      vg.addColorStop(0, 'rgba(247, 241, 222, 0.05)');
+      vg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.save();
+      ctx.translate(cx, baseY);
+      ctx.rotate(ROT);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      /* 1-bosqich: asosiy so'z harfma-harf */
+      const wp = clamp(t / WORD_MS, 0, 1);
+      const wn = Math.floor(wp * word.length);
+      ctx.font = inkFont(mainSize, '700');
+      ctx.fillStyle = fontReady ? INK : 'rgba(247, 241, 222, 0.85)';
+      ctx.shadowColor = 'rgba(247, 241, 222, 0.35)';
+      ctx.shadowBlur = 12 * DPR;
+      const shown = word.slice(0, wn);
+      ctx.fillText(shown, 0, 0);
+      ctx.shadowBlur = 0;
+
+      if (wn !== prevWn) {
+        prevWn = wn;
+        if (wn > 0) soundScratch();
+      }
+
+      /* qalam uchi — yozilayotgan harf oxirida */
+      if (wn > 0 && wn <= word.length) {
+        ctx.font = inkFont(mainSize, '700');
+        const wFull = ctx.measureText(word).width;
+        const wShown = ctx.measureText(shown).width;
+        const px = -wFull / 2 + wShown;
+        const jitter = Math.sin(t * 0.05) * 1.5 * DPR;
+        drawPen(px, jitter, Math.max(2, mainSize * 0.035));
+      }
+
+      /* 2-bosqich: imzo chizig'i (flourish) */
+      const fp = clamp((t - WORD_MS - GAP_MS * 0.4) / FLOUR_MS, 0, 1);
+      if (fp > 0 && wn >= word.length) {
+        ctx.font = inkFont(mainSize, '700');
+        const wFull = ctx.measureText(word).width;
+        const y0 = mainSize * 0.52;
+        ctx.strokeStyle = INK_DIM;
+        ctx.lineWidth = Math.max(1.5, mainSize * 0.022);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        const x0 = -wFull * 0.55;
+        const x1 = wFull * 0.62;
+        const ex = x0 + (x1 - x0) * fp;
+        ctx.moveTo(x0, y0);
+        ctx.quadraticCurveTo((x0 + x1) / 2, y0 + mainSize * 0.22 * fp, ex, y0 - mainSize * 0.06 * fp);
+        ctx.stroke();
+        if (fp >= 1 && !flourishVoiced) {
+          flourishVoiced = true;
+          soundScratch();
         }
       }
-      matrixRAF = requestAnimationFrame(frame);
-    })();
+
+      /* 3-bosqich: taglavha */
+      const sp = clamp((t - WORD_MS - GAP_MS - FLOUR_MS * 0.4) / SUB_MS, 0, 1);
+      if (sp > 0) {
+        const sn = Math.floor(sp * sub.length);
+        ctx.font = inkFont(subSize, '500');
+        ctx.fillStyle = INK_DIM;
+        ctx.fillText(sub.slice(0, sn), 0, mainSize * 0.95);
+        if (sn !== prevSn) {
+          prevSn = sn;
+          if (sn > 0 && sn < sub.length) soundScratch();
+        }
+        if (sp >= 1 && !endVoiced) {
+          endVoiced = true;
+          soundChime();
+        }
+      }
+
+      ctx.restore();
+
+      if (t < total + 250) {
+        handRAF = requestAnimationFrame(frame);
+      }
+    })(t0);
   }
 
   function preloadAssets(onDone) {
@@ -188,11 +410,11 @@
   function finishLoading() {
     if (loaderDone) return;
     loaderDone = true;
-    stopMatrix();
+    stopHandwrite();
     if (logoContainer) logoContainer.style.display = 'flex';
 
     const logoWait = reduceMotion ? 150 : 400;
-    const hideWait = reduceMotion ? 300 : 950;
+    const hideWait = reduceMotion ? 300 : 700;
     setTimeout(() => { if (mainLogo) mainLogo.classList.add('stable'); }, logoWait);
     setTimeout(() => {
       loaded = true;
@@ -203,13 +425,13 @@
   }
 
   function startLoading() {
-    startMatrix();
+    startHandwrite();
 
     setTimeout(() => {
       if (!loaded) finishLoading();
     }, 6000);
 
-    const minTime = reduceMotion ? 120 : 1400;
+    const minTime = reduceMotion ? 120 : 2300;
     preloadAssets(() => {
       setTimeout(finishLoading, minTime);
     });

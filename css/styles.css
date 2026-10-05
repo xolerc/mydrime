@@ -129,7 +129,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 .skip-link:focus-visible { transform: translateY(0); }
 
-/* ─────────── LOADER — matrix shamol (full qora fon, oq raqamlar) ─────────── */
+/* ─────────── LOADER — qo'lda yozuv (qora fon, siyoh + ovoz tugmasi) ─────────── */
 #loader {
   position: fixed;
   inset: 0;
@@ -141,7 +141,7 @@ img, svg, canvas { display: block; max-width: 100%; }
 
 #loader.hidden { opacity: 0; visibility: hidden; }
 
-#matrix-canvas {
+#handwrite-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -149,6 +149,61 @@ img, svg, canvas { display: block; max-width: 100%; }
   display: block;
   background: #000;
 }
+
+/* canvas ishlamasa — sof CSS qo'lyozma zaxira */
+.handwrite-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  z-index: 2;
+}
+
+.handwrite-fallback.show { display: flex; }
+
+.handwrite-fallback span {
+  font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  font-weight: 700;
+  font-size: clamp(3rem, 12vw, 6rem);
+  color: #f7f1de;
+  text-shadow: 0 0 24px rgba(247, 241, 222, 0.35);
+  transform: rotate(-4deg);
+  animation: handIn 1.2s ease-out forwards;
+}
+
+@keyframes handIn {
+  from { opacity: 0; transform: rotate(-4deg) translateY(14px); }
+  to { opacity: 1; transform: rotate(-4deg) translateY(0); }
+}
+
+/* loader ovoz tugmasi */
+.loader-sound {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 241, 222, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7f1de;
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+}
+
+.loader-sound:hover { background: rgba(255, 255, 255, 0.14); transform: scale(1.08); }
+
+.loader-sound:focus-visible { outline: 2px solid #f7f1de; outline-offset: 3px; }
+
+.loader-sound[aria-pressed="false"] { opacity: 0.55; }
 
 #logo-container {
   position: absolute;

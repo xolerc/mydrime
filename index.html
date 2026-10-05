@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.github.com">
   <link rel="dns-prefetch" href="https://api.github.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Bebas+Neue&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Bebas+Neue&family=Caveat:wght@500;600;700&display=swap">
 
   <meta name="description" content="Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. Tez, jonli veb-interfeyslar, WebGL fonlar va interaktiv tajribalar. Rasmiy portfolio.">
 
@@ -57,7 +57,7 @@
   <meta name="twitter:description" content="Tez, qulay interfeyslar bilan UX va konversiyani oshiradigan frontend muhandis.">
   <meta name="twitter:image" content="https://i.ibb.co/1YkVGcLr/file-000000006dac7246bdc26b703d4174a7.png">
 
-  <link rel="stylesheet" href="css/styles.css?v=20261005-mobile-clean">
+  <link rel="stylesheet" href="css/styles.css?v=20261005-handwrite">
 </head>
 <body>
   <canvas id="webgl-bg" aria-hidden="true"></canvas>
@@ -68,9 +68,11 @@
   <div class="grain-top" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Asosiy kontentga o'tish</a>
 
-  <!-- ═══ LOADER — matrix shamol (chapdan o'ngga, full qora fon) ═══ -->
+  <!-- ═══ LOADER — qo'lda yozuv (siyoh + qalam ovozi) ═══ -->
   <div id="loader" aria-hidden="true">
-    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    <canvas id="handwrite-canvas" aria-hidden="true"></canvas>
+    <div class="handwrite-fallback" id="handwriteFallback" aria-hidden="true"><span>Xoleric</span></div>
+    <button id="loaderSound" class="loader-sound" type="button" aria-label="Loader ovozini o'chirish" aria-pressed="true">🔊</button>
     <div id="logo-container" aria-hidden="true">
       <div class="xoleric-logo" id="mainLogo">XOLERIC</div>
     </div>
@@ -248,6 +250,6 @@
   </script>
 
   <script src="js/webgl-bg.js?v=20261001-cinema-glow"></script>
-  <script src="js/app.js?v=20261001-cinema"></script>
+  <script src="js/app.js?v=20261005-handwrite"></script>
 </body>
 </html>

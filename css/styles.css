@@ -1250,27 +1250,20 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .hero-title { font-size: clamp(16px, 5vw, 44px); }
   .eyebrow { letter-spacing: 0.22em; font-size: 11px; }
 
-  /* FIX: the orbit used to stay absolutely centered over the hero text and
-     overlap the eyebrow/title/CTAs on phones. It now flows BELOW the content
-     as a normal flex child — nothing can overlap anymore. */
-  .hero-art {
-    width: min(82vw, 304px);
-    height: min(82vw, 304px);
-    margin: 0 auto var(--space-4);
-  }
+  /* MOBIL TOZALASH — takroriy dekor va matnlar yashiriladi
+     (DOMda qoladi: SEO/AI uchun xavfsiz).
+     - hero-art: orbit-core bilan bir xil yuz (takror)
+     - hero-orbit: futerdagi ijtimoiy iconlar takrori
+     - section-sub: uch qavatli sarlavha takrori
+     - about-lead: bio bilan bir ma'no takrori (bio qoladi)
+     - contact-lead: sarlavha takrori */
+  .hero-art { display: none; }
   .hero-content { max-width: 100%; }
-  .hero-orbit {
-    position: static;
-    transform: none;
-    width: 190px;
-    height: 190px;
-    margin: var(--space-5) auto 0;
-    opacity: 0.85;
-    --orbit-r: 76px;
-    flex-shrink: 0;
-  }
-  .orbit-icon { width: 40px; height: 40px; margin: -20px; }
-  .orbit-core { width: 64px; height: 64px; margin: -32px; }
+  .hero-orbit { display: none; }
+  .section-sub { display: none; }
+  .about-lead { display: none; }
+  .contact-lead { display: none; }
+  .section-head { margin-bottom: var(--space-4); }
 
   .about, .work, .contact { padding-top: var(--space-6); padding-bottom: var(--space-6); }
 
@@ -1306,6 +1299,8 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   }
   .orbit-icon { width: 36px; height: 36px; margin: -18px; }
   .orbit-core { width: 56px; height: 56px; margin: -28px; }
+  /* juda kichik ekran: nav sig'maydi — ikkita havola yashirinadi */
+  .site-nav a[href="store.html"], .site-nav a[href="#about"] { display: none; }
 }
 
 /* ─────────── TOUCH DEVICES — strip heavy GPU work, never jank/freeze ─────────── */

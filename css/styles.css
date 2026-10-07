@@ -4,28 +4,18 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --bg: #05070c;
   --bg-soft: #05070c;
-  --ink: #05070c;
   --bone: #eceff4;
-  --steel: #8ea0b8;
-  --navy: #111921;
   --font-cine: 'Bebas Neue', 'Arial Narrow', Impact, sans-serif;
   --surface: rgba(255, 255, 255, 0.03);
-  --surface-2: rgba(255, 255, 255, 0.07);
   --text: #e8ecf4;
   --text-2: #b6becb;
   --muted: #aab6c9;
-  --faint: rgba(255, 255, 255, 0.35);
   --line: rgba(255, 255, 255, 0.09);
   --accent: #111921;
   --accent-2: #111921;
   --accent-rgb: 17, 25, 33;
-  --gold: #111921;
-  --gold-2: #111921;
-  --gold-deep: #111921;
   --gold-glow: rgba(17, 25, 33, 0.55);
-  --ok: #4cd97b;
 
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Space Grotesk', 'Arial Black', Impact, sans-serif;
@@ -1288,17 +1278,6 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 
 /* very small phones — keep everything readable, nothing clipped */
 @media (max-width: 380px) {
-  .hero-art {
-    width: min(92vw, 300px);
-    height: min(92vw, 300px);
-  }
-  .hero-orbit {
-    width: 160px;
-    height: 160px;
-    --orbit-r: 62px;
-  }
-  .orbit-icon { width: 36px; height: 36px; margin: -18px; }
-  .orbit-core { width: 56px; height: 56px; margin: -28px; }
   /* juda kichik ekran: nav sig'maydi — ikkita havola yashirinadi */
   .site-nav a[href="store.html"], .site-nav a[href="#about"] { display: none; }
 }

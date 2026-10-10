@@ -568,21 +568,7 @@ canvas#webgl-bg {
   border-radius: 4px;
   border: 1px solid rgba(236, 239, 244, 0.18);
 }
-.hero-art::after {
-  content: 'FIG. 01 — PORTRAIT · 35MM';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  padding: 8px 12px;
-  font-family: var(--font);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  color: rgba(236, 239, 244, 0.75);
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
-}
+.hero-art::after { content: none; display: none; }
 
 .hero-art .layer-main,
 .hero-art .layer-bg,

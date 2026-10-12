@@ -328,26 +328,7 @@ canvas#webgl-bg {
   transform: translateZ(0);
 }
 
-/* ─────────── AMBIENT MATRIX RAIN — kam, sekin, rang-barang, tartibsiz ───
-   WebGL ustida, kontent ostida yashaydi. Hech narsani to'smaydi. */
-canvas#matrix-rain {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.9;
-  mix-blend-mode: screen;
-  will-change: opacity;
-  transform: translateZ(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  canvas#matrix-rain { display: none; }
-}
-
-/* kontent har doim yomg'ir ustida — o'qishlilik uchun */
+/* kontent qatlami — WebGL fon ustida */
 main#main, footer.site-footer {
   position: relative;
   z-index: 1;

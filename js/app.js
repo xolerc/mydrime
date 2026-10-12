@@ -55,32 +55,9 @@
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   /* ═══════════════════════════════════════
-     CONTENT PROTECTION — no select, no copy,
-     no screenshots (best effort) — desktop only,
-     touch users keep native long-press behavior
+     UI MATNLAR NUSXALANADI — himoya o'chirilgan.
+     right-click, Ctrl+C, belgilash — hammasi erkin.
      ═══════════════════════════════════════ */
-
-  if (isFine) {
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('copy', (e) => e.preventDefault());
-    document.addEventListener('cut', (e) => e.preventDefault());
-    document.addEventListener('paste', (e) => e.preventDefault());
-    document.addEventListener('selectstart', (e) => e.preventDefault());
-    document.addEventListener('dragstart', (e) => e.preventDefault());
-
-    window.addEventListener('keydown', (e) => {
-      const k = (e.key || '').toLowerCase();
-      const mod = e.ctrlKey || e.metaKey;
-      if (mod && ['c', 'x', 'v', 's', 'p', 'u', 'a'].includes(k)) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (e.key === 'PrintScreen' || k === 'printscreen') {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    });
-  }
 
   /* ═══════════════════════════════════════
      LOADER — matrix shamol (full qora fon, oq raqamlar)

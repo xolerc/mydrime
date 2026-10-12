@@ -67,31 +67,27 @@ body {
   overflow-x: hidden;
 }
 
-/* ─────────── CONTENT PROTECTION (no copy / no select / no screenshots) ─────────── */
+/* ─────────── TEXT SELECTION — UI matnlar nusxalanadi ─────────── */
 html,
 body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-drag: none;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
   cursor: default;
 }
 
 img,
 svg,
-canvas,
-a {
+canvas {
   -webkit-user-drag: none;
   -moz-user-select: none;
   user-select: none;
-  pointer-events: inherit;
 }
 
 ::selection {
-  background: transparent;
-  color: inherit;
+  background: rgba(245, 197, 24, 0.35);
+  color: #fff;
 }
 
 img, svg, canvas { display: block; max-width: 100%; }
@@ -330,6 +326,31 @@ canvas#webgl-bg {
      never forces the page to re-paint under it (scroll stays 60fps) */
   will-change: transform;
   transform: translateZ(0);
+}
+
+/* ─────────── AMBIENT MATRIX RAIN — kam, sekin, rang-barang, tartibsiz ───
+   WebGL ustida, kontent ostida yashaydi. Hech narsani to'smaydi. */
+canvas#matrix-rain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  canvas#matrix-rain { display: none; }
+}
+
+/* kontent har doim yomg'ir ustida — o'qishlilik uchun */
+main#main, footer.site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .chrome-accent {

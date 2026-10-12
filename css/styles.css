@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    xoleric — creative portfolio v3.1 (V1 spirit + V3 skeleton)
-   Flashlight mask-reveal · neon welcome · orbit · scroll layout
+   Flashlight mask-reveal · orbit · scroll layout
    ═══════════════════════════════════════════════════════════ */
 
 :root {
@@ -212,9 +212,9 @@ img, svg, canvas { display: block; max-width: 100%; }
   max-width: calc(100vw - 20px);
   padding: 7px 10px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(17, 25, 33, 0.55), rgba(17, 25, 33, 0.30) 55%, rgba(17, 25, 33, 0.40));
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(17, 25, 33, 0.32), rgba(17, 25, 33, 0.16) 55%, rgba(17, 25, 33, 0.22));
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(142, 160, 184, 0.45);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 34px rgba(142, 160, 184, 0.28);
   opacity: 0;
@@ -601,7 +601,7 @@ main#main, footer.site-footer {
   will-change: transform;
 }
 
-.hero-art .layer-bg { background-image: url('../images/bg.webp'); opacity: 0.5; }
+.hero-art .layer-bg { background-image: url('../images/bg.webp'); opacity: 0.5; background-position: 38% center; transform: translateX(-12px) scale(1.05); }
 .hero-art .layer-main { background-image: url('../images/main.webp'); opacity: 1; }
 
 /* V1 flashlight reveal — clear bg.webp opens in a circle inside the art box only */
@@ -646,38 +646,6 @@ main#main, footer.site-footer {
   margin: 0 0 14px -2px;
   overflow-wrap: anywhere;
 }
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(18px, 2.4vw, 28px);
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  color: var(--text-2);
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5), 0 0 44px rgba(0, 0, 0, 0.35);
-  margin-bottom: var(--space-3);
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-}
-
-.hero.ready .hero-title { opacity: 1; transform: none; }
-
-/* Neon welcome letters */
-.hero-title .word {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.hero-title .letter {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(22px) scale(0.9);
-  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
-}
-
-.hero-title .letter.visible { opacity: 1; }
-.hero-title .letter.space { width: 0.42em; }
-
 .hero-cta {
   display: flex;
   flex-wrap: wrap;
@@ -884,26 +852,7 @@ main#main, footer.site-footer {
 
 .about-sticky .section-title { margin-bottom: var(--space-5); }
 
-.about-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  gap: var(--space-3);
-}
-
-.stat { text-align: left; }
-
-.stat-number {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3.4vw, 44px);
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.stat-label { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-
 .about-content { display: grid; gap: var(--space-4); }
-
-.about-lead { font-size: clamp(16px, 1.6vw, 20px); line-height: 1.7; color: var(--text-2); }
 
 .about-bio {
   font-size: 14px;
@@ -911,7 +860,7 @@ main#main, footer.site-footer {
   color: var(--muted);
   padding: 14px 16px;
   border-left: 2px solid rgba(142, 160, 184, 0.5);
-  background: rgba(17, 25, 33, 0.35);
+  background: rgba(17, 25, 33, 0.18);
   border-radius: 0 12px 12px 0;
 }
 .about-bio strong { color: var(--bone); }
@@ -922,7 +871,9 @@ main#main, footer.site-footer {
   padding: var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(17, 25, 33, 0.65), var(--surface));
+  background: linear-gradient(180deg, rgba(17, 25, 33, 0.32), var(--surface));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition: transform var(--t-ui) var(--ease-out), border-color var(--t-ui);
 }
 
@@ -950,7 +901,9 @@ main#main, footer.site-footer {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(17, 25, 33, 0.55), var(--surface));
+  background: linear-gradient(180deg, rgba(17, 25, 33, 0.28), var(--surface));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition: transform var(--t-fast) var(--ease-out), border-color var(--t-ui), box-shadow var(--t-ui);
   opacity: 0;
   transform-origin: center;
@@ -987,7 +940,7 @@ main#main, footer.site-footer {
   aspect-ratio: 16 / 10;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0a0e16, #04060b);
+  background: linear-gradient(135deg, rgba(10, 14, 22, 0.55), rgba(4, 6, 11, 0.55));
   border-bottom: 1px solid rgba(236, 239, 244, 0.08);
 }
 
@@ -1071,12 +1024,12 @@ main#main, footer.site-footer {
 
 .contact-box {
   width: min(720px, 100%);
-  background: #111921;
+  background: rgba(17, 25, 33, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   padding: clamp(var(--space-4), 5vw, var(--space-6));
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   text-align: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 60px rgba(17, 25, 33, 0.8);
 }
@@ -1147,15 +1100,6 @@ main#main, footer.site-footer {
 
 .footer-note { font-size: 13px; color: var(--muted); }
 
-.credits {
-  font-family: var(--font);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.24em;
-  color: rgba(142, 160, 184, 0.6);
-  text-align: center;
-}
-
 .footer-top {
   color: #ffffff;
   text-decoration: none;
@@ -1195,13 +1139,6 @@ main#main, footer.site-footer {
 body.ee-mode .hero-art .layer-main,
 body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
 
-body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-out; }
-
-@keyframes eePulse {
-  0% { text-shadow: 0 0 10px rgba(255, 0, 100, 0.5); }
-  100% { text-shadow: 0 0 24px rgba(0, 255, 200, 0.6); }
-}
-
 /* ─────────── REVEAL ON SCROLL ─────────── */
 .reveal-up {
   opacity: 0;
@@ -1222,8 +1159,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   }
   .hero-art .reveal { opacity: 0; }
   .project-card, .reveal-up { opacity: 1; transform: none; }
-  .hero-title, .hero-cta { opacity: 1; transform: none; }
-  .hero-title .letter { opacity: 1; }
+  .hero-cta { opacity: 1; transform: none; }
 }
 
 /* ─────────── RESPONSIVE ─────────── */
@@ -1235,7 +1171,6 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
 
 @media (max-height: 620px) and (min-width: 769px) {
   .hero-art { width: 220px; height: 220px; }
-  .hero-title { font-size: clamp(26px, 4vw, 46px); }
   .hero { padding-bottom: calc(var(--space-6) / 2); }
 }
 
@@ -1244,7 +1179,6 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .header-actions .btn { display: none; }
   .projects-grid { grid-template-columns: 1fr; }
   .hero { align-items: flex-start; text-align: left; }
-  .hero-title { font-size: clamp(16px, 5vw, 44px); }
   .eyebrow { letter-spacing: 0.22em; font-size: 11px; }
 
   /* MOBIL TOZALASH — takroriy dekor va matnlar yashiriladi
@@ -1252,13 +1186,11 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
      - hero-art: orbit-core bilan bir xil yuz (takror)
      - hero-orbit: futerdagi ijtimoiy iconlar takrori
      - section-sub: uch qavatli sarlavha takrori
-     - about-lead: bio bilan bir ma'no takrori (bio qoladi)
      - contact-lead: sarlavha takrori */
   .hero-art { display: none; }
   .hero-content { max-width: 100%; }
   .hero-orbit { display: none; }
   .section-sub { display: none; }
-  .about-lead { display: none; }
   .contact-lead { display: none; }
   .section-head { margin-bottom: var(--space-4); }
 
@@ -1269,7 +1201,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .site-header {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: linear-gradient(135deg, rgba(17, 25, 33, 0.95), rgba(17, 25, 33, 0.95));
+    background: linear-gradient(135deg, rgba(17, 25, 33, 0.55), rgba(17, 25, 33, 0.55));
     border-color: rgba(142, 160, 184, 0.4);
   }
   .scroll-progress { top: 0; }
@@ -1277,7 +1209,7 @@ body.ee-mode .hero-title { animation: eePulse 1.6s infinite alternate ease-in-ou
   .contact-box {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: #111921;
+    background: rgba(17, 25, 33, 0.55);
     border-color: rgba(255, 255, 255, 0.25);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
   }

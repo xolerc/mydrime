@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    xoleric — creative portfolio v3.2
-   Corner art (blur reveal) · neon welcome · orbit · live GitHub
+   Corner art (blur reveal) · orbit · live GitHub
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -272,48 +272,6 @@
   }
 
   /* ═══════════════════════════════════════
-     NEON WELCOME LETTERS
-     ═══════════════════════════════════════ */
-
-  const WELCOME_TEXT = 'Men natija beradigan veb-tajribalar yarataman';
-  const welcomeEl = $('welcomeText');
-  const letterEls = [];
-
-  function buildLetters() {
-    if (!welcomeEl) return;
-    welcomeEl.textContent = '';
-    WELCOME_TEXT.split(/\s+/).forEach((word, wi, arr) => {
-      const wordEl = document.createElement('span');
-      wordEl.className = 'word';
-      word.split('').forEach((char) => {
-        const span = document.createElement('span');
-        span.textContent = char;
-        span.className = 'letter';
-        wordEl.appendChild(span);
-        letterEls.push(span);
-      });
-      welcomeEl.appendChild(wordEl);
-      if (wi < arr.length - 1) {
-        const sp = document.createElement('span');
-        sp.className = 'letter space';
-        sp.textContent = '\u00A0';
-        welcomeEl.appendChild(sp);
-        letterEls.push(sp);
-      }
-    });
-  }
-
-  function revealLetters() {
-    if (reduceMotion) {
-      letterEls.forEach((s) => s.classList.add('visible'));
-      return;
-    }
-    letterEls.forEach((s, i) => {
-      setTimeout(() => s.classList.add('visible'), 150 + i * 30);
-    });
-  }
-
-  /* ═══════════════════════════════════════
      ORBIT — cloned social icons
      ═══════════════════════════════════════ */
 
@@ -374,7 +332,7 @@
         if (!widest || r.width > widest.width) widest = { left: r.left, right: r.right };
       });
       /* everything a reader must never lose sight of */
-      document.querySelectorAll('.section-title, .eyebrow, .card, .project-card, .stat, .contact-inner p')
+      document.querySelectorAll('.section-title, .eyebrow, .card, .project-card, .contact-inner p')
         .forEach((el) => {
           const r = el.getBoundingClientRect();
           if (r.width < 70 || r.height < 26) return;
@@ -601,70 +559,6 @@
       }
     }, { threshold: 0.18 });
     els.forEach((el) => io.observe(el));
-  }
-
-  function setStatsFinal() {
-    const els = document.querySelectorAll('.stat-number');
-    els.forEach((el) => {
-      const target = parseInt(el.dataset.count, 10) || 0;
-      el.textContent = target + '+';
-    });
-  }
-
-  let statsDone = false;
-  function animateStats() {
-    if (statsDone) return;
-    statsDone = true;
-    if (reduceMotion) { setStatsFinal(); return; }
-    const els = document.querySelectorAll('.stat-number');
-    const t0 = performance.now();
-    const dur = 1400;
-    let statFrame = 0;
-    let lastT = t0;
-    (function step(now) {
-      const p = clamp((now - t0) / dur, 0, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      statFrame++;
-      if (!coarse || statFrame % 2 === 0) {
-        els.forEach((el) => {
-          const target = parseInt(el.dataset.count, 10) || 0;
-          el.textContent = Math.round(target * ease) + '+';
-        });
-      }
-      if (p < 1) requestAnimationFrame(step);
-      else els.forEach((el) => {
-        const target = parseInt(el.dataset.count, 10) || 0;
-        el.textContent = target + '+';
-      });
-    })(lastT);
-  }
-
-  function initStatsSpy() {
-    const about = document.getElementById('about');
-    if (!about && !document.querySelector('.about-stats')) { animateStats(); return; }
-    if (!hasIO) { animateStats(); return; }
-    if (reduceMotion) { setStatsFinal(); return; }
-
-    /* FIX: threshold 0.4 on the tall #about section can never be reached on
-       mobile (section height >> viewport height → max ratio < 0.4), so the
-       counters stayed at 0 forever. Observe the small .about-stats block
-       instead, with a low threshold + bottom rootMargin as a safety net. */
-    const statsEl = document.querySelector('.about-stats');
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        animateStats();
-        io.disconnect();
-      }
-    }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
-    if (statsEl) io.observe(statsEl);
-
-    const ioAbout = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        animateStats();
-        ioAbout.disconnect();
-      }
-    }, { threshold: 0 });
-    ioAbout.observe(about);
   }
 
   /* ═══════════════════════════════════════
@@ -1016,9 +910,7 @@
     if (siteHeader) siteHeader.classList.add('visible');
     try { buildOrbit(); } catch (e) { /* noop */ }
     try { initOrbitTravel(); } catch (e) { /* noop */ }
-    try { buildLetters(); } catch (e) { /* noop */ }
     try { buildProjectCards(); } catch (e) { /* noop */ }
-    try { initStatsSpy(); } catch (e) { /* noop */ }
     try { initNavSpy(); } catch (e) { /* noop */ }
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
@@ -1028,7 +920,6 @@
     if (!reduceMotion && revealEl) {
       startMasterLoop();
     }
-    try { revealLetters(); } catch (e) { /* noop */ }
 
     const yearEl = $('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();

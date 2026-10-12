@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — ambient matrix rain · mydrime v3.3
-   Juda kam + juda sekin + tartibsiz + rang-barang.
-   - 7-14 ta tomchi (ekran kengligiga qarab), hech qachon zich emas
-   - Sekin tushish: 18-55 px/s + sinusoidal chayqalish
-   - Har bir tomchi: o'z rangi, o'z shrifti, o'z uzunligi, o'z tezligi
-   - Belgilar har kadrda almashadi: raqam + katakana + ramz + shakl
-   - Dumili so'nish (head oq, dum rangga erib ketadi) + glow
+   xoleric — ambient matrix rain · mydrime v3.4 DONA-DONA
+   Zanjir YO'Q — yakka-yakka donalar. Har bir dona tushguncha
+   o'zgaradi: belgisi almashadi (morph) + rangi aylanadi (hue).
+   - 9-18 ta dona (ekran kengligiga qarab), hech qachon zich emas
+   - Sekin tushish: 15-50 px/s + sinusoidal chayqalish
+   - Har dona: o'z o'lchami, o'z tezligi, o'z rangi (HSL aylanish)
+   - Belgilar: raqam + katakana + ramz + geometrik shakl
+   - Pastga yetganda so'nib, tepada yangidan tug'iladi
    - prefers-reduced-motion, hidden tab, low-end himoyalari bor
    Exposed as window.xolericRain = { start, stop, isOn }
    ═══════════════════════════════════════════════════════════ */
@@ -27,25 +28,13 @@
   try { ctx = canvas.getContext('2d'); } catch (e) { return; }
   if (!ctx) return;
 
-  /* ── Har xil belgilar: raqam + katakana + lotin + ramz + geometrik shakl ── */
+  /* ── Har xil belgilar: dona har tushishda qiyofasini almashtiradi ── */
   var GLYPHS = (
     '01' +
     'アイウエオカキクケコサシスセソ0123456789' +
     'XOLERIC<>[]{}+×*=:;・.·' +
     '○●□■△▲◇◆☆★◐◑'
   ).split('');
-
-  /* ── Rang palitrasi: saytning oltin/po'lat ruhiga mos, lekin jonli ── */
-  var PALETTE = [
-    [245, 197, 24],   /* gold #f5c518 */
-    [201, 168, 106],  /* champagne #c9a86a */
-    [142, 160, 184],  /* steel #8ea0b8 */
-    [125, 249, 212],  /* mint */
-    [125, 184, 255],  /* sky */
-    [255, 122, 217],  /* pink */
-    [183, 140, 255],  /* violet */
-    [242, 240, 234]   /* warm white */
-  ];
 
   function pick(arr) { return arr[(Math.random() * arr.length) | 0]; }
   function rand(min, max) { return min + Math.random() * (max - min); }
@@ -66,36 +55,36 @@
 
   function targetCount() {
     var w = window.innerWidth || 800;
-    if (w < 480) return 7;
-    if (w < 900) return 10;
-    if (lowEnd) return 11;
-    return 14; /* desktop: baribir juda kam */
+    if (w < 480) return 9;
+    if (w < 900) return 13;
+    if (lowEnd) return 14;
+    return 18; /* yakka donalar — baribir siyrak */
   }
 
+  /* Bitta dona: zanjirsiz, mustaqil */
   function makeDrop(anywhere) {
-    var c = pick(PALETTE);
-    var fontSize = randInt(12, 22);
-    var len = randInt(3, 9);
-    var speed = rand(18, 55); /* px/s — ataylab sekin */
     return {
       x: rand(0, Math.max(W, 1)),
-      y: anywhere ? rand(-H * 0.4, H) : rand(-H * 0.9, -20),
-      len: len,
-      font: fontSize,
-      speed: speed,
-      baseSpeed: speed,
-      color: c,
-      opacity: rand(0.28, 0.68),
-      drift: rand(-9, 9),          /* yon siljish px/s */
-      phase: rand(0, Math.PI * 2), /* chayqalish fazasi */
-      wobAmp: rand(6, 22),         /* chayqalish amplitudasi */
-      wobFreq: rand(0.2, 0.9),     /* chayqalish tezligi */
-      pause: 0,                    /* pastga yetganda kutish */
-      wait: rand(0, 2.5),          /* boshida kutish — tartibsiz start */
-      chars: [],
-      changeP: rand(0.12, 0.42),   /* har kadrda belgi almashish ehtimoli */
-      glow: rand(4, 12),
-      life: rand(0, 1000)
+      y: anywhere ? rand(-H * 0.3, H) : rand(-H * 0.7, -20),
+      baseFont: randInt(13, 24),
+      speed: rand(15, 50),              /* px/s — ataylab sekin */
+      opacity: rand(0.32, 0.75),
+      drift: rand(-10, 10),
+      phase: rand(0, Math.PI * 2),
+      wobAmp: rand(6, 24),
+      wobFreq: rand(0.2, 0.9),
+      hue: rand(0, 360),                /* boshlang'ich rang */
+      hueShift: rand(6, 28) * (Math.random() < 0.5 ? -1 : 1), /* rang aylanishi °/s */
+      sat: randInt(70, 100),
+      light: randInt(55, 70),
+      ch: pick(GLYPHS),
+      morphP: rand(1.5, 5),             /* sekundiga o'rtacha belgi almashuvi */
+      pulseFreq: rand(0.5, 1.5),        /* o'lcham nafas olishi */
+      glow: rand(6, 14),
+      wait: anywhere ? rand(0, 2) : 0,  /* tartibsiz start */
+      pause: 0,
+      life: rand(0, 1000),
+      flash: 0
     };
   }
 
@@ -115,25 +104,28 @@
     } catch (e) { /* noop */ }
   }
 
-  function respawn(d, initial) {
+  function respawn(d) {
     var fresh = makeDrop(false);
-    d.x = rand(0, Math.max(W, 1));
+    d.x = fresh.x;
     d.y = fresh.y;
-    d.len = fresh.len;
-    d.font = fresh.font;
+    d.baseFont = fresh.baseFont;
     d.speed = fresh.speed;
-    d.baseSpeed = fresh.baseSpeed;
-    d.color = fresh.color;
     d.opacity = fresh.opacity;
     d.drift = fresh.drift;
     d.phase = fresh.phase;
     d.wobAmp = fresh.wobAmp;
     d.wobFreq = fresh.wobFreq;
-    d.wait = initial ? 0 : rand(1, 6); /* tartibsiz qaytish: 1-6s pauza */
-    d.chars = [];
-    d.changeP = fresh.changeP;
+    d.hue = fresh.hue;
+    d.hueShift = fresh.hueShift;
+    d.sat = fresh.sat;
+    d.light = fresh.light;
+    d.ch = fresh.ch;
+    d.morphP = fresh.morphP;
+    d.pulseFreq = fresh.pulseFreq;
     d.glow = fresh.glow;
+    d.wait = rand(0.5, 5); /* tartibsiz qaytish */
     d.pause = 0;
+    d.flash = 0;
   }
 
   function draw(now) {
@@ -147,58 +139,54 @@
     for (var i = 0; i < drops.length; i++) {
       var d = drops[i];
 
-      /* tartibsiz pauza */
       if (d.wait > 0) { d.wait -= dt; continue; }
-      if (d.pause > 0) { d.pause -= dt; if (d.pause <= 0) respawn(d, false); continue; }
+      if (d.pause > 0) { d.pause -= dt; if (d.pause <= 0) respawn(d); continue; }
 
       d.life += dt;
 
-      /* tezlik nafas oladi: sekin ±20% tebranadi */
+      /* ── harakat: sekin + nafas + chayqalish ── */
       var breathe = 1 + Math.sin(d.life * 0.6 + d.phase) * 0.2;
-      d.y += d.baseSpeed * breathe * DPR * dt;
-
-      /* yon chayqalish: drift + sinus */
+      d.y += d.speed * breathe * DPR * dt;
       d.x += (d.drift * DPR * dt) + Math.sin(d.life * d.wobFreq * 2 + d.phase) * d.wobAmp * DPR * dt * 0.35;
-
-      /* chetdan chiqsa qarama-qarshi tomondan kiradi */
       if (d.x < -30) d.x = W + 20;
       if (d.x > W + 30) d.x = -20;
 
-      var rowH = d.font * DPR * 1.25;
+      /* ── O'ZI o'zgaradi: belgi morph ── */
+      if (Math.random() < d.morphP * dt) d.ch = pick(GLYPHS);
 
-      /* belgilar to'plamini yangilash */
-      while (d.chars.length < d.len) d.chars.push(pick(GLYPHS));
-      for (var k = 0; k < d.chars.length; k++) {
-        if (Math.random() < d.changeP) d.chars[k] = pick(GLYPHS);
+      /* ── RANGI o'zgaradi: hue to'xtovsiz aylanadi ── */
+      d.hue = (d.hue + d.hueShift * dt + 360) % 360;
+
+      /* ── o'lcham nafas oladi ── */
+      var scale = 1 + 0.22 * Math.sin(d.life * d.pulseFreq * 2 + d.phase);
+      var fontPx = d.baseFont * scale * DPR;
+
+      /* ── chekkalarda yumshoq so'nish ── */
+      var edge = Math.min(1, d.y / (70 * DPR), (H - d.y) / (130 * DPR));
+      if (edge < 0) edge = 0;
+      var a = d.opacity * edge;
+      /* ba'zan oq chaqnash — jonli lipillash */
+      if (Math.random() < 0.015) d.flash = 0.18;
+      if (d.flash > 0) d.flash -= dt;
+
+      var col;
+      if (d.flash > 0) {
+        col = 'rgba(255,255,255,' + a.toFixed(3) + ')';
+      } else {
+        col = 'hsla(' + d.hue.toFixed(1) + ',' + d.sat + '%,' + d.light + '%,' + a.toFixed(3) + ')';
       }
 
-      ctx.font = d.font * DPR + 'px ui-monospace, "Hiragino Kaku Gothic Pro", Menlo, Consolas, monospace';
+      ctx.font = fontPx.toFixed(1) + 'px ui-monospace, "Hiragino Kaku Gothic Pro", Menlo, Consolas, monospace';
       ctx.shadowBlur = d.glow * DPR;
-      ctx.shadowColor = 'rgba(' + d.color[0] + ',' + d.color[1] + ',' + d.color[2] + ',0.8)';
-
-      for (var j = 0; j < d.chars.length; j++) {
-        var cy = d.y - j * rowH;
-        if (cy < -rowH || cy > H + rowH) continue;
-        var headT = 1 - j / d.len; /* 1 = bosh, 0 = dum */
-        var a = d.opacity * (0.15 + 0.85 * headT * headT);
-        /* bosh harfi deyarli oq — klassik matrix "head" */
-        var mix = j === 0 ? 0.75 : headT * 0.25;
-        var r = Math.round(d.color[0] + (255 - d.color[0]) * mix);
-        var g = Math.round(d.color[1] + (255 - d.color[1]) * mix);
-        var b = Math.round(d.color[2] + (255 - d.color[2]) * mix);
-        /* miltillash: dum uchlari ba'zan lipillaydi */
-        if (j === d.chars.length - 1 && Math.random() < 0.06) a *= 0.3;
-        ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')';
-        /* har bir qator ozgina x-shift — ideal ustun emas, tirik yomg'ir */
-        var jx = d.x + Math.sin(d.life * 1.3 + d.phase + j * 0.7) * 3 * DPR;
-        ctx.fillText(d.chars[j], jx, cy);
-      }
+      ctx.shadowColor = 'hsla(' + d.hue.toFixed(1) + ',' + d.sat + '%,60%,0.8)';
+      ctx.fillStyle = col;
+      ctx.fillText(d.ch, d.x, d.y);
       ctx.shadowBlur = 0;
 
-      /* pastga yetdi → pauza, keyin tartibsiz qaytish */
-      if (d.y - d.len * rowH > H + 20) {
-        d.pause = rand(0.8, 5);
-        if (d.pause <= 0.01) respawn(d, false);
+      /* pastga yetdi → qisqa pauza, keyin tepada yangi qiyofada tug'iladi */
+      if (d.y > H + 30) {
+        d.pause = rand(0.5, 4);
+        if (d.pause <= 0.01) respawn(d);
       }
     }
 
@@ -224,7 +212,6 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
       resize();
-      /* sonni moslash: ko'paysa qo'sh, kamaysa kes */
       var n = targetCount();
       while (drops.length < n) drops.push(makeDrop(true));
       if (drops.length > n) drops.length = n;
@@ -240,7 +227,6 @@
     }
   });
 
-  /* loader yopilgach boshlash — erta chaqirilsa ham xavfsiz */
   function autoStart() {
     if (window.__xolericLoaded) { start(); return; }
     var tries = 0;
@@ -256,7 +242,6 @@
         start();
       }
     }, 250);
-    /* zaxira: baribir 6s da yonadi */
     setTimeout(function () { try { clearInterval(iv); } catch (e) {} start(); }, 6000);
   }
 
@@ -272,6 +257,5 @@
 
   if (document.readyState === 'complete') autoStart();
   else window.addEventListener('load', autoStart, { once: true });
-  /* load kechiksa ham */
   setTimeout(function () { if (!running) start(); }, 7000);
 })();

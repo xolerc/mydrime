@@ -34,8 +34,7 @@
   var GLYPHS = (
     '01' +
     'アイウエオカキクケコサシスセソ0123456789' +
-    'XOLERIC<>[]{}+×*=:;・.·' +
-    '□■◇◆☆★'
+    'XOLERIC<>[]{}+×*=:;・.·'
   ).split('');
 
   function pick(arr) { return arr[(Math.random() * arr.length) | 0]; }

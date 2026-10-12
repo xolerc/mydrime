@@ -347,7 +347,73 @@ canvas#matrix-rain {
   canvas#matrix-rain { display: none; }
 }
 
-/* kontent har doim yomg'ir ustida — o'qishlilik uchun */
+/* ─────────── AURA BLOBS — shaftoli + binafsha nur, sekin suzish ───
+   WebGL ustida, kontent ostida. backdrop-filter emas (fon elementi
+   o'zi) — filter: blur(40px) + mix-blend-mode: screen. */
+.aura {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+
+.aura span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  will-change: transform;
+}
+
+.aura-b1 {
+  width: 55vmax;
+  height: 55vmax;
+  left: -12vmax;
+  top: -14vmax;
+  background: radial-gradient(circle at 30% 30%, #FF9A5A, transparent 50%);
+  opacity: 0.5;
+  animation: auraDrift1 24s ease-in-out infinite alternate;
+}
+
+.aura-b2 {
+  width: 60vmax;
+  height: 60vmax;
+  right: -16vmax;
+  bottom: -18vmax;
+  background: radial-gradient(circle at 70% 60%, #9B8CFF, transparent 55%);
+  opacity: 0.45;
+  animation: auraDrift2 28s ease-in-out infinite alternate;
+}
+
+.aura-b3 {
+  width: 34vmax;
+  height: 34vmax;
+  left: 55%;
+  top: 38%;
+  background: radial-gradient(circle at 50% 50%, #1A1650, transparent 60%);
+  opacity: 0.9;
+  animation: auraDrift3 20s ease-in-out infinite alternate;
+}
+
+@keyframes auraDrift1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(6vmax, 4vmax) scale(1.12); }
+}
+
+@keyframes auraDrift2 {
+  0% { transform: translate(0, 0) scale(1.08); }
+  100% { transform: translate(-5vmax, -6vmax) scale(1); }
+}
+
+@keyframes auraDrift3 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-4vmax, 5vmax) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura span { animation: none; }
+}
 main#main, footer.site-footer {
   position: relative;
   z-index: 1;

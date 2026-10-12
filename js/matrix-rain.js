@@ -1,7 +1,9 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — ambient matrix rain · mydrime v3.4 DONA-DONA
-   Zanjir YO'Q — yakka-yakka donalar. Har bir dona tushguncha
-   o'zgaradi: belgisi almashadi (morph) + rangi aylanadi (hue).
+   xoleric — ambient matrix rain · mydrime v3.5 REAL
+   Real matrix uslubi: tik tushish + tez lipillash + sekin yog'ish.
+   Zanjir YO'Q — yakka-yakka donalar tepada tug'ilib pastga yog'adi.
+   Har bir dona tushguncha qiyofasini tez almashtiradi (morph)
+   va rangi aylanadi (hue).
    - 9-18 ta dona (ekran kengligiga qarab), hech qachon zich emas
    - Sekin tushish: 15-50 px/s + sinusoidal chayqalish
    - Har dona: o'z o'lchami, o'z tezligi, o'z rangi (HSL aylanish)
@@ -69,16 +71,16 @@
       baseFont: randInt(13, 24),
       speed: rand(15, 50),              /* px/s — ataylab sekin */
       opacity: rand(0.32, 0.75),
-      drift: rand(-10, 10),
+      drift: rand(-3, 3),
       phase: rand(0, Math.PI * 2),
-      wobAmp: rand(6, 24),
+      wobAmp: rand(4, 12),
       wobFreq: rand(0.2, 0.9),
       hue: rand(0, 360),                /* boshlang'ich rang */
       hueShift: rand(6, 28) * (Math.random() < 0.5 ? -1 : 1), /* rang aylanishi °/s */
       sat: randInt(70, 100),
       light: randInt(55, 70),
       ch: pick(GLYPHS),
-      morphP: rand(1.5, 5),             /* sekundiga o'rtacha belgi almashuvi */
+      morphP: rand(8, 20),              /* tez lipillash: sekiga 8-20 belgi */
       pulseFreq: rand(0.5, 1.5),        /* o'lcham nafas olishi */
       glow: rand(6, 14),
       wait: anywhere ? rand(0, 2) : 0,  /* tartibsiz start */

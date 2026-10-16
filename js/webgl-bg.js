@@ -1,362 +1,175 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — global WebGL background · Mercury Liquid Chrome
-   Simplex-noise chrome surface + specular lighting, text-free
-   Cursor-reactive "ship on the sea": the background drifts,
-   ripples and re-tints slowly toward the cursor — the pointer
-   itself stays 1:1 and unaffected.
-   Fullscreen quad · u_resolution + u_time + u_cursor · DPR-aware
-
-   SAFETY (universal no-hang):
-   - The ONLY page background — app.js enables it whenever the
-     browser supports WebGL; the static body gradient is the
-     invisible fallback when it cannot run.
-    - Har qanday brauzerda bir xil: renderer/vendor nomi tekshirilmaydi,
-      faqat real kadr tezligi o'lchanadi (xatti-harakat bo'yicha qaror).
-    - A frame watchdog auto-disables the loop after sustained slowness
-      (~12 slow frames per tier) or 3 consecutive 500ms+ frames.
-      Start/resume dan keyingi ilk 8 kadr warmup - hisoblanmaydi.
-   - DPR + max-side caps keep the fill-rate bounded on weak GPUs.
-   Exposed as window.xolericGL = { enable, disable, isOn, canRun }
+   xoleric — global WebGL background · SUV (NULL//SHIFT 13-Suv port)
+   NULL__SHIFT.html dagi 13-Suv (mode 12) to'liq ko'chirma:
+   WVS/WFS point-water shader + 8 ripple + yomg'ir + tomchi + iz.
+   Portfolio foni sifatida moslashtirilgan:
+   - canvas#webgl-bg (fixed, z-index -1, pointer-events none)
+   - interaksiya window dan (bosish=to'lqin, sudrash=iz, scroll=yomg'ir)
+   - window.xolericGL API saqlangan (app.js o'zgarmaydi)
+   SAFETY: watchdog + DPR cap + reduced-motion + THREE yuklanmasa fallback.
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  const canvas = document.getElementById('webgl-bg');
+  var canvas = document.getElementById('webgl-bg');
   if (!canvas) return;
 
-  let reduceMotion = false;
-  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* noop */ }
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  let coarse = false;
-  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) { /* noop */ }
+  var coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
 
-  const smallScreen = (window.innerWidth || 800) < 768;
-  const hw = (navigator.hardwareConcurrency || 4);
-  let devMem = 8;
+  var smallScreen = (window.innerWidth || 800) < 768;
+  var hw = (navigator.hardwareConcurrency || 4);
+  var devMem = 8;
   if (typeof navigator.deviceMemory === 'number') devMem = navigator.deviceMemory;
-  const lowEnd = coarse || smallScreen || hw <= 4 || devMem <= 4;
-  const isMobile = coarse || smallScreen;
+  var lowEnd = coarse || smallScreen || hw <= 4 || devMem <= 4;
+  var isMobile = coarse || smallScreen;
 
-  let gl = null;
-  let program = null;
-  let resolutionLocation = null;
-  let timeLocation = null;
-  let cursorLocation = null;
-  let cursorVelLocation = null;
-  let qualityLocation = null;
-  let animationId = 0;
-  let lastTime = null;
-  let elapsed = 0;
-  let running = false;
-  let disabled = false;
-  let wasRunning = false;
-
-  const lerp = (a, b, t) => a + (b - a) * t;
-
-  let targetX = 0.5, targetY = 0.5;
-  let shipX = 0.5, shipY = 0.5;
-  let velX = 0, velY = 0;
-  let lastShipX = shipX, lastShipY = shipY;
-
-  function updateShip() {
-    shipX += (targetX - shipX) * 0.025;
-    shipY += (targetY - shipY) * 0.025;
-    velX = lerp(velX, (shipX - lastShipX), 0.25);
-    velY = lerp(velY, (shipY - lastShipY), 0.25);
-    lastShipX = shipX;
-    lastShipY = shipY;
-  }
-
-  window.addEventListener('pointermove', (e) => {
-    targetX = e.clientX / Math.max(window.innerWidth, 1);
-    targetY = e.clientY / Math.max(window.innerHeight, 1);
-  }, { passive: true });
-
-  document.addEventListener('touchmove', (e) => {
-    const t = e.touches[0];
-    if (!t) return;
-    targetX = t.clientX / Math.max(window.innerWidth, 1);
-    targetY = t.clientY / Math.max(window.innerHeight, 1);
-  }, { passive: true });
-
-  const VERT = [
-    'attribute vec2 position;',
-    'void main() { gl_Position = vec4(position, 0.0, 1.0); }'
+  /* ── NULL//SHIFT 13-Suv shaderlari (to'liq, o'zgarmagan) ── */
+  var WVS = [
+    'uniform float t,asp,pr,size,tsc,ent,res,dirA,en;',
+    'uniform vec4 R[8];',
+    'attribute vec3 a;',
+    'varying float vH,vD;',
+    'void main(){',
+    'vec2 p=a.xy*2.1-1.05;',
+    'vec2 w=vec2(cos(dirA),sin(dirA)),q2=vec2(-w.y,w.x);',
+    'float ph=dot(p,w)*(2.2+ent*2.)-t*tsc*.8,qq=dot(p,q2);',
+    'float h0=(.5*sin(ph+1.4*sin(qq*3.+t*tsc*.5))+.3*sin(qq*5.-t*tsc*.7+ph*.5)+.15*sin((p.x+p.y)*7.+t*tsc))*(.6+en*.4);',
+    'float hr=0.;vec2 dp=vec2(0.);',
+    'for(int i=0;i<8;i++){vec4 r=R[i];float dt=t-r.z;if(dt>0.&&dt<7.){vec2 dv=(p-r.xy)*vec2(asp,1.);float d=length(dv);float x=d-dt*.95;float env=exp(-x*x*9.)*exp(-dt*.55)/(1.+d*1.6);float hh=r.w*env*cos(x*22.)*(.7+res*.6);hr+=hh;dp+=normalize(dv+1e-5)/vec2(asp,1.)*hh*.025;}}',
+    'p+=dp+.01*vec2(cos(t*.7+a.z*6.2832),sin(t*.6+a.z*6.2832))*(1.+h0);',
+    'p.y+=h0*.015+hr*.04;',
+    'vH=clamp(hr*1.4+h0*.35,-1.,1.);vD=a.z;',
+    'gl_Position=vec4(p,0.,1.);',
+    'gl_PointSize=size*pr*(1.+max(vH,0.)*1.6)*(.7+.6*a.z);}'
   ].join('\n');
 
-  const FRAG = [
-    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
-    '  precision highp float;',
-    '#else',
-    '  precision mediump float;',
-    '#endif',
-    '',
-    'uniform vec2 u_resolution;',
-    'uniform float u_time;',
-    'uniform vec2 u_cursor;',
-    'uniform vec2 u_cursorVel;',
-    'uniform float u_quality;',
-    '',
-    'vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
-    'vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }',
-    'vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }',
-    '',
-    'float snoise(vec2 v) {',
-    '  const vec4 C = vec4(0.211324865405187, 0.366025403784439,',
-    '                     -0.577350269189626, 0.024390243902439);',
-    '  vec2 i  = floor(v + dot(v, C.yy) );',
-    '  vec2 x0 = v -   i + dot(i, C.xx);',
-    '  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);',
-    '  vec4 x12 = x0.xyxy + C.xxzz;',
-    '  x12.xy -= i1;',
-    '  i = mod289(i);',
-    '  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))',
-    '    + i.x + vec3(0.0, i1.x, 1.0 ) );',
-    '  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);',
-    '  m = m*m; m = m*m;',
-    '  vec3 x = 2.0 * fract(p * C.www) - 1.0;',
-    '  vec3 h = abs(x) - 0.5;',
-    '  vec3 ox = floor(x + 0.5);',
-    '  vec3 a0 = x - ox;',
-    '  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);',
-    '  vec3 g;',
-    '  g.x  = a0.x  * x0.x  + h.x  * x0.y;',
-    '  g.yz = a0.yz * x12.xz + h.yz * x12.yw;',
-    '  return 130.0 * dot(m, g);',
-    '}',
-    '',
-    'void main() {',
-    '  vec2 st = gl_FragCoord.xy / u_resolution.xy;',
-    '  float aspect = u_resolution.x / u_resolution.y;',
-    '  st.x *= aspect;',
-    '',
-    '  vec2 cursor = vec2(u_cursor.x * aspect, u_cursor.y);',
-    '  float time = u_time * 0.055;',
-    '',
-    '  vec2 p = st * 1.8;',
-    '  p.y -= time;',
-    '',
-    '  // water flows back as the ship moves through it',
-    '  p -= u_cursorVel * 0.32;',
-    '',
-    '  // distance to the ship',
-    '  vec2 toShip = cursor - st;',
-    '  float dist = length(toShip * vec2(1.0, 1.35));',
-    '  float pull = exp(-dist * 3.0);',
-    '',
-    '  // slow swell rippling outward from the ship',
-    '  float ripple = sin(dist * 16.0 - time * 1.4) * pull;',
-    '',
-    '  // bow the surface gently toward the ship',
-    '  p += (toShip / (length(toShip) + 0.001)) * pull * 0.22;',
-    '  p.y += ripple * 0.3;',
-    '',
-    '  float n1 = snoise(p);',
-    '  float n2 = snoise(p * 2.2 + vec2(0.0, time * 0.25)) * u_quality;',
-    '  float val = n1 * 0.65 + n2 * 0.35;',
-    '  val += ripple * 0.1;',
-    '',
-    '  vec2 e = vec2(0.025, 0.0);',
-    '  float nx = snoise(p + e.xy) - snoise(p - e.xy);',
-    '  float ny = snoise(p + e.yx) - snoise(p - e.yx);',
-    '  vec3 normal = normalize(vec3(-nx * 1.4, -ny * 1.4, 1.0));',
-    '',
-    '  vec3 lightDir = normalize(vec3(0.3 + u_cursorVel.x * 2.0, 0.7 + u_cursorVel.y * 2.0, 0.5));',
-    '  vec3 viewDir = vec3(0.0, 0.0, 1.0);',
-    '  vec3 reflectDir = reflect(-lightDir, normal);',
-    '  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 24.0);',
-    '',
-    '  float chromeVal = sin(val * 3.8 + normal.y * 1.8) * 0.5 + 0.5;',
-    '',
-    '  // VISIBLY liquid with NO black valleys: even the darkest stop keeps',
-    '  // the metal readable, so the page never shows a flat black field.',
-    '  vec3 darkSteel  = vec3(0.020, 0.024, 0.034);',
-    '  vec3 midChrome  = vec3(0.070, 0.078, 0.095);',
-    '  vec3 pureSilver = vec3(0.260, 0.280, 0.340);',
-    '  vec3 whiteGlow  = vec3(0.480, 0.510, 0.580);',
-    '  // #111921 chuqurligi + uning och po\'lat shu\'lasi (#8ea0b8) - sovuq aksent',
-    '  vec3 goldDeep   = vec3(0.067, 0.098, 0.129);',
-    '  vec3 goldGlow   = vec3(0.557, 0.627, 0.722);',
-
-    '  vec3 color = mix(darkSteel, midChrome, smoothstep(0.0, 0.45, chromeVal));',
-    '  color = mix(color, pureSilver, smoothstep(0.45, 0.85, chromeVal));',
-    '  color = mix(color, whiteGlow, smoothstep(0.85, 1.0, chromeVal));',
-    '  // GLOBAL WAVE - tolqin kabi butun sirt bir xil harakatda;',
-    '  // kursor butun maydonga tasir qiladi (faqat markazga emas)',
-    '  float wavePhase = (st.x + st.y) * 5.0 - time * 16.0 + (u_cursor.x + u_cursor.y) * 4.0;',
-    '  float wave = sin(wavePhase) * 0.5 + 0.5;',
-    '  float wavePhase2 = (st.x - st.y) * 3.0 + time * 10.0 - (u_cursor.x - u_cursor.y) * 3.0;',
-    '  float wave2 = sin(wavePhase2) * 0.5 + 0.5;',
-    '  float cursorField = clamp((u_cursor.x + (1.0 - u_cursor.y)) * 0.5, 0.0, 1.0);',
-    '  // #111921 butun sirtda bir xil: asos + tolqin + kursor maydoni',
-    '  float uniGold = 0.38 + 0.22 * wave + 0.14 * wave2 + 0.16 * cursorField;',
-    '  color = mix(color, goldDeep, clamp(uniGold, 0.0, 0.75));',
-    '  color += goldGlow * (wave * 0.10 + wave2 * 0.07 + cursorField * 0.12);',
-    '  // yorqin zonalarga yupqa #111921 parda - chrome ustida sovuq jilo',
-    '  float goldBand = smoothstep(0.45, 1.0, chromeVal);',
-    '  color = mix(color, goldDeep, goldBand * 0.5);',
-
-    '  // the sea harmonizes with the ship — gray accents swell around it',
-    '  vec3 seaA = vec3(0.038, 0.042, 0.052);',
-    '  vec3 seaB = vec3(0.060, 0.066, 0.078);',
-    '  color = mix(color, seaA, pull * 0.4);',
-    '  color = mix(color, seaB, clamp(u_cursor.x * 0.5 + u_cursor.y * 0.2, 0.0, 0.6) * 0.28);',
-    '  color += seaB * (spec * 0.45 + ripple * 0.12);',
-
-    '  // soft moonlight glow on the water at the ship + steel #8ea0b8 halo',
-    '  float glow = exp(-dist * dist * 5.0);',
-    '  color += vec3(0.14, 0.15, 0.18) * glow * 0.25;',
-    '  color += seaB * glow * 0.12;',
-    '  color += goldGlow * glow * 0.45;',
-    '  color += goldGlow * spec * 0.34;',
-    '  color += goldDeep * ripple * 0.22;',
-
-    '  color += vec3(spec * 0.10);',
-    '',
-    '  gl_FragColor = vec4(color, 1.0);',
-    '}'
+  var WFS = [
+    'uniform float cp;',
+    'varying float vH,vD;',
+    'void main(){',
+    'float d=length(gl_PointCoord-.5);if(d>.5)discard;',
+    'float al=smoothstep(.5,.1,d);',
+    'vec3 deep=mix(.5+.5*cos(6.2832*(cp+vec3(0.,.1,.2)+vD*.05)),vec3(.1,.45,.85),.55);',
+    'float hi=smoothstep(.15,1.,vH);',
+    'vec3 c=deep*(.3+.55*smoothstep(-.6,.6,vH))+vec3(.6,.85,1.)*hi*.7;',
+    'gl_FragColor=vec4(c*al*.8,al*.8);}'
   ].join('\n');
 
-  function createShader(type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      gl.deleteShader(s);
-      return null;
-    }
-    return s;
+  /* ── Suv sozlamalari (NULL//SHIFT dagi jonli qiymatlar) ── */
+  var ENT = 0.75, RES = 0.55, CP = 0.55, TSC = 1.0, DIRA = 0.0;
+
+  var gl = null, renderer = null, scene = null, cam = null;
+  var wpts = null, WU = null, RP = [], ri = 0;
+  var WN = [22000, 40000, 65000], PRS = [1, 1.25, 1.5];
+  var q = lowEnd ? 0 : 1;
+
+  var running = false, disabled = false, animationId = 0;
+  var lastTime = null, elapsed = 0;
+  var lx = 0, ly = 0, lastWake = 0, nextRain = 0, nextDrop = 0;
+  var vel = 0, lastPX = 0.5, lastPY = 0.5;
+
+  function ndc(cx, cy) {
+    return [cx / Math.max(window.innerWidth, 1) * 2 - 1, 1 - cy / Math.max(window.innerHeight, 1) * 2];
   }
 
-  function initWebGL() {
-    /* standart atributlar — hech qanday brauzerga xos kalit yo'q */
-    const attrs = { antialias: false, failIfMajorPerformanceCaveat: false };
-    gl = canvas.getContext('webgl', attrs)
-      || canvas.getContext('experimental-webgl', { antialias: false });
-    return !!gl;
+  function ripple(x, y, a) {
+    if (!WU) return;
+    RP[ri].set(x, y, elapsed, a);
+    ri = (ri + 1) % 8;
   }
 
-  function setupProgram() {
-    const vs = createShader(gl.VERTEX_SHADER, VERT);
-    const fs = createShader(gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) return false;
-
-    program = gl.createProgram();
-    gl.attachShader(program, vs);
-    gl.attachShader(program, fs);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      return false;
+  function buildWater() {
+    if (!wpts || !WU) return;
+    var asp = window.innerWidth / Math.max(window.innerHeight, 1);
+    var N = WN[q];
+    var cols = Math.max(2, Math.round(Math.sqrt(N * asp)));
+    var rows = Math.max(2, Math.round(N / cols));
+    var A = new Float32Array(cols * rows * 3), k = 0;
+    for (var j = 0; j < rows; j++) {
+      for (var i2 = 0; i2 < cols; i2++) {
+        A[k++] = (i2 + Math.random()) / cols;
+        A[k++] = (j + Math.random()) / rows;
+        A[k++] = Math.random();
+      }
     }
-    gl.useProgram(program);
-
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      -1, -1,  1, -1,  -1, 1,
-      -1, 1,   1, -1,   1, 1
-    ]), gl.STATIC_DRAW);
-
-    const positionLocation = gl.getAttribLocation(program, 'position');
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-    timeLocation = gl.getUniformLocation(program, 'u_time');
-    cursorLocation = gl.getUniformLocation(program, 'u_cursor');
-    cursorVelLocation = gl.getUniformLocation(program, 'u_cursorVel');
-    qualityLocation = gl.getUniformLocation(program, 'u_quality');
-    return true;
+    var ng = new THREE.BufferGeometry();
+    ng.setAttribute('a', new THREE.BufferAttribute(A, 3));
+    ng.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cols * rows * 3), 3));
+    wpts.geometry.dispose();
+    wpts.geometry = ng;
+    WU.asp.value = asp;
   }
 
   function resize() {
-    if (!gl) return;
-    /* Mobile DPR is capped at 1.25 — modern phones at 3-4x DPR make the GPU
-       raster up to 16x more pixels than needed; 1.25 keeps the liquid chrome
-       crisp while cutting mobile fill-rate by ~60-70%. Desktop keeps 1.5. */
-    const dpr = Math.min(window.devicePixelRatio || 1, lowEnd ? (isMobile ? 1.25 : 1) : 1.5);
-    let w = Math.round(window.innerWidth * dpr);
-    let h = Math.round(window.innerHeight * dpr);
-    const longSide = Math.max(w, h);
-    const MAX_SIDE = 1800;
-    if (longSide > MAX_SIDE) {
-      const s = MAX_SIDE / longSide;
-      w = Math.round(w * s);
-      h = Math.round(h * s);
+    if (!renderer) return;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PRS[q]));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    if (WU) {
+      WU.pr.value = renderer.getPixelRatio();
+      WU.size.value = 2.3;
     }
-    canvas.width = w;
-    canvas.height = h;
-    gl.viewport(0, 0, w, h);
-    gl.uniform2f(resolutionLocation, w, h);
-    gl.uniform1f(qualityLocation, lowEnd ? 0.4 : 1.0);
+    buildWater();
   }
 
-  let resizeTimeout;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      try { if (running) resize(); } catch (e) { /* noop */ }
-    }, 100);
-  }, { passive: true });
+  function setQ(n) {
+    q = n;
+    resize();
+  }
+
+  /* ── watchdog (eski chrome fon bilan bir xil) ── */
+  var frameCount = 0, slowFrames = 0, fastFrames = 0, hugeFrames = 0, warmingUp = 0;
+  var lastFrameNow = null;
+  var FPS_TIERS = isMobile ? [2, 4] : [1, 2, 4];
+  var fpsTier = 0;
 
   function draw(now) {
-    if (!gl || gl.isContextLost()) return false;
+    if (!renderer) return false;
     if (lastTime != null) elapsed += (now - lastTime) / 1000;
     lastTime = now;
     try {
-      if (!reduceMotion) {
-        updateShip();
-        if (cursorLocation) gl.uniform2f(cursorLocation, shipX, shipY);
-        if (cursorVelLocation) gl.uniform2f(cursorVelLocation, velX * 14, velY * 14);
+      WU.t.value = elapsed;
+      /* kursor tezligi → to'lqin kuchi (scroll/sudrashda yomg'ir) */
+      var av = Math.abs(vel);
+      vel *= 0.94;
+      WU.en.value = Math.min(av * 40, 2);
+      WU.dirA.value = DIRA;
+      /* avtomatik yomg'ir + tomchi (NULL//SHIFT dagi kabi) */
+      if (av > 0.02 && elapsed > nextRain) {
+        ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.45);
+        nextRain = elapsed + 0.25;
       }
-      if (timeLocation) gl.uniform1f(timeLocation, elapsed);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      if (elapsed > nextDrop) {
+        ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.3);
+        nextDrop = elapsed + 1.8 + Math.random() * 2.5;
+      }
+      renderer.setClearColor(0x03101c, 1);
+      renderer.render(scene, cam);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  /* Dynamic FPS limiter — graceful tiers instead of hard-kill.
-     Mobile starts at 30fps; if frames keep exceeding 80ms the loop steps
-     down to 15fps before ever giving up, and recovers back up once frames
-     run fast again for a sustained stretch. A single 500ms+ frame (tab
-     switch / GPU stall) still disables the loop as the hard watchdog. */
-  let frameCount = 0;
-  let slowFrames = 0;
-  let fastFrames = 0;
-  let hugeFrames = 0;
-  let warmingUp = 0;
-  let lastFrameNow = null;
-  const FPS_TIERS = isMobile ? [2, 4] : [1, 2, 4];
-  let fpsTier = 0;
-
   function render(now) {
-    if (!running || !gl || gl.isContextLost()) return;
+    if (!running) return;
     frameCount++;
     if (lastFrameNow != null) {
-      const dt = now - lastFrameNow;
-      if (warmingUp > 0) {
-        /* start/resume dan keyingi ilk kadrlar — tab switch bo'shlig'i
-           watchdog ni aldamasligi uchun hisoblanmaydi (barcha brauzerda bir xil) */
-        warmingUp--;
-        hugeFrames = 0;
-      } else if (dt > 500) {
-        /* bitta og'ir kadr (shader compile, tab switch) uchun o'chirmaymiz —
-           faqat ketma-ket 3 ta ulkan kadrda, xatti-harakat bo'yicha */
+      var dt = now - lastFrameNow;
+      if (warmingUp > 0) { warmingUp--; hugeFrames = 0; }
+      else if (dt > 500) {
         hugeFrames++;
         if (hugeFrames >= 3) { disableBackground(); return; }
-      } else {
-        hugeFrames = 0;
-      }
+      } else { hugeFrames = 0; }
       if (dt > 80) {
-        slowFrames++;
-        fastFrames = 0;
-        if (slowFrames >= 12 && fpsTier < FPS_TIERS.length - 1) { stepDown(); }
+        slowFrames++; fastFrames = 0;
+        if (slowFrames >= 12 && fpsTier < FPS_TIERS.length - 1) { slowFrames = 0; fpsTier++; }
         else if (slowFrames >= 12) { disableBackground(); return; }
       } else {
-        slowFrames = 0;
-        fastFrames++;
+        slowFrames = 0; fastFrames++;
         if (fpsTier > 0 && fastFrames >= 60) { fpsTier--; fastFrames = 0; }
       }
     }
@@ -367,45 +180,11 @@
     }
     if (!draw(now)) {
       cancelAnimationFrame(animationId);
-      animationId = 0;
-      running = false;
+      animationId = 0; running = false;
       return;
     }
     animationId = requestAnimationFrame(render);
   }
-
-  function stepDown() {
-    slowFrames = 0;
-    if (fpsTier < FPS_TIERS.length - 1) fpsTier++;
-  }
-
-  /* Canvas visibility: the chrome is a fixed background, but pausing the
-     render cycle while it is out of view (e.g. hidden behind the loader,
-     or any host layout that covers it) saves battery and CPU for free. */
-  let canvasVisible = true;
-  function initCanvasObserver() {
-    if (typeof IntersectionObserver === 'undefined') return;
-    try {
-      const io = new IntersectionObserver((entries) => {
-        canvasVisible = entries.some((e) => e.isIntersecting);
-        if (!canvasVisible) {
-          stopLoop();
-        } else if (running && !disabled && animationId === 0) {
-          /* animationId===0 guards a duplicate loop: the observer may fire at
-             the same time enableBackground() starts its own rAF chain */
-          lastFrameNow = null;
-          slowFrames = 0;
-          fastFrames = 0;
-          hugeFrames = 0;
-          warmingUp = 8;
-          lastTime = null;
-          animationId = requestAnimationFrame(render);
-        }
-      }, { threshold: 0.05 });
-      io.observe(canvas);
-    } catch (e) { /* noop */ }
-  }
-  initCanvasObserver();
 
   function stopLoop() {
     cancelAnimationFrame(animationId);
@@ -413,20 +192,16 @@
   }
 
   function disableBackground() {
-    running = false;
-    disabled = true;
+    running = false; disabled = true;
     stopLoop();
-    try { sessionStorage.setItem('xoleric-gl-off', String(Date.now())); } catch (e) { /* noop */ }
-    try { canvas.style.display = 'none'; } catch (e) { /* noop */ }
-    try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) { /* noop */ }
+    try { sessionStorage.setItem('xoleric-gl-off', String(Date.now())); } catch (e) {}
+    try { canvas.style.display = 'none'; } catch (e) {}
+    try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) {}
   }
 
   function killedThisSession() {
-    /* The watchdog kill flag EXPIRES quickly: one bad patch must not silence
-       the glow for long — 3 daqiqadan keyin reload qayta urinadi.
-       Har bir page load o'z imkoniyatini oladi (brauzerdan qat'i nazar). */
     try {
-      const v = parseInt(sessionStorage.getItem('xoleric-gl-off') || '0', 10);
+      var v = parseInt(sessionStorage.getItem('xoleric-gl-off') || '0', 10);
       if (!v) return false;
       if (Date.now() - v > 3 * 60 * 1000) {
         sessionStorage.removeItem('xoleric-gl-off');
@@ -440,38 +215,50 @@
   function enableBackground() {
     if (disabled || running || reduceMotion) return false;
     if (killedThisSession()) { disabled = true; return false; }
+    if (typeof THREE === 'undefined') return false;
     try {
-      if (!initWebGL()) return false;
-      if (!setupProgram()) {
-        disableBackground();
-        return false;
-      }
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: 'high-performance' });
+    } catch (e) { return false; }
+    try {
+      scene = new THREE.Scene();
+      cam = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+      RP = [];
+      for (var i = 0; i < 8; i++) RP.push(new THREE.Vector4(0, 0, -99, 0));
+      var uniforms = {
+        t: { value: 0 }, tsc: { value: TSC }, ent: { value: ENT }, res: { value: RES },
+        cp: { value: CP }, pr: { value: 1 }, asp: { value: 1 }, size: { value: 2.3 },
+        dirA: { value: DIRA }, en: { value: 0 }, R: { value: RP }
+      };
+      WU = uniforms;
+      wpts = new THREE.Points(
+        new THREE.BufferGeometry(),
+        new THREE.ShaderMaterial({
+          uniforms: uniforms, vertexShader: WVS, fragmentShader: WFS,
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        })
+      );
+      wpts.frustumCulled = false;
+      scene.add(wpts);
       resize();
-      wasRunning = true;
+      /* ilk to'lqin — sahifa ochilganda markazda */
+      elapsed = 0;
+      ripple(0, 0, 0.9);
       running = true;
       lastTime = null;
-      /* yangi start — ilk 8 kadr watchdog dan xoli (warmup) */
-      warmingUp = 8;
-      hugeFrames = 0;
-      slowFrames = 0;
-      fastFrames = 0;
-      fpsTier = 0;
+      warmingUp = 8; hugeFrames = 0; slowFrames = 0; fastFrames = 0; fpsTier = 0;
       animationId = requestAnimationFrame(render);
-      try { canvas.style.display = ''; } catch (e) { /* noop */ }
+      try { canvas.style.display = ''; } catch (e) {}
       return true;
     } catch (e) {
-      stopLoop();
-      running = false;
-      disabled = true;
+      stopLoop(); running = false; disabled = true;
       return false;
     }
   }
 
   function disableGl() {
-    running = false;
-    disabled = true;
+    running = false; disabled = true;
     stopLoop();
-    try { canvas.style.display = 'none'; } catch (e) { /* noop */ }
+    try { canvas.style.display = 'none'; } catch (e) {}
   }
 
   window.xolericGL = {
@@ -479,62 +266,70 @@
     disable: disableGl,
     isOn: function () { return running; },
     canRun: function () {
-      return typeof window.WebGLRenderingContext !== 'undefined'
-        && !reduceMotion
-        && !killedThisSession();
+      return typeof window.WebGLRenderingContext !== 'undefined' && !reduceMotion && !killedThisSession();
     },
     onDisable: null
   };
 
-  canvas.addEventListener('webglcontextlost', (e) => {
+  /* ── interaksiya: canvas pointer-events:none → window dan ── */
+  window.addEventListener('pointerdown', function (e) {
+    if (!running) return;
+    if (e.target && (e.target.closest('a') || e.target.closest('button'))) return;
+    var n = ndc(e.clientX, e.clientY);
+    lx = n[0]; ly = n[1];
+    ripple(lx, ly, 1);
+    lastPX = e.clientX / Math.max(window.innerWidth, 1);
+    lastPY = e.clientY / Math.max(window.innerHeight, 1);
+  }, { passive: true });
+
+  window.addEventListener('pointermove', function (e) {
+    if (!running) return;
+    var nx = e.clientX / Math.max(window.innerWidth, 1);
+    var ny = e.clientY / Math.max(window.innerHeight, 1);
+    vel += Math.abs(nx - lastPX) * 2 + Math.abs(ny - lastPY) * 2;
+    lastPX = nx; lastPY = ny;
+    /* bosib sudrash → iz */
+    if (e.buttons > 0) {
+      var n = ndc(e.clientX, e.clientY);
+      lx = n[0]; ly = n[1];
+      var now = performance.now();
+      if (now - lastWake > 70) { lastWake = now; ripple(lx, ly, 0.3); }
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!running) return;
+    var t = e.touches[0];
+    if (!t) return;
+    var n = ndc(t.clientX, t.clientY);
+    var now = performance.now();
+    if (now - lastWake > 70) { lastWake = now; ripple(n[0], n[1], 0.3); }
+    vel += 0.01;
+  }, { passive: true });
+
+  window.addEventListener('wheel', function () {
+    if (!running) return;
+    vel += 0.02;
+  }, { passive: true });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { try { if (running) resize(); } catch (e) {} }, 100);
+  }, { passive: true });
+
+  canvas.addEventListener('webglcontextlost', function (e) {
     e.preventDefault();
-    wasRunning = running;
     running = false;
     stopLoop();
     lastTime = null;
   }, false);
 
-  canvas.addEventListener('webglcontextcreationerror', () => {
-    disabled = true;
-  }, false);
-
-  canvas.addEventListener('webglcontextrestored', () => {
-    if (!wasRunning || disabled || reduceMotion) return;
-    wasRunning = false;
-    try {
-      if (initWebGL() && setupProgram()) {
-        resize();
-        running = true;
-        lastTime = null;
-        lastFrameNow = null;
-        slowFrames = 0;
-        fastFrames = 0;
-        hugeFrames = 0;
-        warmingUp = 8;
-        fpsTier = 0;
-        animationId = requestAnimationFrame(render);
-      } else {
-        disabled = true;
-      }
-    } catch (e) {
-      running = false;
-      disabled = true;
-    }
-  }, false);
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      stopLoop();
-    } else if (running) {
-      /* resume cleanly: without resetting lastFrameNow the first frame back
-         carries the whole hidden gap as dt and the watchdog kills the waves */
-      lastFrameNow = null;
-      slowFrames = 0;
-      fastFrames = 0;
-      hugeFrames = 0;
-      warmingUp = 8;
-      fpsTier = 0;
-      lastTime = null;
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { stopLoop(); }
+    else if (running) {
+      lastFrameNow = null; slowFrames = 0; fastFrames = 0; hugeFrames = 0;
+      warmingUp = 8; fpsTier = 0; lastTime = null;
       animationId = requestAnimationFrame(render);
     }
   });

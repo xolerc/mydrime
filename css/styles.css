@@ -55,10 +55,10 @@ html {
 }
 
 body {
-  /* WebGL chrome ortidagi fallback — chuqur qora + po'lat shu'la */
+  /* WebGL Suv foni ortidagi fallback — chuqur suv ko'ki (#03101c) */
   background:
-    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(142, 160, 184, 0.32) 0%, rgba(17, 25, 33, 0.30) 52%, transparent 70%),
-    radial-gradient(ellipse at 50% 0%, #0a0f18 0%, #04060b 75%);
+    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(60, 120, 180, 0.28) 0%, rgba(3, 16, 28, 0.6) 52%, transparent 70%),
+    radial-gradient(ellipse at 50% 0%, #062032 0%, #03101c 60%, #020a12 100%);
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;

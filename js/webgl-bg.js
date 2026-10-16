@@ -70,7 +70,7 @@
   var running = false, disabled = false, animationId = 0;
   var lastTime = null, elapsed = 0;
   var lx = 0, ly = 0, lastWake = 0, nextRain = 0, nextDrop = 0;
-  var vel = 0, lastPX = 0.5, lastPY = 0.5;
+  var vel = 0, holdT = null, holdI = null;
 
   function ndc(cx, cy) {
     return [cx / Math.max(window.innerWidth, 1) * 2 - 1, 1 - cy / Math.max(window.innerHeight, 1) * 2];
@@ -128,13 +128,17 @@
 
   function draw(now) {
     if (!renderer) return false;
-    if (lastTime != null) elapsed += (now - lastTime) / 1000;
+    /* 1:1 — originaldagi kabi dt (clamp .1s) */
+    var dt = 0;
+    if (lastTime != null) dt = Math.min((now - lastTime) / 1000, 0.1);
+    elapsed += dt;
     lastTime = now;
     try {
       WU.t.value = elapsed;
-      /* kursor tezligi → to'lqin kuchi (scroll/sudrashda yomg'ir) */
+      /* 1:1 — av/vel faqat wheel dan keladi (original formula bilan).
+         Bosilmagan sichqoncha harakati en ga ta'sir QILMAYDI. */
       var av = Math.abs(vel);
-      vel *= 0.94;
+      vel *= Math.pow(0.92, dt * 60);
       WU.en.value = Math.min(av * 40, 2);
       WU.dirA.value = DIRA;
       /* avtomatik yomg'ir + tomchi (NULL//SHIFT dagi kabi) */
@@ -271,24 +275,34 @@
     onDisable: null
   };
 
-  /* ── interaksiya: canvas pointer-events:none → window dan ── */
+  /* ── interaksiya 1:1 (NULL//SHIFT 122–131 qatorlar) ──
+     canvas pointer-events:none → window dan, lekin formula bir xil:
+     - bosish → darhol ripple(1)
+     - ushlab turish (350ms+) → har 500ms ripple(.9)
+     - bosib sudrash → 70ms throttle bilan iz ripple(.3)
+     - bosilmagan harakat → HECH NIMA (en ga ta'sir yo'q)
+     - wheel → vel += -deltaY*.0008 (sahifa scrolli to'xtatilmaydi)
+     - double-tap mutate ATAYLAB yo'q (fon barqaror turishi kerak) */
+  function clearHold() {
+    if (holdT) clearTimeout(holdT);
+    if (holdI) clearInterval(holdI);
+    holdT = null; holdI = null;
+  }
+
   window.addEventListener('pointerdown', function (e) {
     if (!running) return;
     if (e.target && (e.target.closest('a') || e.target.closest('button'))) return;
     var n = ndc(e.clientX, e.clientY);
     lx = n[0]; ly = n[1];
     ripple(lx, ly, 1);
-    lastPX = e.clientX / Math.max(window.innerWidth, 1);
-    lastPY = e.clientY / Math.max(window.innerHeight, 1);
+    clearHold();
+    holdT = setTimeout(function () {
+      holdI = setInterval(function () { ripple(lx, ly, 0.9); }, 500);
+    }, 350);
   }, { passive: true });
 
   window.addEventListener('pointermove', function (e) {
     if (!running) return;
-    var nx = e.clientX / Math.max(window.innerWidth, 1);
-    var ny = e.clientY / Math.max(window.innerHeight, 1);
-    vel += Math.abs(nx - lastPX) * 2 + Math.abs(ny - lastPY) * 2;
-    lastPX = nx; lastPY = ny;
-    /* bosib sudrash → iz */
     if (e.buttons > 0) {
       var n = ndc(e.clientX, e.clientY);
       lx = n[0]; ly = n[1];
@@ -297,6 +311,9 @@
     }
   }, { passive: true });
 
+  window.addEventListener('pointerup', clearHold, { passive: true });
+  window.addEventListener('pointercancel', clearHold, { passive: true });
+
   document.addEventListener('touchmove', function (e) {
     if (!running) return;
     var t = e.touches[0];
@@ -304,12 +321,11 @@
     var n = ndc(t.clientX, t.clientY);
     var now = performance.now();
     if (now - lastWake > 70) { lastWake = now; ripple(n[0], n[1], 0.3); }
-    vel += 0.01;
   }, { passive: true });
 
-  window.addEventListener('wheel', function () {
+  window.addEventListener('wheel', function (e) {
     if (!running) return;
-    vel += 0.02;
+    vel += -(e.deltaY || 0) * 0.0008;
   }, { passive: true });
 
   var resizeTimer = null;

@@ -744,47 +744,6 @@ main#main, footer.site-footer {
   to { transform: rotate(360deg); }
 }
 
-/* ─────────── ORBIT CORE — pulsar avatar markazda ─────────── */
-.orbit-core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 96px;
-  height: 96px;
-  margin: -48px;
-  z-index: 2;
-  pointer-events: none;
-}
-.orbit-core-img {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: url('../images/main.webp') center / cover no-repeat;
-  border: 2px solid rgba(142, 160, 184, 0.85);
-  box-shadow: 0 0 24px rgba(142, 160, 184, 0.5), 0 0 60px rgba(17, 25, 33, 0.9);
-  animation: corePulse 3.2s ease-in-out infinite;
-  will-change: transform, box-shadow;
-}
-.orbit-core::before,
-.orbit-core::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(142, 160, 184, 0.55);
-  animation: coreRipple 3.2s ease-out infinite;
-  will-change: transform, opacity;
-}
-.orbit-core::after { animation-delay: 1.6s; }
-@keyframes corePulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 24px rgba(142, 160, 184, 0.5), 0 0 60px rgba(17, 25, 33, 0.9); }
-  50% { transform: scale(1.07); box-shadow: 0 0 34px rgba(142, 160, 184, 0.75), 0 0 80px rgba(17, 25, 33, 1); }
-}
-@keyframes coreRipple {
-  0% { transform: scale(0.72); opacity: 0.9; }
-  100% { transform: scale(1.55); opacity: 0; }
-}
-
 /* ─────────── ORBIT TRAVEL (≥1200px) ───────────
    The social ring leaves the hero and rolls down the page with scroll,
    riding the empty side zones. JS picks the clearest lane per frame
@@ -1164,7 +1123,7 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
 
   /* MOBIL TOZALASH — takroriy dekor va matnlar yashiriladi
      (DOMda qoladi: SEO/AI uchun xavfsiz).
-     - hero-art: orbit-core bilan bir xil yuz (takror)
+     - hero-art: mobilda keraksiz dekor (yashirin)
      - hero-orbit: futerdagi ijtimoiy iconlar takrori
      - section-sub: uch qavatli sarlavha takrori
      - contact-lead: sarlavha takrori */
@@ -1231,8 +1190,4 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
   }
 
   .orbit-icon::after { display: none; }
-
-  .orbit-core-img,
-  .orbit-core::before,
-  .orbit-core::after { animation: none; }
 }

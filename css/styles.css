@@ -567,8 +567,10 @@ main#main, footer.site-footer {
   height: min(38vw, 372px);
   z-index: 1;
   overflow: hidden;
-  border-radius: 4px;
+  /* zamonaviy yumaloq burchak — to'rtburchak shakl saqlanadi */
+  border-radius: 24px;
   border: 1px solid rgba(236, 239, 244, 0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 44px rgba(142, 160, 184, 0.16);
 }
 .hero-art::after { content: none; display: none; }
 

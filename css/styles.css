@@ -1072,11 +1072,19 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
 
   /* MOBIL TOZALASH — takroriy dekor va matnlar yashiriladi
      (DOMda qoladi: SEO/AI uchun xavfsiz).
-     - hero-art: mobilda keraksiz dekor (yashirin)
+     - hero-art: mobilda ham KO'RINADI, faqat ixcham formatda (pastda)
      - hero-orbit: futerdagi ijtimoiy iconlar takrori
      - section-sub: uch qavatli sarlavha takrori
      - contact-lead: sarlavha takrori */
-  .hero-art { display: none; }
+  .hero-art {
+    display: block;
+    width: 132px;
+    height: 132px;
+    border-radius: 18px;
+    margin: 0 0 var(--space-2);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 0 24px rgba(142, 160, 184, 0.14);
+  }
+  .hero-art .layer-bg { background-position: 42% center; transform: translateX(-6px) scale(1.04); }
   .hero-content { max-width: 100%; }
   .hero-orbit { display: none; }
   .section-sub { display: none; }
@@ -1104,9 +1112,10 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
   }
 }
 
-/* very small phones — keep everything readable, nothing clipped */
-@media (max-width: 380px) {
-  /* juda kichik ekran: nav sig'maydi — ikkita havola yashirinadi */
+/* narrow phones — keep everything readable, nothing clipped */
+@media (max-width: 430px) {
+  /* tor ekran: nav sig'maydi — ikkita havola yashirinadi
+     (store va "men haqimda" futerda ham bor) */
   .site-nav a[href="store.html"], .site-nav a[href="#about"] { display: none; }
 }
 
@@ -1131,4 +1140,39 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
   }
 
   .orbit-icon::after { display: none; }
+}
+
+@media (max-width: 420px) {
+  /* ixcham telefonlar — portret yana kichikroq */
+  .hero-art {
+    width: 104px;
+    height: 104px;
+    border-radius: 16px;
+    margin-bottom: var(--space-1);
+  }
+}
+
+@media (max-width: 768px) {
+  /* mobil hero: portret + sarlavha + CTA bitta ixcham blok bo'lib turadi
+     (avval art tepada, matn pastda — orada bo'sh liq ko'p edi) */
+  .hero {
+    justify-content: center;
+    gap: var(--space-3);
+    padding-top: calc(var(--header-h) + var(--space-3));
+  }
+  .hero-content { padding-bottom: 0; }
+  .hero-name { line-height: 0.92; }
+}
+
+/* ─────────── MATN SUZISHI (text-swim.js) ───────────
+   Har bir harf alohida inline-block span — kursor yaqinlashsa suzadi,
+   uzoqlashsa joyiga qaytadi. Layoutga ta'sir yo'q (faqat transform). */
+.sw-w { display: inline-block; white-space: nowrap; }
+.sw-c {
+  display: inline-block;
+  transform-origin: 50% 62%;
+  backface-visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-c { display: inline; }
 }

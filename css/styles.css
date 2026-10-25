@@ -55,10 +55,8 @@ html {
 }
 
 body {
-  /* WebGL Suv foni ortidagi fallback — monoxrom qora suv (#000) */
-  background:
-    radial-gradient(ellipse 60% 32% at 50% 0%, rgba(205, 212, 222, 0.10) 0%, rgba(0, 0, 0, 0.55) 52%, transparent 70%),
-    radial-gradient(ellipse at 50% 0%, #0b0b0d 0%, #000000 62%, #000000 100%);
+  /* WebGL Suv foni ortidagi fallback — toza qora (yoruqlik yo'q) */
+  background: #000000;
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;
@@ -334,60 +332,9 @@ main#main, footer.site-footer {
   z-index: 1;
 }
 
-.chrome-accent {
-  position: fixed;
-  top: -15%;
-  right: -10%;
-  width: 75%;
-  height: 55%;
-  z-index: -1;
-  pointer-events: none;
-  /* sovuq chrome + kuchli #111921 — ikki qavatli yumshoq glow */
-  background:
-    radial-gradient(ellipse 42% 38% at 72% 30%,
-      rgba(142, 160, 184, 0.28) 0%,
-      rgba(17, 25, 33, 0.34) 48%,
-      transparent 70%),
-    radial-gradient(ellipse at 65% 25%,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(120, 120, 120, 0.02) 40%,
-      transparent 72%);
-  border-radius: 0 0 55% 35%;
-  animation: accentDrift 20s ease-in-out infinite alternate;
-  will-change: transform, opacity;
-}
-
-@keyframes accentDrift {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.35; }
-  100% { transform: translate(-6%, 4%) scale(1.12) rotate(3deg); opacity: 0.7; }
-}
-
-/* ─────────── #111921 GLOW — WebGL o'chsa ham ko'rinadigan kuchli aura ─────────── */
-.gold-glow {
-  position: fixed;
-  top: -22%;
-  left: 50%;
-  width: min(1300px, 150vw);
-  height: min(760px, 85vh);
-  transform: translateX(-50%);
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 50% 38%,
-    rgba(142, 160, 184, 0.42) 0%,
-    rgba(17, 25, 33, 0.36) 52%,
-    transparent 70%);
-  animation: goldBreathe 12s ease-in-out infinite alternate;
-  will-change: opacity;
-}
-
-@keyframes goldBreathe {
-  0% { opacity: 0.65; }
-  100% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gold-glow { animation: none; opacity: 0.85; }
-}
+/* ─────────── Yuqoridagi yoruqlik qatlamlari olib tashlandi ───────────
+   .chrome-accent va .gold-glow (oq/kulrang glow divlari) HTML dan ham,
+   CSS dan ham butunlay o'chirildi. Fon = #000 + WebGL suv. */
 
 /* film grain — statik SVG shovqin, overlay aralashma, arzon (animatsiyasiz) */
 .grain-top {
@@ -1173,14 +1120,6 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-
-  .chrome-accent {
-    filter: none;
-    animation: none;
-    opacity: 0.5;
-  }
-
-  .gold-glow { animation: none; opacity: 0.8; }
 
   .grain-top { display: none; }
 

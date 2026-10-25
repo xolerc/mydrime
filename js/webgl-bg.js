@@ -53,10 +53,13 @@
     'void main(){',
     'float d=length(gl_PointCoord-.5);if(d>.5)discard;',
     'float al=smoothstep(.5,.1,d);',
-    'vec3 deep=mix(.5+.5*cos(6.2832*(cp+vec3(0.,.1,.2)+vD*.05)),vec3(.1,.45,.85),.55);',
-    'float hi=smoothstep(.15,1.,vH);',
-    'vec3 c=deep*(.3+.55*smoothstep(-.6,.6,vH))+vec3(.6,.85,1.)*hi*.7;',
-    'gl_FragColor=vec4(c*al*.8,al*.8);}'
+    /* MONOXROM: tinch suv — qora (faqat juda nozik kulrang relyef) */
+    'float m=smoothstep(-.9,.9,vH);',
+    'vec3 deep=vec3(mix(.03,.13,m));',
+    /* REAKSIYA (bosish / scroll to'lqini) — toza oq */
+    'float hi=smoothstep(.22,1.,vH);',
+    'vec3 c=deep+vec3(1.)*hi;',
+    'gl_FragColor=vec4(c*al*.9,al*.9);}'
   ].join('\n');
 
   /* ── Suv sozlamalari (NULL//SHIFT dagi jonli qiymatlar) ── */
@@ -150,7 +153,7 @@
         ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.3);
         nextDrop = elapsed + 1.8 + Math.random() * 2.5;
       }
-      renderer.setClearColor(0x03101c, 1);
+      renderer.setClearColor(0x000000, 1);
       renderer.render(scene, cam);
       return true;
     } catch (e) {

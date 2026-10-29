@@ -509,6 +509,8 @@ main#main, footer.site-footer {
 }
 
 .hero-art {
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
   position: relative;
   width: min(38vw, 372px);
   height: min(38vw, 372px);
@@ -520,6 +522,8 @@ main#main, footer.site-footer {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 44px rgba(142, 160, 184, 0.16);
 }
 .hero-art::after { content: none; display: none; }
+.hero-art:focus-visible { outline: 2px solid rgba(236, 239, 244, 0.8); outline-offset: 4px; }
+.hero-art:hover { border-color: rgba(236, 239, 244, 0.34); }
 
 .hero-art .layer-main,
 .hero-art .layer-bg,
@@ -730,18 +734,15 @@ main#main, footer.site-footer {
 /* ─────────── ABOUT ─────────── */
 .about {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
   max-width: var(--max-w);
   margin: 0 auto;
   padding: var(--space-7) clamp(var(--space-3), 6vw, var(--space-6));
 }
 
-.about-sticky { position: sticky; top: calc(var(--header-h) + var(--space-5)); align-self: start; }
-
-.about-sticky .section-title { margin-bottom: var(--space-5); }
-
-.about-content { display: grid; gap: var(--space-4); }
+/* sarlavha/eyebrow olib tashlangani uchun kontent markazda, o'qishga qulay kenglikda */
+.about-content { display: grid; gap: var(--space-4); max-width: 860px; margin: 0 auto; width: 100%; }
 
 .about-bio {
   font-size: 14px;
@@ -1175,4 +1176,85 @@ body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sw-c { display: inline; }
+}
+
+/* ─────────── PORTRAIT LIGHTBOX (QR uslubi) ───────────
+   1 bosish → rasm markazda, atrofi blur; blur qismga bosish → yopiladi. */
+html.lb-lock, html.lb-lock body { overflow: hidden; }
+
+.lb {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: clamp(12px, 4vw, 32px);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  overflow: hidden;
+  cursor: zoom-out;
+}
+.lb[open] { display: grid; }
+
+.lb::backdrop {
+  background: rgba(0, 0, 0, 0.52);
+  -webkit-backdrop-filter: blur(22px) saturate(0.85);
+  backdrop-filter: blur(22px) saturate(0.85);
+}
+
+.lb-figure {
+  position: relative;
+  margin: 0;
+  width: min(92vw, 560px);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(236, 239, 244, 0.22);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.75), 0 0 60px rgba(142, 160, 184, 0.18);
+  background: #05070c;
+  cursor: default;
+  animation: lbIn 380ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.lb-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lb-hint {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(236, 239, 244, 0.55);
+  pointer-events: none;
+  animation: lbFade 500ms ease both;
+}
+
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes lbFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-figure, .lb-hint { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .lb { padding: 16px; gap: 10px; }
+  .lb-figure { width: min(94vw, 480px); border-radius: 18px; }
+  .lb-hint { font-size: 11px; }
 }

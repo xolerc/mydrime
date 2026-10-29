@@ -59,7 +59,7 @@
   <meta name="twitter:description" content="Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. Tez, jonli veb-interfeyslar, WebGL fonlar va interaktiv tajribalar. Rasmiy portfolio.">
   <meta name="twitter:image" content="https://xolerc.github.io/mydrime/images/og-cover.jpg">
 
-  <link rel="stylesheet" href="css/styles.css?v=20261026-swim4">
+  <link rel="stylesheet" href="css/styles.css?v=20261030-lb">
 </head>
 <body>
   <canvas id="webgl-bg" aria-hidden="true"></canvas>
@@ -107,7 +107,7 @@
 
     <!-- ═══ HERO — corner art (blur reveal) + orbit ═══ -->
     <section id="hero" class="section hero" role="region" aria-label="Kirish">
-      <div class="hero-art" role="img" aria-label="Xoleric portreti">
+      <div class="hero-art" id="heroArt" role="button" tabindex="0" aria-label="Portretni kattalashtirib ko'rish" aria-haspopup="dialog" aria-controls="portraitLB">
         <div class="hero-art-layer layer-bg"></div>
         <div class="hero-art-layer layer-main" id="layerMain"></div>
         <div class="reveal" id="reveal"></div>
@@ -127,10 +127,6 @@
 
     <!-- ═══ ABOUT ═══ -->
     <section id="about" class="section about" role="region" aria-label="Men haqimda">
-      <div class="about-sticky">
-        <p class="eyebrow">men haqimda</p>
-        <h2 class="section-title">G'oyalarni <span class="highlight">jonli</span> interfeysga aylantiraman</h2>
-      </div>
       <div class="about-content">
         <p class="about-bio"><strong>Xoleric kim?</strong> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. HTML, CSS, JavaScript, React va WebGL texnologiyalari bilan tez hamda jonli veb-saytlar yaratadi. Ushbu sahifa — Xoleric'ning rasmiy portfoliosi.</p>
         <div class="about-blurbs">
@@ -163,7 +159,6 @@
     <!-- ═══ CONTACT ═══ -->
     <section id="contact" class="section contact" role="region" aria-label="Aloqa">
       <div class="contact-box">
-        <p class="eyebrow">aloqa</p>
         <h2 class="section-title">Keling, <span class="highlight">birga</span> yaratamiz</h2>
         <p class="contact-lead">Loyiha g'oyangiz, hamkorlik taklifi bormi yoki shunchaki salomlashmoqchimisiz? Istalgan vaqtda yozing.</p>
         <div class="contact-links">
@@ -232,8 +227,17 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- ═══ PORTRAIT LIGHTBOX — QR uslubidagi markaziy ko'rinish ═══ -->
+  <dialog class="lb" id="portraitLB" aria-label="Xoleric portreti">
+    <figure class="lb-figure">
+      <img class="lb-img" src="images/main.webp" alt="Xoleric — portret" width="640" height="426" decoding="async">
+    </figure>
+    <p class="lb-hint">Tashqariga bosing — yopiladi</p>
+  </dialog>
+
   <script src="js/webgl-bg.js?v=20261025-monoblack"></script>
   <script src="js/app.js?v=20261012-opt"></script>
   <script src="js/text-swim.js?v=20261025-swim"></script>
+  <script src="js/lightbox.js?v=20261029-lb"></script>
 </body>
 </html>

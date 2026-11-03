@@ -33,8 +33,6 @@
   var raf = 0;
   var bootTimer = 0;
   var failsafe = 0;
-  var lastTouchY = 0;
-  var touchOne = false;
 
   function clamp(v) { return Math.max(0, Math.min(1, v)); }
   function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
@@ -201,23 +199,16 @@
     window.scrollBy(0, d * SLOW);
   }
 
-  function onTouchStart(e) {
-    touchOne = !!(e.touches && e.touches.length === 1);
-    if (touchOne && e.touches[0]) lastTouchY = e.touches[0].clientY;
-  }
+  function onTouchStart() { /* native scroll — faqat hero qulfi touchmove da ishlaydi */ }
 
-  /* Telefon: barmoq bilan pastga surish 2x sekin, yuqoriga — normal (ZIP'dagi yechim). */
+  /* Telefon: hero qurilishi tugagach barmoq OHIRGI tezlikda suriladi —
+     native scroll (momentum) ishlaydi, hech narsa prevent qilinmaydi.
+     (Eski 0.5x sekinlashtirish telefonda "sudralib qolish" hissini berardi.)
+     Qulflangan holatda (hero hali qurilmagan bo'lsa) oldidagidek to'xtatiladi. */
   function onTouchMove(e) {
     if (!started || done) return;
     if (root.classList.contains('lb-lock')) return;
-    e.preventDefault();
-    if (!heroDone) return;
-    if (!touchOne || !e.touches || e.touches.length !== 1) return;
-    var y = e.touches[0].clientY;
-    var d = lastTouchY - y;
-    lastTouchY = y;
-    if (!d) return;
-    window.scrollBy(0, d * (d > 0 ? SLOW : 1));
+    if (!heroDone) { if (e.cancelable) e.preventDefault(); }
   }
 
   function onKey(e) {

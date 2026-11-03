@@ -16,12 +16,11 @@
   var isOpen = false;
   var lastFocus = null;
 
-  /* Kursor effektlari (crosshair nishon + spotlight nuri) top-layer dialog
-     ostida qolib ketadi. Ochiq payt dialog ichiga ko'chiramiz — effektlar
-     kattalashtirilgan rasm ustida ham davom etadi. */
+  /* Kursor nishoni (crosshair) top-layer dialog ostida qolib ketadi.
+     Ochiq payt dialog ichiga ko'chiramiz — nishon kattalashtirilgan
+     rasm ustida ham davom etadi. */
   var fxEls = [
-    document.getElementById('crosshair'),
-    document.getElementById('spotlight')
+    document.getElementById('crosshair')
   ].filter(Boolean);
   var fxHomes = [];
 

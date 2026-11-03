@@ -348,27 +348,6 @@ main#main, footer.site-footer {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/></filter><rect width="160" height="160" filter="url(%23n)" opacity="0.6"/></svg>');
 }
 
-/* proyektor nuri — kursor ortidan mayin kechikish bilan (transition) */
-.spotlight {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 560px;
-  height: 560px;
-  margin: -280px;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(circle,
-    rgba(142, 160, 184, 0.13) 0%,
-    rgba(142, 160, 184, 0.05) 40%,
-    transparent 70%);
-  transition: transform 0.18s ease-out;
-  will-change: transform;
-}
-@media (pointer: coarse) {
-  .spotlight { display: none; }
-}
-
 /* ─────────── CROSSHAIR — kursor joylashuv nishoni (faqat sichqoncha) ─────────── */
 .crosshair {
   position: fixed;
@@ -1335,16 +1314,4 @@ html.is-building.is-hero-built .site-header {
 
 @media (max-width: 768px) {
   .build-cursors .cur { width: 16px; height: 16px; }
-}
-
-/* Zoom (lightbox) ichida spotlight ancha sezilarli — qora backdrop ustida */
-.lb > .spotlight {
-  width: 640px;
-  height: 640px;
-  margin: -320px 0 0 -320px;
-  background: radial-gradient(circle,
-    rgba(142, 196, 235, 0.20) 0%,
-    rgba(142, 196, 235, 0.08) 40%,
-    transparent 70%);
-  z-index: 1;
 }

@@ -875,16 +875,6 @@
     glApi.enable();
   }
 
-  function initSpotlight() {
-    if (reduceMotion) return;
-    const sp = $('spotlight');
-    if (!sp) return;
-    window.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      sp.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
-    }, { passive: true });
-  }
-
   /* ═══════════════════════════════════════
      INIT
      ═══════════════════════════════════════ */
@@ -915,7 +905,6 @@
     try { initViewportSpy(); } catch (e) { /* noop */ }
     try { measureReveal(); } catch (e) { /* noop */ }
     try { initBg(); } catch (e) { /* noop */ }
-    try { initSpotlight(); } catch (e) { /* noop */ }
 
     if (!reduceMotion && revealEl) {
       startMasterLoop();

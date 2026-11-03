@@ -1230,6 +1230,22 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
   -webkit-user-drag: none;
 }
 
+/* Flashlight reveal — hero'dagi kabi: ortidagi bg.webp kursor ostida ochiladi */
+.lb-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: url('../images/bg.webp');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.92;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .lb-hint {
   margin: 0;
   font-size: 12px;
@@ -1251,6 +1267,7 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .lb-figure, .lb-hint { animation: none; }
+  .lb-reveal { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -1318,4 +1335,16 @@ html.is-building.is-hero-built .site-header {
 
 @media (max-width: 768px) {
   .build-cursors .cur { width: 16px; height: 16px; }
+}
+
+/* Zoom (lightbox) ichida spotlight ancha sezilarli — qora backdrop ustida */
+.lb > .spotlight {
+  width: 640px;
+  height: 640px;
+  margin: -320px 0 0 -320px;
+  background: radial-gradient(circle,
+    rgba(142, 196, 235, 0.20) 0%,
+    rgba(142, 196, 235, 0.08) 40%,
+    transparent 70%);
+  z-index: 1;
 }

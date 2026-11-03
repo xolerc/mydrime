@@ -16,31 +16,36 @@
   var isOpen = false;
   var lastFocus = null;
 
-  /* Kursor nishoni (crosshair) top-layer dialog ostida qolib ketadi.
-     Ochiq payt dialog ichiga ko'chiramiz — effekt kattalashtirilgan
-     rasm ustida ham davom etadi. */
-  var crosshair = document.getElementById('crosshair');
-  var crosshairHome = null;
-  var crosshairNext = null;
+  /* Kursor effektlari (crosshair nishon + spotlight nuri) top-layer dialog
+     ostida qolib ketadi. Ochiq payt dialog ichiga ko'chiramiz — effektlar
+     kattalashtirilgan rasm ustida ham davom etadi. */
+  var fxEls = [
+    document.getElementById('crosshair'),
+    document.getElementById('spotlight')
+  ].filter(Boolean);
+  var fxHomes = [];
 
   function mountCrosshair() {
-    if (!crosshair || crosshair.parentNode === dlg) return;
-    crosshairHome = crosshair.parentNode;
-    crosshairNext = crosshair.nextSibling;
-    dlg.appendChild(crosshair);
+    fxHomes = [];
+    for (var i = 0; i < fxEls.length; i++) {
+      var el = fxEls[i];
+      if (!el || el.parentNode === dlg) continue;
+      fxHomes.push({ node: el, parent: el.parentNode, next: el.nextSibling });
+      dlg.appendChild(el);
+    }
   }
 
   function unmountCrosshair() {
-    if (!crosshair || !crosshairHome) return;
-    if (crosshair.parentNode === dlg) {
-      if (crosshairNext && crosshairNext.parentNode === crosshairHome) {
-        crosshairHome.insertBefore(crosshair, crosshairNext);
+    for (var i = fxHomes.length - 1; i >= 0; i--) {
+      var h = fxHomes[i];
+      if (h.node.parentNode !== dlg) continue;
+      if (h.next && h.next.parentNode === h.parent) {
+        h.parent.insertBefore(h.node, h.next);
       } else {
-        crosshairHome.appendChild(crosshair);
+        h.parent.appendChild(h.node);
       }
     }
-    crosshairHome = null;
-    crosshairNext = null;
+    fxHomes = [];
   }
 
   function open() {

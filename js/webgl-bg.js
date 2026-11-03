@@ -48,7 +48,7 @@
   ].join('\n');
 
   var WFS = [
-    'uniform float cp,gd;',
+    'uniform float cp;',
     'varying float vH,vD;',
     'void main(){',
     'float d=length(gl_PointCoord-.5);if(d>.5)discard;',
@@ -58,39 +58,12 @@
     'vec3 deep=vec3(mix(.03,.13,m));',
     /* REAKSIYA (bosish / scroll to'lqini) — toza oq */
     'float hi=smoothstep(.22,1.,vH);',
-    'vec3 c=deep+mix(vec3(1.),vec3(1.,.8,.38),gd)*hi;',
+    'vec3 c=deep+vec3(1.)*hi;',
     'gl_FragColor=vec4(c*al*.9,al*.9);}'
   ].join('\n');
 
   /* ── Suv sozlamalari (NULL//SHIFT dagi jonli qiymatlar) ── */
   var ENT = 0.75, RES = 0.55, CP = 0.55, TSC = 1.0, DIRA = 0.0;
-
-  /* ── MOOD: bo'limga qarab suv "kayfiyati" (shamol yo'nalishi, kuch, oltin) ── */
-  var MOODS = {
-    hero:    { ent: 0.75, res: 0.55, dir: 0.0,   gd: 0.0,  tsc: 1.0 },
-    about:   { ent: 1.05, res: 0.60, dir: 0.9,   gd: 0.18, tsc: 1.1 },
-    work:    { ent: 1.40, res: 0.70, dir: -0.7,  gd: 0.40, tsc: 1.25 },
-    contact: { ent: 0.50, res: 0.90, dir: 1.57,  gd: 1.0,  tsc: 0.8 }
-  };
-  var tiltOff = 0;
-  var moodName = 'hero', tgt = MOODS.hero;
-  var curM = { ent: ENT, res: RES, dir: DIRA, gd: 0, tsc: TSC };
-  var moodRaf = 0;
-
-  function pickMood() {
-    moodRaf = 0;
-    var vh = window.innerHeight || 800, best = moodName;
-    for (var id in MOODS) {
-      var el = document.getElementById(id);
-      if (!el) continue;
-      var r = el.getBoundingClientRect();
-      if (r.top <= vh * 0.5 && r.bottom > vh * 0.5) best = id;
-    }
-    if (best !== moodName) {
-      moodName = best; tgt = MOODS[best];
-      if (running) ripple(0, 0, 0.55);   /* bo'lim almashganda yumshoq to'lqin */
-    }
-  }
 
   var gl = null, renderer = null, scene = null, cam = null;
   var wpts = null, WU = null, RP = [], ri = 0;
@@ -170,14 +143,7 @@
       var av = Math.abs(vel);
       vel *= Math.pow(0.92, dt * 60);
       WU.en.value = Math.min(av * 40, 2);
-      var mk = 1 - Math.exp(-dt * 1.6);
-      curM.ent += (tgt.ent - curM.ent) * mk;
-      curM.res += (tgt.res - curM.res) * mk;
-      curM.dir += (tgt.dir - curM.dir) * mk;
-      curM.gd  += (tgt.gd  - curM.gd)  * mk;
-      curM.tsc += (tgt.tsc - curM.tsc) * mk;
-      WU.ent.value = curM.ent; WU.res.value = curM.res;
-      WU.dirA.value = curM.dir + tiltOff; WU.tsc.value = curM.tsc; WU.gd.value = curM.gd;
+      WU.dirA.value = DIRA;
       /* avtomatik yomg'ir + tomchi (NULL//SHIFT dagi kabi) */
       if (av > 0.02 && elapsed > nextRain) {
         ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.45);
@@ -268,7 +234,7 @@
       var uniforms = {
         t: { value: 0 }, tsc: { value: TSC }, ent: { value: ENT }, res: { value: RES },
         cp: { value: CP }, pr: { value: 1 }, asp: { value: 1 }, size: { value: 2.3 },
-        dirA: { value: DIRA }, en: { value: 0 }, gd: { value: 0 }, R: { value: RP }
+        dirA: { value: DIRA }, en: { value: 0 }, R: { value: RP }
       };
       WU = uniforms;
       wpts = new THREE.Points(
@@ -309,7 +275,6 @@
     canRun: function () {
       return typeof window.WebGLRenderingContext !== 'undefined' && !reduceMotion && !killedThisSession();
     },
-    tilt: function (v) { tiltOff = (typeof v === 'number' && isFinite(v)) ? v : 0; },
     onDisable: null
   };
 
@@ -341,14 +306,11 @@
 
   window.addEventListener('pointermove', function (e) {
     if (!running) return;
-    var n = ndc(e.clientX, e.clientY);
-    var now = performance.now();
     if (e.buttons > 0) {
+      var n = ndc(e.clientX, e.clientY);
       lx = n[0]; ly = n[1];
+      var now = performance.now();
       if (now - lastWake > 70) { lastWake = now; ripple(lx, ly, 0.3); }
-    } else if (e.pointerType === 'mouse') {
-      /* kursor-baliq: siljiyotgan kursor orqasida nozik to'lqin izi */
-      if (now - lastWake > 130) { lastWake = now; ripple(n[0], n[1], 0.07); }
     }
   }, { passive: true });
 
@@ -367,10 +329,6 @@
   window.addEventListener('wheel', function (e) {
     if (!running) return;
     vel += -(e.deltaY || 0) * 0.0008;
-  }, { passive: true });
-
-  window.addEventListener('scroll', function () {
-    if (!moodRaf) moodRaf = requestAnimationFrame(pickMood);
   }, { passive: true });
 
   var resizeTimer = null;

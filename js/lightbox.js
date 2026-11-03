@@ -16,6 +16,33 @@
   var isOpen = false;
   var lastFocus = null;
 
+  /* Kursor nishoni (crosshair) top-layer dialog ostida qolib ketadi.
+     Ochiq payt dialog ichiga ko'chiramiz — effekt kattalashtirilgan
+     rasm ustida ham davom etadi. */
+  var crosshair = document.getElementById('crosshair');
+  var crosshairHome = null;
+  var crosshairNext = null;
+
+  function mountCrosshair() {
+    if (!crosshair || crosshair.parentNode === dlg) return;
+    crosshairHome = crosshair.parentNode;
+    crosshairNext = crosshair.nextSibling;
+    dlg.appendChild(crosshair);
+  }
+
+  function unmountCrosshair() {
+    if (!crosshair || !crosshairHome) return;
+    if (crosshair.parentNode === dlg) {
+      if (crosshairNext && crosshairNext.parentNode === crosshairHome) {
+        crosshairHome.insertBefore(crosshair, crosshairNext);
+      } else {
+        crosshairHome.appendChild(crosshair);
+      }
+    }
+    crosshairHome = null;
+    crosshairNext = null;
+  }
+
   function open() {
     if (isOpen) return;
     if (!supportsDialog) return;
@@ -23,6 +50,7 @@
     isOpen = true;
     dlg.classList.add('is-open');
     dlg.showModal();
+    mountCrosshair();
     document.documentElement.classList.add('lb-lock');
     /* matn suzishi effekti ochiq oynada ham ishlamasin */
     try { document.body.setAttribute('data-swim', 'off'); } catch (e) {}
@@ -33,6 +61,7 @@
     isOpen = false;
     dlg.classList.remove('is-open');
     try { dlg.close(); } catch (e) {}
+    unmountCrosshair();
     document.documentElement.classList.remove('lb-lock');
     try { document.body.removeAttribute('data-swim'); } catch (e) {}
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
@@ -63,6 +92,7 @@
     if (!isOpen) return;
     isOpen = false;
     dlg.classList.remove('is-open');
+    unmountCrosshair();
     document.documentElement.classList.remove('lb-lock');
     try { document.body.removeAttribute('data-swim'); } catch (e) {}
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();

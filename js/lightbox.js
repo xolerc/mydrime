@@ -59,6 +59,8 @@
     document.documentElement.classList.add('lb-lock');
     /* matn suzishi effekti ochiq oynada ham ishlamasin */
     try { document.body.setAttribute('data-swim', 'off'); } catch (e) {}
+    /* extras.js: suv ostidan chiqish particles effekti */
+    try { document.dispatchEvent(new CustomEvent('xoleric:lb-open')); } catch (e) {}
   }
 
   function close() {

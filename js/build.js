@@ -1,15 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — BUILD SCROLL (demo uslubi)
-   Har bir bo'lim o'z "oynasi" bilan ochiladi: clip-path chap
-   burchakdan o'nga/pastga cho'ziladi, atrofida 6 ta kursor
-   harakatlanadi. #hero yuklangach 2.4s da avtomatik quriladi,
-   shu vaqt ichida scroll qulflangan. Keyin pastga scroll 2x
-   sekin; har bo'lim scroll pozitsiyasiga qarab quriladi.
-   Qurilish faqat oldinga — yuqoriga qaytishda o'zgarmaydi.
-   Hammasi qurilgach scroll odatiy tezlikka qaytadi.
-   Har to'liq sahifa yuklanishida (refresh / yangi kirish) ishlaydi.
-   SAFETY: prefers-reduced-motion, app.js xatosi yoki 5.6s timeout —
-   build o'chadi, sahifa normal ochiladi.
+   xoleric — BUILD SCROLL
+   Loaderdan keyin sahifa "toza" holatda boshlanadi: faqat fon.
+   Pastga scroll (2x sekin) davomida kursorlar to'r bo'lib
+   ko'rinadi va bo'limlar pastdan yuqoriga quriladi.
+   To'liq pastga tushilgach qurilish tugaydi; yuqoriga qaytishda
+   hech narsa o'zgarmaydi. Har bir to'liq sahifa yuklanishida
+   (refresh / yangi kirish) ishlaydi — loader kabi.
+   SAFETY: prefers-reduced-motion, JS xatosi yoki app.js o'lsa —
+   build o'chadi va sahifa normal ko'rinadi.
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -18,242 +16,289 @@
   try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
   if (reduce) return;
 
-  var SLOW = 0.5;          /* 2x sekin */
-  var HERO_MS = 2400;      /* hero auto-build */
-  var N = 6;               /* har bo'limdagi kursorlar soni */
-  var ARROW = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1l14 8-6 2-3 6z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>';
-
   var root = document.documentElement;
   var started = false;
   var done = false;
-  var heroDone = false;
-  var unlocked = false;
-  var items = [];
-  var t0 = 0;
+  var armed = false;
+  var targets = [];
+  var layer = null;
+  var grid = null;
+  var hudState = null;
+  var hudPct = null;
+  var hudBar = null;
+  var cursors = [];
+  var activeCount = 0;
+  var maxReached = 0;
   var raf = 0;
+  var lastPct = -1;
+  var lastState = '';
   var bootTimer = 0;
   var failsafe = 0;
-  var lastTouchY = 0;
-  var touchOne = false;
+  var resizeTimer = 0;
 
-  function clamp(v) { return Math.max(0, Math.min(1, v)); }
-  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
-  function docMax() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  function maxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
 
   /* Loader ostida darhol yashiramiz — flash bo'lmasin. */
   root.classList.add('is-building');
   try { history.scrollRestoration = 'manual'; } catch (e) {}
   try { window.scrollTo(0, 0); } catch (e) {}
 
-  function makeItem(el, isFooter) {
-    var wrap = document.createElement('div');
-    wrap.className = 'build-wrap';
-    el.parentNode.insertBefore(wrap, el);
-    wrap.appendChild(el);
-
-    var layer = document.createElement('div');
-    layer.className = 'build-cursors';
+  function createLayer() {
+    layer = document.createElement('div');
+    layer.className = 'build-layer';
     layer.setAttribute('aria-hidden', 'true');
-    wrap.appendChild(layer);
-
-    var cs = [];
-    for (var k = 0; k < N; k++) {
-      var c = document.createElement('div');
-      c.className = 'cur';
-      c.innerHTML = ARROW;
-      layer.appendChild(c);
-      cs.push({
-        el: c,
-        ph: Math.random() * 6.28,
-        jx: (Math.random() - .5) * 90,
-        jy: (Math.random() - .5) * 90,
-        sp: 1 + Math.random()
-      });
-    }
-
-    el.style.clipPath = 'inset(0 100% 100% 0)';
-    return { el: el, wrap: wrap, layer: layer, cs: cs, built: 0, fin: false, footer: !!isFooter };
+    layer.innerHTML =
+      '<div class="build-grid"></div>' +
+      '<div class="build-hud" role="status" aria-live="polite">' +
+        '<span class="build-mouse" aria-hidden="true"><i></i></span>' +
+        '<span class="build-state">Pastga scroll</span>' +
+        '<span class="build-pct">000%</span>' +
+        '<span class="build-track"><i></i></span>' +
+      '</div>';
+    document.body.appendChild(layer);
+    grid = layer.querySelector('.build-grid');
+    hudState = layer.querySelector('.build-state');
+    hudPct = layer.querySelector('.build-pct');
+    hudBar = layer.querySelector('.build-track > i');
   }
 
-  function layout(it) {
-    var wr = it.wrap.getBoundingClientRect();
-    var sr = it.el.getBoundingClientRect();
-    it.layer.style.left = (sr.left - wr.left) + 'px';
-    it.layer.style.top = (sr.top - wr.top) + 'px';
-    it.layer.style.width = sr.width + 'px';
-    it.layer.style.height = sr.height + 'px';
-  }
+  function makeCursors() {
+    if (!grid) return;
+    grid.innerHTML = '';
+    cursors = [];
+    activeCount = 0;
 
-  function render(it, p, now) {
-    var e = ease(p);
-    it.el.style.clipPath = 'inset(0 ' + ((1 - e) * 100) + '% ' + ((1 - e) * 100) + '% 0)';
-    layout(it);
-
-    var r = it.el.getBoundingClientRect();
-    var W = r.width;
-    var H = r.height;
-    var viewTop = Math.max(0, -r.top);
-    var viewBottom = Math.min(H, -r.top + window.innerHeight);
-    if (viewBottom < viewTop) viewBottom = viewTop;
-    var band = Math.max(1, viewBottom - viewTop);
-    var edgeX = W * e;
-    var edgeY = Math.min(viewBottom - 8, Math.max(viewTop + 8, H * e));
-
-    it.cs.forEach(function (c, k) {
-      /* Kursorlar o'ng-pastki burchak atrofida "oyna cho'zayotgandek" tebranadi. */
-      var s = now / 400 * c.sp + c.ph;
-      var x = edgeX + c.jx * Math.sin(s) * (1 - e * .2);
-      var y = edgeY + c.jy * Math.cos(s * 1.1) * (1 - e * .2);
-      if (k % 3 === 1) { y = viewTop + band * (.2 + .15 * k); }   /* o'ng chet bo'ylab */
-      if (k % 3 === 2) { x = W * e * (.2 + .15 * k); }             /* pastki chet bo'ylab */
-      x = Math.min(W - 8, Math.max(0, x));
-      y = Math.min(viewBottom - 8, Math.max(viewTop + 8, y));
-      c.el.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-      c.el.style.opacity = (p > 0 && p < 1) ? 1 : 0;
-    });
-  }
-
-  function tick(now) {
-    if (!started || done) return;
+    var vw = window.innerWidth;
     var vh = window.innerHeight;
-    var y = window.scrollY || 0;
-    var max = docMax();
-    var atBottom = y >= max - 2;
+    var cols = clamp(Math.ceil(vw / 104), 4, 14);
+    var rows = clamp(Math.ceil(vh / 96), 4, 10);
+    var cellW = vw / cols;
+    var cellH = vh / rows;
+    var list = [];
+    var max = 112;
 
-    items.forEach(function (it, i) {
-      var p;
-      if (i === 0) {
-        p = clamp((now - t0) / HERO_MS);
-        if (p >= 1 && !heroDone) {
-          heroDone = true;
-          root.classList.add('is-hero-built');
-        }
-        if (atBottom) p = 1;
-      } else if (it.footer) {
-        var ftop = it.wrap.getBoundingClientRect().top + y;
-        var entry = ftop - vh * 0.95;
-        p = clamp((y - entry) / Math.max(1, max - entry));
-        if (atBottom) p = 1;
-      } else {
-        var top = it.wrap.getBoundingClientRect().top + y;
-        p = clamp((y + vh * 0.95 - top) / (vh * 0.9));
-        if (atBottom) p = 1;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        if (list.length >= max) break;
+        list.push({
+          x: (c + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.36,
+          y: (r + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.36
+        });
       }
-
-      if (p > it.built) {
-        it.built = p;
-        render(it, p, now);
-        if (p >= 1) it.fin = true;
-      } else if (it.built < 1) {
-        render(it, it.built, now);
-      } else if (!it.fin) {
-        render(it, 1, now);
-        it.fin = true;
-        it.el.style.clipPath = 'none';
-      }
-    });
-
-    var allBuilt = items.every(function (it) { return it.built >= 1; });
-    if (allBuilt && !done) {
-      done = true;
-      unlock();
-      finish();
     }
-    if (!done) raf = requestAnimationFrame(tick);
+
+    /* Yuqoridan pastga to'lqin — #hero dan boshlanadi. */
+    list.sort(function (a, b) { return (a.y - b.y) || (a.x - b.x); });
+
+    var frag = document.createDocumentFragment();
+    list.forEach(function (p, i) {
+      var el = document.createElement('span');
+      el.className = 'bc';
+      el.style.setProperty('--x', p.x.toFixed(1) + 'px');
+      el.style.setProperty('--y', p.y.toFixed(1) + 'px');
+      el.style.setProperty('--r', (Math.random() * 28 - 14).toFixed(1) + 'deg');
+      el.style.setProperty('--d', ((i % 7) * 22) + 'ms');
+      el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.2L9.4 20z"/></svg>';
+      frag.appendChild(el);
+      cursors.push(el);
+    });
+    grid.appendChild(frag);
   }
 
-  function unlock() {
-    if (unlocked) return;
-    unlocked = true;
-    window.removeEventListener('wheel', onWheel, false);
-    window.removeEventListener('touchstart', onTouchStart, false);
-    window.removeEventListener('touchmove', onTouchMove, false);
-    window.removeEventListener('keydown', onKey, false);
-    window.removeEventListener('resize', onResize, false);
-    root.classList.remove('is-building');
+  function activate(i, quiet) {
+    var el = cursors[i];
+    if (!el || el.classList.contains('on')) return;
+    el.classList.add('on');
+    if (quiet) el.classList.add('quiet');
   }
 
-  function finish() {
-    /* 250ms dan keyin kursor qatlamlarini olib tashlab, bo'limlarni
-       asl DOM joyiga qaytaramiz — sahifa butunlay normal holatda qoladi. */
+  function updateHud(pct, finished) {
+    var n = Math.round(pct * 100);
+    if (n !== lastPct) {
+      lastPct = n;
+      if (hudPct) hudPct.textContent = ('00' + n).slice(-3) + '%';
+      if (hudBar) hudBar.style.width = n + '%';
+    }
+    var text = finished ? 'Tayyor' : (armed ? "Yig'ilmoqda" : 'Pastga scroll');
+    if (hudState && text !== lastState) {
+      lastState = text;
+      hudState.textContent = text;
+    }
+    if (hudPct) hudPct.classList.toggle('is-live', armed || finished);
+  }
+
+  function buildAll() {
+    for (var i = 0; i < targets.length; i++) targets[i].classList.add('is-built');
+    root.classList.add('is-hero-built');
+    for (var j = 0; j < cursors.length; j++) activate(j, false);
+    activeCount = cursors.length;
+  }
+
+  function complete() {
+    if (done) return;
+    done = true;
+    buildAll();
+    updateHud(1, true);
+    unbind();
+
     setTimeout(function () {
-      items.forEach(function (it) {
-        it.el.style.clipPath = 'none';
-        if (it.layer && it.layer.parentNode) it.layer.parentNode.removeChild(it.layer);
-        if (it.wrap && it.wrap.parentNode) {
-          it.wrap.parentNode.insertBefore(it.el, it.wrap);
-          it.wrap.parentNode.removeChild(it.wrap);
-        }
-      });
-      items = [];
-    }, 250);
+      if (layer) layer.classList.add('is-done');
+      root.classList.add('is-build-done');
+    }, 350);
+
+    setTimeout(function () {
+      root.classList.remove('is-building');
+      setTimeout(function () {
+        if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
+        layer = null;
+      }, 900);
+    }, 1050);
   }
 
-  /* ===== 2x sekin scroll ===== */
-  function onWheel(e) {
+  function sync() {
     if (!started || done) return;
+    try {
+      var max = maxScroll();
+      var y = clamp(window.scrollY || 0, 0, max);
+      maxReached = Math.max(maxReached, y);
+      var pct = max > 0 ? clamp(maxReached / max, 0, 1) : 1;
+
+      if (!armed) {
+        if ((window.scrollY || 0) > 2) armed = true;
+        else { updateHud(0, false); return; }
+      }
+
+      var want = Math.round(pct * cursors.length);
+      if (want > activeCount) {
+        for (var i = activeCount; i < want; i++) activate(i, false);
+        activeCount = want;
+      }
+
+      var vh = window.innerHeight;
+      for (var t = 0; t < targets.length; t++) {
+        var el = targets[t];
+        if (el.classList.contains('is-built')) continue;
+        var r = el.getBoundingClientRect();
+        /* Ekranning 90% chizig'idan o'tgan (yoki undan yuqorida qolgan)
+           har bir blok qurilgan hisoblanadi — tez scrollda ham
+           o'tkazib yuborilmaydi. */
+        if (r.top < vh * 0.9) {
+          el.classList.add('is-built');
+          if (el.id === 'hero') root.classList.add('is-hero-built');
+        }
+      }
+
+      updateHud(pct, false);
+
+      if (maxReached >= max - 2) complete();
+    } catch (e) {
+      /* Har qanday xatoda sahifani ochib yuboramiz. */
+      complete();
+    }
+  }
+
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      sync();
+    });
+  }
+
+  function onWheel(e) {
+    if (!started || done || e.ctrlKey) return;
     if (root.classList.contains('lb-lock')) return;
-    e.preventDefault();
-    if (!heroDone) return;
+    var max = maxScroll();
+    if (max <= 0) return;
     var d = e.deltaY;
     if (e.deltaMode === 1) d *= 16;
     else if (e.deltaMode === 2) d *= window.innerHeight;
-    window.scrollBy(0, d * SLOW);
-  }
-
-  function onTouchStart(e) {
-    touchOne = !!(e.touches && e.touches.length === 1);
-    if (touchOne && e.touches[0]) lastTouchY = e.touches[0].clientY;
-  }
-
-  /* Telefon: barmoq bilan pastga surish 2x sekin, yuqoriga — normal (ZIP'dagi yechim). */
-  function onTouchMove(e) {
-    if (!started || done) return;
-    if (root.classList.contains('lb-lock')) return;
-    e.preventDefault();
-    if (!heroDone) return;
-    if (!touchOne || !e.touches || e.touches.length !== 1) return;
-    var y = e.touches[0].clientY;
-    var d = lastTouchY - y;
-    lastTouchY = y;
     if (!d) return;
-    window.scrollBy(0, d * (d > 0 ? SLOW : 1));
+    var y = window.scrollY || 0;
+    if ((d < 0 && y <= 0) || (d > 0 && y >= max - 1)) return;
+    e.preventDefault();
+    /* Pastga — 2x sekin (qurilish); yuqoriga — normal tezlik. */
+    window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
+  }
+
+  /* Telefon: barmoq bilan pastga surish ham 2x sekin; yuqoriga — normal. */
+  var touchY = 0, touchOne = false;
+  function onTouchStart(e) {
+    if (!started || done) return;
+    touchOne = e.touches.length === 1;
+    if (touchOne) touchY = e.touches[0].clientY;
+  }
+  function onTouchMove(e) {
+    if (!started || done || !touchOne || e.touches.length !== 1) return;
+    if (root.classList.contains('lb-lock')) return;
+    var y = e.touches[0].clientY;
+    var d = touchY - y;
+    touchY = y;
+    if (!d) return;
+    var max = maxScroll();
+    if (max <= 0) return;
+    var sy = window.scrollY || 0;
+    if ((d < 0 && sy <= 0) || (d > 0 && sy >= max - 1)) return;
+    if (e.cancelable) e.preventDefault();
+    window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
   }
 
   function onKey(e) {
     if (!started || done) return;
-    if (root.classList.contains('lb-lock')) return;
     var tag = (e.target && e.target.tagName) || '';
     if (/INPUT|TEXTAREA|SELECT/.test(tag) || (e.target && e.target.isContentEditable)) return;
     if ((e.key === ' ' || e.key === 'Spacebar') && /^A$|^BUTTON$/.test(tag)) return;
 
-    var keys = [' ', 'Spacebar', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'End', 'Home'];
-    if (keys.indexOf(e.key) < 0) return;
-    e.preventDefault();
-    if (!heroDone) return;
-
-    if (e.key === 'End') { window.scrollTo(0, docMax()); return; }
-    if (e.key === 'Home') { window.scrollTo(0, 0); return; }
-
     var step = 0;
     if (e.key === 'ArrowDown') step = 20;
-    else if (e.key === 'ArrowUp') step = -20;
+    else if (e.key === 'ArrowUp') step = -40;
     else if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'PageDown') step = window.innerHeight * 0.45;
-    else if (e.key === 'PageUp') step = -window.innerHeight * 0.45;
+    else if (e.key === 'PageUp') step = -window.innerHeight * 0.9;
+    if (!step) return;
+    e.preventDefault();
     window.scrollBy(0, step);
   }
 
   function onResize() {
     if (!started || done) return;
-    items.forEach(layout);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      try {
+        var keep = activeCount;
+        makeCursors();
+        for (var i = 0; i < keep && i < cursors.length; i++) activate(i, true);
+        activeCount = Math.min(keep, cursors.length);
+        sync();
+      } catch (e) { complete(); }
+    }, 180);
   }
 
-  function lock() {
+  function bind() {
     window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('keydown', onKey, false);
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize, { passive: true });
+  }
+
+  function unbind() {
+    window.removeEventListener('wheel', onWheel, false);
+    window.removeEventListener('touchstart', onTouchStart, false);
+    window.removeEventListener('touchmove', onTouchMove, false);
+    window.removeEventListener('keydown', onKey, false);
+    window.removeEventListener('scroll', onScroll, false);
+    window.removeEventListener('resize', onResize, false);
+  }
+
+  function collect() {
+    targets = [];
+    var nodes = document.querySelectorAll('.site-header, main > .section, .site-footer');
+    for (var i = 0; i < nodes.length; i++) targets.push(nodes[i]);
   }
 
   function start() {
@@ -261,14 +306,13 @@
     try {
       started = true;
       try { window.scrollTo(0, 0); } catch (e) {}
-      var nodes = document.querySelectorAll('main > .section');
-      for (var i = 0; i < nodes.length; i++) items.push(makeItem(nodes[i], false));
-      var footer = document.querySelector('body > .site-footer');
-      if (footer) items.push(makeItem(footer, true));
-      if (!items.length) { abort(); return; }
-      lock();
-      t0 = performance.now();
-      raf = requestAnimationFrame(tick);
+      createLayer();
+      collect();
+      makeCursors();
+      bind();
+      updateHud(0, false);
+      if (maxScroll() <= 2) { complete(); return; }
+      requestAnimationFrame(sync);
     } catch (e) {
       abort();
     }
@@ -277,23 +321,11 @@
   function abort() {
     if (done) return;
     done = true;
-    try {
-      window.removeEventListener('wheel', onWheel, false);
-      window.removeEventListener('touchstart', onTouchStart, false);
-      window.removeEventListener('touchmove', onTouchMove, false);
-      window.removeEventListener('keydown', onKey, false);
-      window.removeEventListener('resize', onResize, false);
-    } catch (e) {}
+    try { unbind(); } catch (e) {}
     root.classList.remove('is-building');
-    items.forEach(function (it) {
-      it.el.style.clipPath = 'none';
-      if (it.layer && it.layer.parentNode) it.layer.parentNode.removeChild(it.layer);
-      if (it.wrap && it.wrap.parentNode) {
-        it.wrap.parentNode.insertBefore(it.el, it.wrap);
-        it.wrap.parentNode.removeChild(it.wrap);
-      }
-    });
-    items = [];
+    root.classList.add('is-build-done');
+    if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer = null;
   }
 
   function boot() {
@@ -308,6 +340,7 @@
     setTimeout(start, 320);
   } else {
     bootTimer = setInterval(boot, 80);
+    /* app.js o'lib qolsa, inline failsafe sahifani ochadi — biz ham qo'shilamiz. */
     failsafe = setTimeout(function () {
       if (!started && !done) abort();
     }, 5600);

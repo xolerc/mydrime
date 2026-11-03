@@ -8,7 +8,7 @@ Mahsulotga yo'naltirilgan frontend portfolio — tez, qulay, kreativ kod bilan.
 - Statik `HTML + CSS + vanilla JS` — buildsiz, bog'liqliksiz
 - `js/webgl-bg.js` — Mercury Liquid Chrome WebGL foni (fullscreen quad, simplex noise, kursorga sezgir, DPR cheklov, FPS pog'onalari, software-renderer himoyasi, watchdog) + **to'q sariq / gold glow**
 - `js/app.js` — loader (matrix shamol: full qora fonda oq raqamlar chapdan o'ngga, tez ~2.4s), neon sarlavha, flashlight reveal, orbit ijtimoiy halqa + travel rejimi (≥1200px), GitHub jonli loyihalar, scroll spy, statistika, Konami sirli rejimi
-- `js/build.js` — loaderdan keyin scroll-driven build: pastga scroll 2x sekin, kursor to'ri oyna o'lchamida to'lib boradi, bo'limlar #hero dan footer'gacha ketma-ket quriladi; to'liq pastga tushgach effekt o'chadi (faqat to'liq sahifa yuklanishida)
+- `js/build.js` — loaderdan keyin "kursorlar oynasi" intro: #hero 2.4s da burchakdan oynaday ochiladi (shu vaqtda scroll qulf), keyin har bo'lim scroll pozitsiyasiga qarab clip-path bilan chap burchakdan quriladi; har bo'lim atrofida 6 ta kursor yuradi; pastga scroll wheel uchun 2x sekin (touch: pastga 2x, yuqoriga normal); qurilish faqat oldinga — to'liq qurilgach effekt o'chadi va scroll odatiy tezlikka qaytadi (faqat to'liq sahifa yuklanishida)
 - `css/styles.css` — dizayn-tokenlar, tungi mavzu, gold aksentlar, responsiv (960px / 768px / 380px), `prefers-reduced-motion` qo'llab-quvvatlash
 - `cv.html` — chop etiladigan CV / rezyume (yorug' + tungi, chop CSS)
 - Rasmlar: `images/bg.webp`, `images/main.webp` (oldindan yuklanadi)

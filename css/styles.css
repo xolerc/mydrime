@@ -1259,187 +1259,63 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
   .lb-hint { font-size: 11px; }
 }
 
+
 /* ═══════════════════════════════════════════════════════════
-   BUILD SCROLL — loaderdan keyin scroll bilan sahifa yig'iladi
+   BUILD SCROLL (demo uslubi) — har bir bo'lim kursorlar bilan
+   oynaday ochiladi: chap burchakdan o'ng/pastga cho'ziladigan
+   clip-path + bo'lim atrofidagi 6 ta kursor.
    Faqat html.is-building paytida; build.js qo'shadi/o'chiradi.
    ═══════════════════════════════════════════════════════════ */
 html.is-building { scroll-behavior: auto; scroll-snap-type: none; }
 
-/* Orbit ham hero bilan birga quriladi — boshda faqat toza fon. */
+/* Bo'lim/footer hali JS inline klip yo'q bo'lsa ham yashirin turadi. */
+html.is-building .section,
+html.is-building .site-footer {
+  clip-path: inset(0 100% 100% 0);
+}
+
+/* Orbit va yuqori bar hero qurilib bo'lgandan keyin paydo bo'ladi. */
 html.is-building:not(.is-hero-built) #orbitLayer,
 html.is-building:not(.is-hero-built) #orbitContainer,
 html.is-building:not(.is-hero-built) .orbit-layer .hero-orbit {
   visibility: hidden !important;
 }
-
-/* Kontent boshda ko'rinmaydi — faqat WebGL fon qoladi. */
 html.is-building .site-header {
   opacity: 0 !important;
   pointer-events: none;
   transform: translateX(-50%) translateY(-16px) !important;
   transition: opacity .55s var(--ease-out), transform .7s var(--ease-out);
 }
-html.is-building .site-header.is-built,
-html.is-building .site-header:focus-within {
+html.is-building.is-hero-built .site-header {
   opacity: 1 !important;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0) !important;
-  transition: opacity .55s var(--ease-out), transform .7s var(--ease-out);
 }
 
-html.is-building main > .section,
-html.is-building .site-footer {
-  opacity: 0;
-  clip-path: inset(0 0 100% 0);
-  transform: translateY(26px);
-  pointer-events: none;
-  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
-}
-html.is-building main > .section.is-built,
-html.is-building .site-footer.is-built {
-  opacity: 1;
-  clip-path: inset(0 0 0 0);
-  transform: none;
-  pointer-events: auto;
-  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
-}
+/* Har bir bo'limning build o'rami va kursorlar qatlami. */
+.build-wrap { position: relative; }
 
-/* Kursor maydoni — joriy oyna o'lchamiga to'r bo'lib joylashadi. */
-.build-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 95;
+.build-cursors {
+  position: absolute;
   pointer-events: none;
   overflow: hidden;
-  opacity: 1;
-  transition: opacity .8s var(--ease-out);
+  z-index: 5;
 }
-.build-layer.is-done { opacity: 0; }
-
-.build-grid { position: absolute; inset: 0; }
-
-.bc {
+.build-cursors .cur {
   position: absolute;
-  left: var(--x, 50%);
-  top: var(--y, 50%);
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
   opacity: 0;
-  transform: translateY(10px) scale(.35) rotate(var(--r, 0deg));
-  transition: opacity .35s ease, transform .65s var(--ease-spring);
-  transition-delay: var(--d, 0ms);
-  will-change: opacity, transform;
+  will-change: transform, opacity;
 }
-.bc svg {
-  display: block;
+.build-cursors .cur svg {
   width: 100%;
   height: 100%;
-  fill: #e8ecf4;
-  stroke: #05070c;
-  stroke-width: 1.1;
-  stroke-linejoin: round;
-}
-.bc.on {
-  opacity: .86;
-  transform: translateY(0) scale(1) rotate(0deg);
-  filter: drop-shadow(0 0 7px rgba(232, 236, 244, .45));
-}
-.bc::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  margin: -3px;
-  border: 1px solid rgba(232, 236, 244, .9);
-  border-radius: 50%;
-  opacity: 0;
-  transform: scale(.4);
-}
-.bc.on::after {
-  animation: bc-ring .9s cubic-bezier(.2, .8, .3, 1) forwards;
-  animation-delay: calc(var(--d, 0ms) + 80ms);
-}
-.bc.quiet::after { animation: none; }
-
-@keyframes bc-ring {
-  0% { opacity: .85; transform: scale(.5); }
-  100% { opacity: 0; transform: scale(5); }
-}
-
-/* HUD — scroll holati va progress. */
-.build-hud {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(18px, 4vh, 40px);
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(232, 236, 244, .16);
-  border-radius: 999px;
-  background: rgba(5, 7, 12, .55);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, .35);
-  color: rgba(232, 236, 244, .72);
-  font-family: var(--font);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: opacity .35s ease, transform .35s var(--ease-out);
-}
-.build-state { min-width: 112px; text-align: center; }
-.build-pct {
-  color: #eceff4;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: .08em;
-  transition: color .3s ease;
-}
-.build-pct.is-live { color: #fff; }
-.build-track {
-  width: clamp(52px, 12vw, 92px);
-  height: 2px;
-  border-radius: 2px;
-  background: rgba(232, 236, 244, .16);
-  overflow: hidden;
-}
-.build-track i {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, #8ea0b8, #eceff4);
-  box-shadow: 0 0 10px rgba(142, 160, 184, .65);
-  transition: width .25s linear;
-}
-.build-mouse {
-  position: relative;
-  width: 12px;
-  height: 18px;
-  border: 1px solid rgba(232, 236, 244, .55);
-  border-radius: 7px;
-}
-.build-mouse i {
-  position: absolute;
-  left: 50%;
-  top: 4px;
-  width: 2px;
-  height: 4px;
-  margin-left: -1px;
-  border-radius: 1px;
-  background: #eceff4;
-  animation: bh-wheel 1.5s ease-in-out infinite;
-}
-@keyframes bh-wheel {
-  0%, 100% { opacity: .25; transform: translateY(0); }
-  45% { opacity: 1; transform: translateY(4px); }
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .65));
 }
 
 @media (max-width: 768px) {
-  .bc { width: 17px; height: 17px; margin: -8.5px 0 0 -8.5px; }
-  .build-hud { gap: 8px; padding: 9px 12px; font-size: 9px; letter-spacing: .14em; }
-  .build-state { min-width: 96px; }
+  .build-cursors .cur { width: 16px; height: 16px; }
 }

@@ -32,7 +32,7 @@
     SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, INPUT: 1,
     SELECT: 1, OPTION: 1, CODE: 1, PRE: 1, SVG: 1, CANVAS: 1, IFRAME: 1
   };
-  var SKIP_SEL = '[data-swim="off"], .sw-w, .sw-c, #loader, .grain-top, .skip-link';
+  var SKIP_SEL = '[data-swim="off"], .sw-w, .sw-c, #loader, .grain-top, .skip-link, .build-layer';
 
   var chars = [];
   var grid = new Map();
@@ -301,6 +301,13 @@
       mo = new MutationObserver(function (muts) {
         for (var i = 0; i < muts.length; i++) {
           var m = muts[i];
+          /* build HUD (foiz matni) har scrollda o'zgaradi — qayta bo'lish/o'lchash shart emas */
+          var tn = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentNode);
+          if (tn && tn.closest && tn.closest('.build-layer')) continue;
+          if (m.type === 'childList' && m.addedNodes.length === 1 && m.addedNodes[0].classList &&
+              m.addedNodes[0].classList.contains('build-layer')) continue;
+          if (m.type === 'childList' && m.removedNodes.length === 1 && m.removedNodes[0].classList &&
+              m.removedNodes[0].classList.contains('build-layer')) continue;
           if (m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length)) { scheduleSplit(); return; }
           if (m.type === 'characterData') { scheduleSplit(); return; }
         }

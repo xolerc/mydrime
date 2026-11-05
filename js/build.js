@@ -76,55 +76,12 @@
   }
 
   function makeCursors() {
+    /* Statik kursor to'ri olib tashlandi — faqat harakatlanuvchi
+       agent kursorlar (agents.js) qoldiriladi. */
     if (!grid) return;
     grid.innerHTML = '';
     cursors = [];
     activeCount = 0;
-
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var cols = clamp(Math.ceil(vw / 104), 4, 14);
-    var rows = clamp(Math.ceil(vh / 96), 4, 10);
-    var cellW = vw / cols;
-    var cellH = vh / rows;
-    var list = [];
-    var max = 112;
-
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < cols; c++) {
-        if (list.length >= max) break;
-        list.push({
-          x: (c + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.36,
-          y: (r + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.36
-        });
-      }
-    }
-
-    /* Yuqoridan pastga to'lqin — #hero dan boshlanadi. */
-    list.sort(function (a, b) { return (a.y - b.y) || (a.x - b.x); });
-
-    var frag = document.createDocumentFragment();
-    var named = 0;
-    var every = Math.max(7, Math.round(list.length / 6));
-    list.forEach(function (p, i) {
-      var el = document.createElement('span');
-      el.className = 'bc';
-      el.style.setProperty('--x', p.x.toFixed(1) + 'px');
-      el.style.setProperty('--y', p.y.toFixed(1) + 'px');
-      el.style.setProperty('--r', (Math.random() * 28 - 14).toFixed(1) + 'deg');
-      el.style.setProperty('--d', ((i % 7) * 22) + 'ms');
-      el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.2L9.4 20z"/></svg>';
-      /* Figma multiplayer uslubi: ba'zi kursorlar ismli va rangli */
-      if (named < 6 && i % every === 3) {
-        var nm = NAMES[named++];
-        el.classList.add('has-name');
-        el.style.setProperty('--c', nm[1]);
-        el.insertAdjacentHTML('beforeend', '<b class="bn">' + nm[0] + '</b>');
-      }
-      frag.appendChild(el);
-      cursors.push(el);
-    });
-    grid.appendChild(frag);
   }
 
   function activate(i, quiet) {

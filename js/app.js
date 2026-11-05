@@ -726,7 +726,7 @@
     list.forEach((r, i) => {
       const lang = r.language || 'Kod';
       const langColor = LANG_COLORS[r.language] || '#8b949e';
-      const desc = esc((r.description || 'Tavsif berilmagan.').slice(0, 130));
+      const desc = esc((r.description || 'XOLERIC').slice(0, 130));
       const stars = r.stargazers_count || 0;
       const forks = r.forks_count || 0;
       const date = new Date(r.updated_at || Date.now()).toLocaleDateString('uz-UZ', { year: 'numeric', month: 'short' });
@@ -758,7 +758,7 @@
         `<span class="meta-forks">⑂ ${forks}</span>` +
         `<span class="meta-updated">${date}</span>` +
         '</div>' +
-        `<a class="card-link" href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">GitHub'da ochish →</a>` +
+        `<a class="card-link" href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">XOLERIC</a>` +
         '</div>';
       frag.appendChild(card);
     });
@@ -828,7 +828,7 @@
     eeActive = !eeActive;
     document.body.classList.toggle('ee-mode', eeActive);
     if (!toastEl) return;
-    toastEl.textContent = eeActive ? 'Konami Kodi Faollashdi' : 'Konami Kodi O‘chirildi';
+    toastEl.textContent = eeActive ? 'XOLERIC' : 'XOLERIC';
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), 2500);
   }

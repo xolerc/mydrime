@@ -251,28 +251,6 @@
     window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
   }
 
-  /* Telefon: barmoq bilan pastga surish ham 2x sekin; yuqoriga — normal. */
-  var touchY = 0, touchOne = false;
-  function onTouchStart(e) {
-    if (!started || done) return;
-    touchOne = e.touches.length === 1;
-    if (touchOne) touchY = e.touches[0].clientY;
-  }
-  function onTouchMove(e) {
-    if (!started || done || !touchOne || e.touches.length !== 1) return;
-    if (root.classList.contains('lb-lock')) return;
-    var y = e.touches[0].clientY;
-    var d = touchY - y;
-    touchY = y;
-    if (!d) return;
-    var max = maxScroll();
-    if (max <= 0) return;
-    var sy = window.scrollY || 0;
-    if ((d < 0 && sy <= 0) || (d > 0 && sy >= max - 1)) return;
-    if (e.cancelable) e.preventDefault();
-    window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
-  }
-
   function onKey(e) {
     if (!started || done) return;
     var tag = (e.target && e.target.tagName) || '';
@@ -305,8 +283,6 @@
 
   function bind() {
     window.addEventListener('wheel', onWheel, { passive: false });
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('keydown', onKey, false);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize, { passive: true });
@@ -314,8 +290,6 @@
 
   function unbind() {
     window.removeEventListener('wheel', onWheel, false);
-    window.removeEventListener('touchstart', onTouchStart, false);
-    window.removeEventListener('touchmove', onTouchMove, false);
     window.removeEventListener('keydown', onKey, false);
     window.removeEventListener('scroll', onScroll, false);
     window.removeEventListener('resize', onResize, false);

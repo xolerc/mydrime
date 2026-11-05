@@ -1230,6 +1230,22 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
   -webkit-user-drag: none;
 }
 
+/* hero'dagi flashlight qatlami — zoom ichida ham bg.webp ochiladi */
+.lb-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: url('../images/bg.webp');
+  background-size: cover;
+  background-position: 38% center;
+  opacity: 0.92;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .lb-hint {
   margin: 0;
   font-size: 12px;

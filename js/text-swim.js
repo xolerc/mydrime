@@ -303,11 +303,13 @@
           var m = muts[i];
           /* build HUD (foiz matni) har scrollda o'zgaradi — qayta bo'lish/o'lchash shart emas */
           var tn = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentNode);
-          if (tn && tn.closest && tn.closest('.build-layer')) continue;
-          if (m.type === 'childList' && m.addedNodes.length === 1 && m.addedNodes[0].classList &&
-              m.addedNodes[0].classList.contains('build-layer')) continue;
-          if (m.type === 'childList' && m.removedNodes.length === 1 && m.removedNodes[0].classList &&
-              m.removedNodes[0].classList.contains('build-layer')) continue;
+          if (tn && tn.closest && tn.closest('.build-layer, [data-swim="off"]')) continue;
+          if (m.type === 'childList') {
+            var one = (m.addedNodes.length === 1 && !m.removedNodes.length) ? m.addedNodes[0]
+                    : (m.removedNodes.length === 1 && !m.addedNodes.length) ? m.removedNodes[0] : null;
+            if (one && one.nodeType === 1 && one.matches &&
+                one.matches('.build-layer, [data-swim="off"]')) continue;
+          }
           if (m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length)) { scheduleSplit(); return; }
           if (m.type === 'characterData') { scheduleSplit(); return; }
         }

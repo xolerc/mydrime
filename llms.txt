@@ -1,6 +1,6 @@
 # Xoleric
 
-> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi.
+> Xoleric — kreativ kod muallifi.
 > Tez, jonli va interaktiv veb-interfeyslar yaratadi: HTML, CSS, JavaScript, React, WebGL.
 
 ## Rasmiy sahifalar
@@ -11,7 +11,7 @@
 
 ## Xoleric kim?
 
-Xoleric — O'zbekistondan frontend dasturchi. Kreativ kod, WebGL fonlar,
+Xoleric — kreativ kod muallifi. WebGL fonlar,
 scroll-hikoyalar va 60fps animatsiyalar bilan oddiy sahifalarni jonli
 tajribaga aylantiradi. Freelance loyihalar va hamkorlik uchun ochiq.
 

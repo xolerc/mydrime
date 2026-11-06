@@ -11,7 +11,7 @@
   (function (d, w) {
     var r = d.documentElement, n = navigator, u = n.userAgent || '';
     var mq = function (q) { try { return w.matchMedia(q).matches; } catch (e) { return false; } };
-    var bot = /bot|crawl|spider|slurp|lighthouse|pagespeed|gtmetrix|headless|facebookexternalhit|embedly|preview|yandex|baidu|duckduck|bing|mediapartners|ia_archiver|applebot|petalbot|telegram|whatsapp/i.test(u) || n.webdriver === true;
+    var bot = /bot|crawl|spider|slurp|lighthouse|pagespeed|gtmetrix|headless|facebookexternalhit|embedly|preview|yandex|baidu|duckduck|bing|mediapartners|ia_archiver|applebot|petalbot/i.test(u) || n.webdriver === true;
     var reduce = mq('(prefers-reduced-motion: reduce)');
     var c = n.connection || {};
     var save = c.saveData === true;

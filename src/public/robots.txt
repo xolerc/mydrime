@@ -1,0 +1,5 @@
+# XOLERIC — https://xolerc.github.io/
+User-agent: *
+Allow: /
+
+Sitemap: https://xolerc.github.io/sitemap.xml

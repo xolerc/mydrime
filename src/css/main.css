@@ -366,7 +366,8 @@ main#main, footer.site-footer {
   will-change: transform;
 }
 @media (pointer: coarse) {
-  .spotlight { display: none; }
+  /* telefonda kursor yo'q — yumshoq nur hero markazida statik qoladi */
+  .spotlight { left: 50%; top: 36%; }
 }
 
 /* ─────────── CROSSHAIR — kursor joylashuv nishoni (faqat sichqoncha) ─────────── */

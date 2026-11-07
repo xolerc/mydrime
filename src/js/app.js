@@ -21,7 +21,7 @@
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
   var GH_USER = 'xolerc';
-  var THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  var THREE_SRC = 'js/three.min.js'; /* o'zimizda (CDN o'lsa ham suv-effekt ishlaydi) */
 
   /* ═══════════════ three.js (lazy) ═══════════════ */
   var threeReady = false, revealed = false;
@@ -200,7 +200,7 @@
     var art = $('heroArt'), rev = $('reveal'), lm = $('layerMain');
     if (!art) return;
 
-    if (X.fx && !X.coarse && rev) {
+    if (X.fx && rev) {
       var st = { x: 0, y: 0, r: 0, tr: 0, run: false, pxx: 0, pyy: 0 };
       var loop = function () {
         st.r += (st.tr - st.r) * 0.2;
@@ -223,6 +223,30 @@
         st.tr = 0; st.pxx = 0; st.pyy = 0;
         if (!st.run) { st.run = true; raf(loop); }
       });
+      /* telefonda (touch) kursor yo'q — flashlight doira o'zi sekin aylanib yuradi */
+      if (X.coarse) {
+        var t0 = 0;
+        var auto = function (now) {
+          if (doc.hidden) { raf(auto); return; }
+          if (!t0) t0 = now;
+          var b = art.getBoundingClientRect();
+          if (b.width > 0) {
+            var t = (now - t0) / 1000;
+            st.x = b.width * (0.5 + 0.3 * Math.sin(t * 0.55));
+            st.y = b.height * (0.46 + 0.22 * Math.sin(t * 0.83 + 1.3));
+            st.tr = Math.min(b.width, b.height) * 0.34;
+            st.pxx = (st.x / b.width - 0.5) * 2; st.pyy = (st.y / b.height - 0.5) * 2;
+            art.style.setProperty('--mx', (st.x / b.width * 100).toFixed(0) + '%');
+            art.style.setProperty('--my', (st.y / b.height * 100).toFixed(0) + '%');
+          }
+          st.r += (st.tr - st.r) * 0.2;
+          var m = 'radial-gradient(circle ' + st.r.toFixed(1) + 'px at ' + st.x.toFixed(1) + 'px ' + st.y.toFixed(1) + 'px,#000 0%,transparent 100%)';
+          rev.style.webkitMaskImage = m; rev.style.maskImage = m;
+          if (lm) lm.style.transform = 'translate3d(' + (-st.pxx * 8).toFixed(2) + 'px,' + (-st.pyy * 8).toFixed(2) + 'px,0) scale(1.04)';
+          raf(auto);
+        };
+        raf(auto);
+      }
     }
 
     /* lightbox */

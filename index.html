@@ -1,0 +1,4154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#05070c">
+  <meta name="color-scheme" content="dark">
+  <title>XOLERIC</title>
+
+  <!-- Jonli manzil: https://xolerc.github.io/mydrime/ (eu.org faollashganda xoleric.eu.org ga qaytariladi) -->
+  <link rel="canonical" href="https://xolerc.github.io/mydrime/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="XOLERIC">
+  <meta name="application-name" content="XOLERIC">
+  <meta name="apple-mobile-web-app-title" content="XOLERIC">
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "XOLERIC",
+      "alternateName": ["Xoleric", "devxoleric"],
+      "url": "https://xolerc.github.io/"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "XOLERIC",
+      "alternateName": ["Xoleric", "devxoleric"],
+      "url": "https://xolerc.github.io/mydrime/",
+      "image": "https://xolerc.github.io/mydrime/images/og-cover.jpg",
+      "address": { "@type": "PostalAddress", "addressCountry": "UZ" },
+      "sameAs": [
+        "https://github.com/xolerc",
+        "https://t.me/Wxoleric",
+        "https://www.instagram.com/ixoleric",
+        "https://youtube.com/@xoleric"
+      ]
+    }
+  ]
+  </script>
+
+  <link rel="icon" href="images/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" href="images/favicon-96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="images/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+  <link rel="preload" as="image" href="images/bg.webp" fetchpriority="high" media="(min-width:769px)">
+  <link rel="preload" as="image" href="images/main.webp" fetchpriority="high" media="(min-width:769px)">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.github.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Bebas+Neue&display=swap">
+
+  <meta name="description" content="XOLERIC — rasmiy veb-sayt.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="uz_UZ">
+  <meta property="og:site_name" content="XOLERIC">
+  <meta property="og:title" content="XOLERIC">
+  <meta property="og:description" content="XOLERIC — rasmiy veb-sayt.">
+  <meta property="og:image" content="https://xolerc.github.io/mydrime/images/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="XOLERIC">
+  <meta property="og:url" content="https://xolerc.github.io/mydrime/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XOLERIC">
+  <meta name="twitter:description" content="XOLERIC — rasmiy veb-sayt.">
+  <meta name="twitter:image" content="https://xolerc.github.io/mydrime/images/og-cover.jpg">
+
+  <style>
+/* ═══════════════════════════════════════════════════════════
+   xoleric — creative portfolio v3.1 (V1 spirit + V3 skeleton)
+   Flashlight mask-reveal · orbit · scroll layout
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --bg-soft: #05070c;
+  --bone: #eceff4;
+  --font-cine: 'Bebas Neue', 'Arial Narrow', Impact, sans-serif;
+  --surface: rgba(255, 255, 255, 0.03);
+  --text: #e8ecf4;
+  --text-2: #b6becb;
+  --muted: #aab6c9;
+  --line: rgba(255, 255, 255, 0.09);
+  --accent: #111921;
+  --accent-2: #111921;
+  --accent-rgb: 17, 25, 33;
+  --gold-glow: rgba(17, 25, 33, 0.55);
+
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Arial Black', Impact, sans-serif;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 80px;
+  --space-7: 120px;
+
+  --ease-out: cubic-bezier(0.2, 0.9, 0.27, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast: 150ms;
+  --t-ui: 300ms;
+  --t-macro: 700ms;
+
+  --header-h: 72px;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --max-w: 1200px;
+
+  color-scheme: dark;
+}
+
+/* ─────────── RESET / BASE ─────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: var(--header-h);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  /* WebGL Suv foni ortidagi fallback — toza qora (yoruqlik yo'q) */
+  background: #000000;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─────────── TEXT SELECTION — UI matnlar nusxalanadi ─────────── */
+html,
+body {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  cursor: default;
+}
+
+img,
+svg,
+canvas {
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+::selection {
+  background: rgba(245, 197, 24, 0.35);
+  color: #fff;
+}
+
+img, svg, canvas { display: block; max-width: 100%; }
+
+:focus-visible {
+  outline: 2px solid #e8ecf4;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 110;
+  padding: 10px 18px;
+  background: var(--bg-soft);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 13px;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* ─────────── LOADER — matrix shamol (full qora fon, oq raqamlar) ─────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  overflow: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+#loader.hidden { opacity: 0; visibility: hidden; }
+
+#matrix-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000;
+}
+
+#logo-container {
+  position: absolute;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  z-index: 3;
+}
+
+.xoleric-logo {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: clamp(6px, 1.2vw, 10px);
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: clamp(14px, 3vw, 20px) clamp(30px, 6vw, 50px);
+  box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3);
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  animation: fadeIn 0.5s ease-out forwards, glitch-anim 0.3s steps(2, end) infinite;
+}
+
+.xoleric-logo.stable {
+  animation: fadeIn 0.5s ease-out forwards, glow 3s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, 3px); }
+  80% { transform: translate(3px, -3px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3); }
+  50% { box-shadow: 0 0 30px rgba(255,255,255,0.5) inset, 0 0 50px rgba(255,255,255,0.6); }
+  100% { box-shadow: 0 0 15px rgba(255,255,255,0.2) inset, 0 0 20px rgba(255,255,255,0.3); }
+}
+
+/* ─────────── SCROLL PROGRESS + HEADER ─────────── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  box-shadow: 0 0 8px rgba(142, 160, 184, 0.6);
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent), #8ea0b8);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 40;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.site-header {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: calc(100vw - 20px);
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(17, 25, 33, 0.32), rgba(17, 25, 33, 0.16) 55%, rgba(17, 25, 33, 0.22));
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(142, 160, 184, 0.45);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 34px rgba(142, 160, 184, 0.28);
+  opacity: 0;
+  transform: translateX(-50%) translateY(-12px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-header::-webkit-scrollbar { display: none; }
+
+.site-header.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+.site-header.scrolled { border-color: rgba(142, 160, 184, 0.7); box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55), 0 0 50px rgba(142, 160, 184, 0.35); }
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.logo-dot { color: #ffffff; }
+
+.site-nav { display: flex; gap: 4px; align-items: center; }
+
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.site-nav a::after { content: none; }
+
+.site-nav a:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+.site-nav a.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 14px var(--gold-glow), 0 0 34px rgba(17, 25, 33, 0.8);
+  font-weight: 700;
+}
+
+.header-actions { display: flex; align-items: center; }
+.header-actions .btn { padding: 7px 14px !important; font-size: 12.5px !important; border-radius: 999px !important; white-space: nowrap; }
+
+/* ─────────── BUTTONS ─────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) ease,
+              background var(--t-fast) ease, border-color var(--t-fast) ease, color var(--t-fast) ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.30);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 30px rgba(142, 160, 184, 0.35);
+}
+
+.btn-primary:hover { transform: translateY(-2px); background: linear-gradient(135deg, #1a2636, #243447); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 46px rgba(142, 160, 184, 0.5); }
+
+.btn-ghost {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text-2);
+}
+
+.btn-ghost:hover { border-color: rgba(142, 160, 184, 0.7); color: #ffffff; transform: translateY(-2px); background: rgba(17, 25, 33, 0.6); box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5); }
+
+.btn-lg { padding: 15px 28px; font-size: 15px; }
+.btn-sm { padding: 9px 16px; font-size: 13px; }
+
+.btn:focus-visible {
+  outline: 3px solid #e8ecf4;
+  outline-offset: 3px;
+}
+
+/* ─────────── GLOBAL WEBGL BACKGROUND ─────────── */
+canvas#webgl-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  /* GPU compositing: promotes the canvas to its own hardware layer so it
+     never forces the page to re-paint under it (scroll stays 60fps) */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* kontent qatlami — WebGL fon ustida */
+main#main, footer.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────── Yuqoridagi yoruqlik qatlamlari olib tashlandi ───────────
+   .chrome-accent va .gold-glow (oq/kulrang glow divlari) HTML dan ham,
+   CSS dan ham butunlay o'chirildi. Fon = #000 + WebGL suv. */
+
+/* film grain — statik SVG shovqin, overlay aralashma, arzon (animatsiyasiz) */
+.grain-top {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/></filter><rect width="160" height="160" filter="url(%23n)" opacity="0.6"/></svg>');
+}
+
+/* proyektor nuri — kursor ortidan mayin kechikish bilan (transition) */
+.spotlight {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 560px;
+  margin: -280px;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle,
+    rgba(142, 160, 184, 0.13) 0%,
+    rgba(142, 160, 184, 0.05) 40%,
+    transparent 70%);
+  transition: transform 0.18s ease-out;
+  will-change: transform;
+}
+@media (pointer: coarse) {
+  .spotlight { display: none; }
+}
+
+/* ─────────── CROSSHAIR — kursor joylashuv nishoni (faqat sichqoncha) ─────────── */
+.crosshair {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  overflow: hidden;
+}
+.crosshair.on { opacity: 1; }
+.ch-x, .ch-y { position: absolute; will-change: transform; }
+.ch-x {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  transform: translateY(-100px);
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(142, 160, 184, 0.45) 20%,
+    rgba(142, 160, 184, 0.45) 80%,
+    transparent);
+}
+.ch-y {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  transform: translateX(-100px);
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(142, 160, 184, 0.45) 20%,
+    rgba(142, 160, 184, 0.45) 80%,
+    transparent);
+}
+.ch-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px;
+  border-radius: 50%;
+  border: 1px solid rgba(142, 160, 184, 0.9);
+  box-shadow: 0 0 10px rgba(142, 160, 184, 0.6), 0 0 22px rgba(17, 25, 33, 0.8);
+  transform: translate(-100px, -100px);
+  will-change: transform;
+}
+@media (pointer: coarse) {
+  .crosshair { display: none; }
+}
+
+/* ─────────── VIGNETTE ─────────── */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 26;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(4, 6, 10, 0.55) 100%);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.vignette.visible { opacity: 1; }
+
+/* ─────────── SECTIONS / TYPOGRAPHY ─────────── */
+.section {
+  scroll-snap-align: start;
+  scroll-margin-top: var(--header-h);
+}
+
+.section-head { margin-bottom: var(--space-5); }
+
+.section-sub {
+  margin-top: var(--space-2);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.section-sub .dot-live {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3fb950;
+  margin-right: 6px;
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(63, 185, 80, 0); }
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  margin-bottom: var(--space-2);
+}
+.eyebrow::before {
+  content: '── ';
+  color: rgba(142, 160, 184, 0.5);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.6vw, 58px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.highlight {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+}
+
+/* ─────────── HERO ─────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh; /* iOS URL-bar safe viewport */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: var(--header-h) clamp(var(--space-3), 6vw, var(--space-7)) var(--space-6);
+}
+
+.hero-art {
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  width: min(38vw, 372px);
+  height: min(38vw, 372px);
+  z-index: 1;
+  overflow: hidden;
+  /* zamonaviy yumaloq burchak — to'rtburchak shakl saqlanadi */
+  border-radius: 24px;
+  border: 1px solid rgba(236, 239, 244, 0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 44px rgba(142, 160, 184, 0.16);
+}
+.hero-art::after { content: none; display: none; }
+.hero-art:focus-visible { outline: 2px solid rgba(236, 239, 244, 0.8); outline-offset: 4px; }
+.hero-art:hover { border-color: rgba(236, 239, 244, 0.34); }
+
+.hero-art .layer-main,
+.hero-art .layer-bg,
+.hero-art .reveal {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+.hero-art .layer-bg { background-image: url('images/bg.webp'); opacity: 0.5; background-position: 38% center; transform: translateX(-12px) scale(1.05); }
+.hero-art .layer-main { background-image: url('images/main.webp'); opacity: 1; }
+
+/* V1 flashlight reveal — clear bg.webp opens in a circle inside the art box only */
+.hero-art .reveal {
+  z-index: 2;
+  background-image: url('images/bg.webp');
+  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.hero-art-sheen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 40%), rgba(142, 160, 184, 0.22), transparent 55%);
+  transition: background 0.2s ease;
+  opacity: 0.9;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+  padding-bottom: var(--space-2);
+}
+
+.hero .eyebrow {
+  color: #e8ecf4;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.hero-name {
+  font-family: var(--font-cine);
+  font-size: clamp(64px, 11vw, 150px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.7), 0 0 90px rgba(142, 160, 184, 0.30);
+  margin: 0 0 14px -2px;
+  overflow-wrap: anywhere;
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s var(--ease-out) 0.3s, transform 0.8s var(--ease-out) 0.3s;
+}
+
+.hero.ready .hero-cta { opacity: 1; transform: none; }
+
+/* ─────────── ORBIT — orbiting social ring ─────────── */
+.hero-orbit {
+  position: absolute;
+  right: clamp(24px, 6vw, 100px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--orbit-d, 320px);
+  height: var(--orbit-d, 320px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.orbit-ring {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* solid hairline (not dashed): a rotating dashed border must re-raster
+     every frame, a solid one is a pure compositor transform */
+  border: 1px solid rgba(142, 160, 184, 0.45);
+  border-radius: 50%;
+  animation: orbitSpin 48s linear infinite;
+  will-change: transform;
+}
+
+.orbit-ring::before {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  border: 1px solid rgba(142, 160, 184, 0.25);
+  border-radius: 50%;
+}
+
+.orbit-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(10, 13, 20, 0.82);
+  /* no backdrop-filter here: the icons rotate continuously, and per-frame
+     backdrop sampling is one of the most expensive GPU ops on weak devices */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transform: rotate(var(--a)) translateX(var(--orbit-r, 160px)) rotate(calc(-1 * var(--a)));
+  color: #e8ecf4;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  will-change: transform;
+}
+
+/* soft mist trail sweeping behind each icon along its orbit
+   (gradient-only softness — a blur filter here re-rasters every frame) */
+.orbit-icon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 8px;
+  background: linear-gradient(to right,
+    transparent,
+    color-mix(in srgb, currentColor 30%, transparent) 45%,
+    color-mix(in srgb, currentColor 14%, transparent) 75%,
+    transparent);
+  transform: rotate(calc(var(--a) - 90deg));
+  transform-origin: left center;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.orbit-icon .icon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  animation: orbitSpin 48s linear infinite reverse;
+  will-change: transform;
+}
+
+.orbit-icon svg { width: 18px; height: 18px; fill: currentColor; transition: color 0.2s; }
+
+.orbit-icon:hover {
+  animation-play-state: paused;
+  border-color: rgba(142, 160, 184, 0.9);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5), 0 0 30px rgba(142, 160, 184, 0.45);
+}
+
+.orbit-icon.yt:hover { color: #ff0033; }
+.orbit-icon.ig:hover { color: #e1306c; }
+.orbit-icon.tg:hover { color: #229ed9; }
+.orbit-icon.gh:hover { color: var(--text); }
+.orbit-icon.pin:hover { color: #e60023; }
+.orbit-icon.in:hover { color: #0a66c2; }
+
+@keyframes orbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────── ORBIT TRAVEL (≥1200px) ───────────
+   The social ring leaves the hero and rolls down the page with scroll,
+   riding the empty side zones. JS picks the clearest lane per frame
+   (gutter center → edge hug → hidden) so it never covers panels/text. */
+.orbit-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3; /* above page background, below header/toasts */
+  pointer-events: none;
+  display: none;
+}
+
+.orbit-layer.active { display: block; }
+
+.hero-orbit.orbit-travel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: auto;
+  width: var(--orbit-d, 320px);
+  height: var(--orbit-d, 320px);
+  transform: translate3d(-999px, -999px, 0);
+  will-change: transform, opacity;
+  transition: opacity 0.35s ease;
+}
+
+/* scroll drives rotation in travel mode — the CSS spin animations stop */
+.hero-orbit.orbit-travel .orbit-ring,
+.hero-orbit.orbit-travel .icon-inner { animation: none; }
+
+@media (max-width: 1199.98px) {
+  .orbit-layer { display: none !important; }
+}
+
+/* ─────────── ABOUT ─────────── */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--space-7) clamp(var(--space-3), 6vw, var(--space-6));
+}
+
+/* sarlavha/eyebrow olib tashlangani uchun kontent markazda, o'qishga qulay kenglikda */
+.about-content { display: grid; gap: var(--space-4); max-width: 860px; margin: 0 auto; width: 100%; }
+
+.about-bio {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  padding: 14px 16px;
+  border-left: 2px solid rgba(142, 160, 184, 0.5);
+  background: rgba(17, 25, 33, 0.18);
+  border-radius: 0 12px 12px 0;
+}
+.about-bio strong { color: var(--bone); }
+
+.about-blurbs { display: grid; gap: var(--space-3); }
+
+.blurb {
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(17, 25, 33, 0.32), var(--surface));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: transform var(--t-ui) var(--ease-out), border-color var(--t-ui);
+}
+
+.blurb:hover { transform: translateY(-3px); border-color: rgba(142, 160, 184, 0.6); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5), 0 0 26px rgba(142, 160, 184, 0.18); }
+
+.blurb h3 { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 6px; }
+
+.blurb p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+/* ─────────── WORK ─────────── */
+.work {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--space-7) clamp(var(--space-3), 6vw, var(--space-6));
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.project-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(17, 25, 33, 0.28), var(--surface));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: transform var(--t-fast) var(--ease-out), border-color var(--t-ui), box-shadow var(--t-ui);
+  opacity: 0;
+  transform-origin: center;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(142, 160, 184, 0.6);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(142, 160, 184, 0.22);
+}
+
+.card-body { padding: var(--space-3); }
+
+.card-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
+.card-body h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 8px 0 6px;
+}
+
+.card-body p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+/* GitHub live-card art (no screenshot — gradient + lang badge) */
+.card-art {
+  aspect-ratio: 16 / 10;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(10, 14, 22, 0.55), rgba(4, 6, 11, 0.55));
+  border-bottom: 1px solid rgba(236, 239, 244, 0.08);
+}
+
+.card-art::before {
+  content: '';
+  position: absolute;
+  top: -45%;
+  right: -25%;
+  width: 75%;
+  height: 130%;
+  background: radial-gradient(circle at 30% 35%, rgba(142, 160, 184, 0.22) 0%, rgba(17, 25, 33, 0.50) 50%, transparent 70%);
+}
+
+.card-art-lang {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 34px;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.card-art-name {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  right: 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-impact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #cbd5e1;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.card-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.card-meta .meta-stars { color: #ffffff; }
+
+.card-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  transition: transform 0.2s var(--ease-out), color 0.2s;
+}
+
+.project-card:hover .card-link { transform: translateX(4px); color: #cbd5e1; }
+
+/* ─────────── CONTACT ─────────── */
+.contact {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--space-7) clamp(var(--space-3), 6vw, var(--space-6));
+  display: flex;
+  justify-content: center;
+}
+
+.contact-box {
+  width: min(720px, 100%);
+  background: rgba(17, 25, 33, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: clamp(var(--space-4), 5vw, var(--space-6));
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 60px rgba(17, 25, 33, 0.8);
+}
+
+.contact-lead {
+  color: var(--muted);
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: 15px;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* ─────────── FOOTER ─────────── */
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: var(--space-5) clamp(var(--space-3), 6vw, var(--space-6));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.footer-social { display: flex; gap: var(--space-2); }
+
+.social-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: transform 0.2s var(--ease-out), border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.social-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+
+.social-icon:hover { transform: translateY(-3px) scale(1.1); box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.3); }
+
+.social-icon.yt:hover svg { color: #ff0033; }
+.social-icon.ig:hover svg { color: #e1306c; }
+.social-icon.tg:hover svg { color: #229ed9; }
+.social-icon.gh:hover svg { color: var(--text); }
+.social-icon.pin:hover svg { color: #e60023; }
+.social-icon.in:hover svg { color: #0a66c2; }
+
+.social-icon.yt:hover { border-color: #ff0033; }
+.social-icon.ig:hover { border-color: #e1306c; }
+.social-icon.tg:hover { border-color: #229ed9; }
+.social-icon.gh:hover { border-color: rgba(255, 255, 255, 0.5); }
+.social-icon.pin:hover { border-color: #e60023; }
+.social-icon.in:hover { border-color: #0a66c2; }
+
+.footer-note { font-size: 13px; color: var(--muted); }
+
+.footer-top {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+.footer-top:hover { color: #cbd5e1; }
+
+/* ─────────── EASTER EGG ─────────── */
+.ee-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 70;
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: 1px solid rgba(142, 160, 184, 0.5);
+  background: #0a0d14;
+  background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s var(--ease-out);
+}
+
+.ee-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─────────── WEBGL BG TOGGLE ─────────── */
+body.ee-mode .hero-art .layer-main,
+body.ee-mode .hero-art .layer-bg { filter: hue-rotate(180deg) saturate(1.5); }
+
+/* ─────────── REVEAL ON SCROLL ─────────── */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.reveal-up.in-view { opacity: 1; transform: none; }
+
+/* ─────────── REDUCED MOTION ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: none; }
+  .crosshair { display: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero-art .reveal { opacity: 0; }
+  .project-card, .reveal-up { opacity: 1; transform: none; }
+  .hero-cta { opacity: 1; transform: none; }
+}
+
+/* ─────────── RESPONSIVE ─────────── */
+@media (max-width: 960px) {
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .about { grid-template-columns: 1fr; gap: var(--space-4); }
+  .about-sticky { position: static; }
+}
+
+@media (max-height: 620px) and (min-width: 769px) {
+  .hero-art { width: 220px; height: 220px; }
+  .hero { padding-bottom: calc(var(--space-6) / 2); }
+}
+
+@media (max-width: 768px) {
+  .site-nav a { font-size: 12.5px; }
+  .header-actions .btn { display: none; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .hero { align-items: flex-start; text-align: left; }
+  .eyebrow { letter-spacing: 0.22em; font-size: 11px; }
+
+  /* MOBIL TOZALASH — takroriy dekor va matnlar yashiriladi
+     (DOMda qoladi: SEO/AI uchun xavfsiz).
+     - hero-art: mobilda ham KO'RINADI, faqat ixcham formatda (pastda)
+     - hero-orbit: futerdagi ijtimoiy iconlar takrori
+     - section-sub: uch qavatli sarlavha takrori
+     - contact-lead: sarlavha takrori */
+  .hero-art {
+    display: block;
+    width: 132px;
+    height: 132px;
+    border-radius: 18px;
+    margin: 0 0 var(--space-2);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 0 24px rgba(142, 160, 184, 0.14);
+  }
+  .hero-art .layer-bg { background-position: 42% center; transform: translateX(-6px) scale(1.04); }
+  .hero-content { max-width: 100%; }
+  .hero-orbit { display: none; }
+  .section-sub { display: none; }
+  .contact-lead { display: none; }
+  .section-head { margin-bottom: var(--space-4); }
+
+  .about, .work, .contact { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+
+  /* strip heavy GPU blur on small screens — mobile GPUs re-sample
+     backdrop-filter every frame and it fights the WebGL background */
+  .site-header {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(135deg, rgba(17, 25, 33, 0.55), rgba(17, 25, 33, 0.55));
+    border-color: rgba(142, 160, 184, 0.4);
+  }
+  .scroll-progress { top: 0; }
+  .hero-name { margin-left: -2px; }
+  .contact-box {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(17, 25, 33, 0.55);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* narrow phones — keep everything readable, nothing clipped */
+@media (max-width: 430px) {
+  /* tor ekran: nav sig'maydi — ikkita havola yashirinadi
+     (store va "men haqimda" futerda ham bor) */
+  .site-nav a[href="store.html"], .site-nav a[href="#about"] { display: none; }
+}
+
+/* ─────────── TOUCH DEVICES — strip heavy GPU work, never jank/freeze ─────────── */
+@media (pointer: coarse) {
+  html { scroll-snap-type: none; }
+
+  .site-header,
+  .contact-box,
+  .orbit-icon {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .grain-top { display: none; }
+
+  .orbit-ring,
+  .orbit-icon,
+  .orbit-icon .icon-inner,
+  .orbit-icon::after {
+    animation: none;
+  }
+
+  .orbit-icon::after { display: none; }
+}
+
+@media (max-width: 420px) {
+  /* ixcham telefonlar — portret yana kichikroq */
+  .hero-art {
+    width: 104px;
+    height: 104px;
+    border-radius: 16px;
+    margin-bottom: var(--space-1);
+  }
+}
+
+@media (max-width: 768px) {
+  /* mobil hero: portret + sarlavha + CTA bitta ixcham blok bo'lib turadi
+     (avval art tepada, matn pastda — orada bo'sh liq ko'p edi) */
+  .hero {
+    justify-content: center;
+    gap: var(--space-3);
+    padding-top: calc(var(--header-h) + var(--space-3));
+  }
+  .hero-content { padding-bottom: 0; }
+  .hero-name { line-height: 0.92; }
+}
+
+/* ─────────── MATN SUZISHI (text-swim.js) ───────────
+   Har bir harf alohida inline-block span — kursor yaqinlashsa suzadi,
+   uzoqlashsa joyiga qaytadi. Layoutga ta'sir yo'q (faqat transform). */
+.sw-w { display: inline-block; white-space: nowrap; }
+.sw-c {
+  display: inline-block;
+  transform-origin: 50% 62%;
+  backface-visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-c { display: inline; }
+}
+
+/* ─────────── PORTRAIT LIGHTBOX (QR uslubi) ───────────
+   1 bosish → rasm markazda, atrofi blur; blur qismga bosish → yopiladi. */
+html.lb-lock, html.lb-lock body { overflow: hidden; }
+
+.lb {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: clamp(12px, 4vw, 32px);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  overflow: hidden;
+  cursor: zoom-out;
+}
+.lb[open] { display: grid; }
+
+.lb::backdrop {
+  background: rgba(0, 0, 0, 0.52);
+  -webkit-backdrop-filter: blur(22px) saturate(0.85);
+  backdrop-filter: blur(22px) saturate(0.85);
+}
+
+.lb-figure {
+  position: relative;
+  margin: 0;
+  width: min(92vw, 560px);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(236, 239, 244, 0.22);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.75), 0 0 60px rgba(142, 160, 184, 0.18);
+  background: #05070c;
+  cursor: default;
+  animation: lbIn 380ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.lb-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lb-hint {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(236, 239, 244, 0.55);
+  pointer-events: none;
+  animation: lbFade 500ms ease both;
+}
+
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes lbFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-figure, .lb-hint { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .lb { padding: 16px; gap: 10px; }
+  .lb-figure { width: min(94vw, 480px); border-radius: 18px; }
+  .lb-hint { font-size: 11px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUILD SCROLL — loaderdan keyin scroll bilan sahifa yig'iladi
+   Faqat html.is-building paytida; build.js qo'shadi/o'chiradi.
+   ═══════════════════════════════════════════════════════════ */
+html.is-building { scroll-behavior: auto; scroll-snap-type: none; }
+
+/* Orbit ham hero bilan birga quriladi — boshda faqat toza fon. */
+html.is-building:not(.is-hero-built) #orbitLayer,
+html.is-building:not(.is-hero-built) #orbitContainer,
+html.is-building:not(.is-hero-built) .orbit-layer .hero-orbit {
+  visibility: hidden !important;
+}
+
+/* Kontent boshda ko'rinmaydi — faqat WebGL fon qoladi. */
+html.is-building .site-header {
+  opacity: 0 !important;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-16px) !important;
+  transition: opacity .55s var(--ease-out), transform .7s var(--ease-out);
+}
+html.is-building .site-header.is-built,
+html.is-building .site-header:focus-within {
+  opacity: 1 !important;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) !important;
+  transition: opacity .55s var(--ease-out), transform .7s var(--ease-out);
+}
+
+html.is-building main > .section,
+html.is-building .site-footer {
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(26px);
+  pointer-events: none;
+  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
+}
+html.is-building main > .section.is-built,
+html.is-building .site-footer.is-built {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transform: none;
+  pointer-events: auto;
+  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
+}
+
+/* Kursor maydoni — joriy oyna o'lchamiga to'r bo'lib joylashadi. */
+.build-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity .8s var(--ease-out);
+}
+.build-layer.is-done { opacity: 0; }
+
+.build-grid { position: absolute; inset: 0; }
+
+.bc {
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  opacity: 0;
+  transform: translateY(10px) scale(.35) rotate(var(--r, 0deg));
+  transition: opacity .35s ease, transform .65s var(--ease-spring);
+  transition-delay: var(--d, 0ms);
+  will-change: opacity, transform;
+}
+.bc svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #e8ecf4;
+  stroke: #05070c;
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+.bc.on {
+  opacity: .86;
+  transform: translateY(0) scale(1) rotate(0deg);
+  filter: drop-shadow(0 0 7px rgba(232, 236, 244, .45));
+}
+.bc::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  border: 1px solid rgba(232, 236, 244, .9);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(.4);
+}
+.bc.on::after {
+  animation: bc-ring .9s cubic-bezier(.2, .8, .3, 1) forwards;
+  animation-delay: calc(var(--d, 0ms) + 80ms);
+}
+.bc.quiet::after { animation: none; }
+
+@keyframes bc-ring {
+  0% { opacity: .85; transform: scale(.5); }
+  100% { opacity: 0; transform: scale(5); }
+}
+
+/* HUD — scroll holati va progress. */
+.build-hud {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(18px, 4vh, 40px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(232, 236, 244, .16);
+  border-radius: 999px;
+  background: rgba(5, 7, 12, .55);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .35);
+  color: rgba(232, 236, 244, .72);
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: opacity .35s ease, transform .35s var(--ease-out);
+}
+.build-state { min-width: 112px; text-align: center; }
+.build-pct {
+  color: #eceff4;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+  transition: color .3s ease;
+}
+.build-pct.is-live { color: #fff; }
+.build-track {
+  width: clamp(52px, 12vw, 92px);
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(232, 236, 244, .16);
+  overflow: hidden;
+}
+.build-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #8ea0b8, #eceff4);
+  box-shadow: 0 0 10px rgba(142, 160, 184, .65);
+  transition: width .25s linear;
+}
+.build-mouse {
+  position: relative;
+  width: 12px;
+  height: 18px;
+  border: 1px solid rgba(232, 236, 244, .55);
+  border-radius: 7px;
+}
+.build-mouse i {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  width: 2px;
+  height: 4px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #eceff4;
+  animation: bh-wheel 1.5s ease-in-out infinite;
+}
+@keyframes bh-wheel {
+  0%, 100% { opacity: .25; transform: translateY(0); }
+  45% { opacity: 1; transform: translateY(4px); }
+}
+
+@media (max-width: 768px) {
+  .bc { width: 17px; height: 17px; margin: -8.5px 0 0 -8.5px; }
+  .build-hud { gap: 8px; padding: 9px 12px; font-size: 9px; letter-spacing: .14em; }
+  .build-state { min-width: 96px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUPER VIBE — ismli kursorlar · agentlar · bento · palette · editor
+   (build.js / agents.js / editor.js / extras.js bilan ishlaydi)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── build-layer ichidagi ismli kursorlar ── */
+.bc.has-name svg { fill: var(--c, #e8ecf4); }
+.bn {
+  position: absolute; left: 15px; top: 17px; padding: 2px 7px 3px;
+  border-radius: 7px 7px 7px 2px; background: var(--c, #eceff4); color: #05070c;
+  font: 700 9px/1.3 var(--font); letter-spacing: .07em; white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .45);
+  opacity: 0; transform: translateY(4px);
+  transition: opacity .3s .2s, transform .4s .2s var(--ease-out);
+}
+.bc.on .bn { opacity: 1; transform: none; }
+
+/* ── selection frame (build.js bo'limlari + agents.js elementlari) ── */
+.bf { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform, width, height; transition: opacity .5s ease; }
+.bf.out { opacity: 0; }
+.bf-box {
+  position: absolute; inset: 0; border: 1px solid var(--c); border-radius: 2px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c) 8%, transparent), transparent 42%);
+  animation: bf-grow var(--bf-d, .95s) var(--ease-out) both;
+}
+.bf-box i { position: absolute; width: 9px; height: 9px; background: #05070c; border: 1.5px solid var(--c); border-radius: 2px; }
+.bf-box .tl { left: -5px; top: -5px; } .bf-box .tr { right: -5px; top: -5px; }
+.bf-box .bl { left: -5px; bottom: -5px; } .bf-box .br { right: -5px; bottom: -5px; }
+@keyframes bf-grow { from { clip-path: inset(-8px 100% 100% -8px); } to { clip-path: inset(-8px -8px -8px -8px); } }
+.bf-tag {
+  position: absolute; left: 0; top: 0; transform: translateY(calc(-100% - 6px));
+  padding: 2px 7px; border-radius: 6px; background: var(--c); color: #05070c;
+  font: 700 10px/1.4 var(--font); letter-spacing: .04em; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.bf-cur { position: absolute; left: 0; top: 0; display: flex; align-items: flex-start; gap: 4px; will-change: transform; }
+.bf-cur svg { width: 20px; height: 20px; fill: var(--c); stroke: #05070c; stroke-width: 1.1; stroke-linejoin: round; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
+.bf-cur span { margin-top: 14px; padding: 3px 8px; border-radius: 8px 8px 8px 2px; background: var(--c); color: #05070c; font: 700 10px/1.35 var(--font); letter-spacing: .05em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bf-cur em { font-style: normal; opacity: .7; }
+
+/* ── CURSOR AGENTS ── */
+.ag-layer { position: fixed; inset: 0; z-index: 104; pointer-events: none; overflow: hidden; }
+.ag { position: absolute; left: 0; top: 0; opacity: 0; transition: opacity .35s; will-change: transform; }
+.ag.on { opacity: 1; }
+.ag svg { display: block; width: 20px; height: 20px; fill: var(--c); stroke: #05070c; stroke-width: 1.1; stroke-linejoin: round; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55)); }
+.ag-l { position: absolute; left: 14px; top: 16px; padding: 3px 8px 4px; border-radius: 8px 8px 8px 2px; background: var(--c); color: #05070c; font: 700 10px/1.3 var(--font); letter-spacing: .05em; white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.ag-pilot svg { width: 16px; height: 16px; }
+.ag-pilot .ag-l { font-size: 9px; padding: 2px 6px 3px; opacity: .92; }
+.ag-sw { position: absolute; left: 14px; top: 42px; display: flex; gap: 5px; padding: 5px 7px; border-radius: 10px; background: rgba(8, 11, 18, .92); border: 1px solid rgba(255, 255, 255, .14); opacity: 0; transform: translateY(-4px); transition: opacity .2s, transform .2s; }
+.ag-sw.on { opacity: 1; transform: none; }
+.ag-sw i { width: 12px; height: 12px; border-radius: 50%; background: var(--s); opacity: .55; transition: transform .15s, opacity .15s; }
+.ag-sw i.hl { opacity: 1; transform: scale(1.35); box-shadow: 0 0 0 2px #fff; }
+
+/* agentlar ishlayotganda: matn yozilguncha ko'rinmaydi, panel/tugma ochilguncha ushlab turiladi */
+html.ag-run .sw-c:not(.tw) { opacity: 0; }
+html.ag-run .ag-hold { opacity: 0 !important; }
+.sw-c.tw { animation: tw-in .42s var(--ease-out) backwards; }
+.sw-c.tw-i { animation: none !important; }
+@keyframes tw-in {
+  0%   { opacity: 0; color: var(--tw-c, #ffd166); translate: 0 5px; }
+  30%  { opacity: 1; color: var(--tw-c, #ffd166); translate: 0 -1px; }
+  100% { opacity: 1; translate: 0 0; }
+}
+.ag-morph { animation: ag-morph var(--ag-d, .9s) var(--ease-out) backwards; }
+@keyframes ag-morph {
+  from { opacity: 0; clip-path: inset(0 100% 100% 0 round 999px); }
+  to   { clip-path: inset(0 0 0 0 round 0); }
+}
+.ag-flash { animation: ag-flash .9s ease-out; }
+@keyframes ag-flash {
+  0%   { box-shadow: 0 0 0 2px var(--ag-c, #ffd166), 0 0 28px var(--ag-c, #ffd166); }
+  100% { box-shadow: 0 0 0 2px transparent, 0 0 0 transparent; }
+}
+
+/* ── BENTO + SPOTLIGHT ── */
+@media (min-width: 961px) {
+  .projects-grid { grid-auto-flow: dense; }
+  .projects-grid .project-card:first-child { grid-column: span 2; }
+  .projects-grid .project-card:nth-child(6):last-child { grid-column: span 3; }
+}
+.project-card::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .35s;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 209, 102, .13), transparent 62%);
+}
+.project-card:hover::before { opacity: 1; }
+.project-card:hover { border-color: rgba(255, 209, 102, .38); }
+
+/* ── COMMAND PALETTE ── */
+.kp-hint { margin-right: 10px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); color: var(--text-2); font: 600 11px var(--font); letter-spacing: .08em; cursor: pointer; transition: border-color .2s, color .2s; }
+.kp-hint:hover { border-color: rgba(255, 209, 102, .5); color: #fff; }
+@media (max-width: 768px) { .kp-hint { display: none; } }
+.kp-fab { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 90; padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(10, 13, 20, .88); color: #fff; font: 700 12px var(--font); letter-spacing: .06em; }
+.kp { position: fixed; inset: 0; z-index: 120; display: none; align-items: flex-start; justify-content: center; padding: 14vh 16px 16px; }
+.kp.open { display: flex; }
+.kp-bg { position: absolute; inset: 0; background: rgba(4, 6, 10, .6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.kp-box { position: relative; width: min(560px, 100%); border-radius: 18px; border: 1px solid rgba(255, 255, 255, .16); background: rgba(11, 15, 24, .94); box-shadow: 0 30px 90px rgba(0, 0, 0, .65), 0 0 60px rgba(255, 209, 102, .12); overflow: hidden; animation: kp-in .28s var(--ease-out); }
+@keyframes kp-in { from { opacity: 0; transform: translateY(-10px) scale(.97); } }
+.kp-in { width: 100%; padding: 16px 18px; background: none; border: 0; border-bottom: 1px solid var(--line); color: var(--text); font: 500 15px var(--font); outline: none; }
+.kp-list { list-style: none; max-height: min(50vh, 380px); overflow: auto; padding: 8px; margin: 0; }
+.kp-it { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--text-2); font-size: 14px; cursor: pointer; }
+.kp-it small { color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.kp-it.on { background: rgba(255, 209, 102, .1); color: #fff; }
+.kp-empty { padding: 14px 12px; color: var(--muted); font-size: 13px; }
+.kp-foot { display: flex; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+
+/* ── LIVE EDITOR ── */
+.ed-ui { position: fixed; inset: 0; z-index: 118; pointer-events: none; display: none; }
+.ed-hov, .ed-frame { position: absolute; left: 0; top: 0; display: none; pointer-events: none; will-change: transform, width, height; }
+.ed-hov { border: 1px dashed rgba(125, 249, 255, .6); }
+.ed-frame { border: 1px solid #7df9ff; box-shadow: 0 0 0 1px rgba(5, 7, 12, .6); }
+.ed-frame.typing { border-style: dashed; }
+.ed-frame.typing .ed-h { display: none; }
+.ed-h { position: absolute; width: 11px; height: 11px; margin: -6px 0 0 -6px; background: #05070c; border: 1.5px solid #7df9ff; border-radius: 3px; pointer-events: auto; }
+.ed-h[data-d="nw"], .ed-h[data-d="se"] { cursor: nwse-resize; }
+.ed-h[data-d="ne"], .ed-h[data-d="sw"] { cursor: nesw-resize; }
+.ed-h[data-d="n"], .ed-h[data-d="s"] { cursor: ns-resize; }
+.ed-h[data-d="e"], .ed-h[data-d="w"] { cursor: ew-resize; }
+.ed-bar { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 119; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; max-width: calc(100vw - 24px); padding: 10px 14px; border-radius: 16px; background: rgba(8, 11, 18, .95); border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 20px 60px rgba(0, 0, 0, .6); pointer-events: auto; font: 600 11px var(--font); color: var(--text-2); }
+.ed-t { color: #7df9ff; letter-spacing: .12em; text-transform: uppercase; }
+.ed-g { display: inline-flex; align-items: center; gap: 6px; }
+.ed-bar .sw { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .35); background: var(--s); cursor: pointer; transition: transform .15s; }
+.ed-bar .sw:hover { transform: scale(1.2); }
+.ed-bar input[type="range"] { width: 90px; accent-color: #7df9ff; }
+.ed-bar button { padding: 6px 11px; border-radius: 9px; border: 1px solid rgba(255, 255, 255, .16); background: rgba(255, 255, 255, .05); color: var(--text); font: 600 11px var(--font); cursor: pointer; }
+.ed-bar button:hover { border-color: #7df9ff; }
+.ed-bar .ed-x { border-color: rgba(255, 107, 214, .5); }
+.ed-toast { position: fixed; left: 50%; top: 18px; transform: translate(-50%, -12px); z-index: 121; padding: 9px 16px; border-radius: 999px; background: rgba(8, 11, 18, .95); border: 1px solid rgba(255, 255, 255, .16); color: #fff; font: 600 12px var(--font); opacity: 0; pointer-events: none; transition: opacity .25s, transform .3s var(--ease-out); }
+.ed-toast.on { opacity: 1; transform: translate(-50%, 0); }
+html.ed-on body { cursor: crosshair; }
+html.ed-on .ag-layer { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bf, .ag-layer, .kp-box { animation: none !important; }
+  .sw-c.tw, .ag-morph, .ag-flash { animation: none !important; }
+}
+
+  </style>
+</head>
+<body>
+  <canvas id="webgl-bg" aria-hidden="true"></canvas>
+  <div class="orbit-layer" id="orbitLayer" aria-hidden="true"></div>
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+  <div class="grain-top" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Asosiy kontentga o'tish</a>
+
+  <!-- ═══ LOADER — matrix shamol (chapdan o'ngga, full qora fon) ═══ -->
+  <div id="loader" aria-hidden="true">
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    <div id="logo-container" aria-hidden="true">
+      <div class="xoleric-logo" id="mainLogo">XOLERIC</div>
+    </div>
+  </div>
+
+  <!-- ═══ SCROLL PROGRESS + HEADER ═══ -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="logo" href="#hero">xoleric<span class="logo-dot">.</span></a>
+    <nav class="site-nav" aria-label="Asosiy">
+      <a href="#work">ishlar</a>
+      <a href="store.html">store</a>
+      <a href="#about">men haqimda</a>
+      <a href="#contact">aloqa</a>
+      <a href="cv.html">CV</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="#contact">Meni yolla</a>
+    </div>
+  </header>
+
+  <!-- ═══ VIGNETTE ═══ -->
+  <div class="vignette" id="vignette" aria-hidden="true"></div>
+
+  <!-- ═══ CROSSHAIR — kursor joylashuv nishoni ═══ -->
+  <div class="crosshair" id="crosshair" aria-hidden="true">
+    <div class="ch-x"></div>
+    <div class="ch-y"></div>
+    <div class="ch-dot"></div>
+  </div>
+
+  <main id="main">
+
+    <!-- ═══ HERO — corner art (blur reveal) + orbit ═══ -->
+    <section id="hero" class="section hero" role="region" aria-label="Kirish">
+      <div class="hero-art" id="heroArt" role="button" tabindex="0" aria-label="Portretni kattalashtirib ko'rish" aria-haspopup="dialog" aria-controls="portraitLB">
+        <div class="hero-art-layer layer-bg"></div>
+        <div class="hero-art-layer layer-main" id="layerMain"></div>
+        <div class="reveal" id="reveal"></div>
+        <div class="hero-art-sheen"></div>
+      </div>
+      <div class="hero-content">
+        <h1 class="hero-name">XOLERIC</h1>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#work">Ishlarni ko'rish</a>
+          <a class="btn btn-ghost btn-lg" href="#contact">Bog'lanish</a>
+        </div>
+      </div>
+      <div class="hero-orbit" id="orbitContainer" aria-hidden="true">
+        <div class="orbit-ring" id="orbitRing"></div>
+      </div>
+    </section>
+
+    <!-- ═══ ABOUT ═══ -->
+    <section id="about" class="section about" role="region" aria-label="Men haqimda">
+      <div class="about-content">
+        <p class="about-bio"><strong>Xoleric kim?</strong> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. HTML, CSS, JavaScript, React va WebGL texnologiyalari bilan tez hamda jonli veb-saytlar yaratadi. Ushbu sahifa — Xoleric'ning rasmiy portfoliosi.</p>
+        <div class="about-blurbs">
+          <div class="blurb">
+            <h3>Ko'nikmalar</h3>
+            <p>Toza semantik HTML, zamonaviy CSS tizimlar, vanilla va framework JavaScript hamda har qanday qurilmada tez ishlaydigan motion-dizayn.</p>
+          </div>
+          <div class="blurb">
+            <h3>Jarayon</h3>
+            <p>Dizayn-tokenlar → komponentli fikrlash → interaksiya xoreografiyasi → Lighthouse. Ko'rinishi kabi his qilinishi ham yoqimli interfeyslar topshiraman.</p>
+          </div>
+          <div class="blurb">
+            <h3>Mavjudlik</h3>
+            <p>Freelance loyihalar, hamkorlik va full-time rollar uchun ochiqman. Telegram yoki email orqali tez javob beraman.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ WORK ═══ -->
+    <section id="work" class="section work" role="region" aria-label="Loyihalar">
+      <header class="section-head">
+        <p class="eyebrow">tanlangan ishlar</p>
+        <h2 class="section-title">Loyihalar</h2>
+        <p class="section-sub"><span class="dot-live"></span>GitHub'dan jonli — har push bilan yangilanadi</p>
+      </header>
+      <div class="projects-grid" id="projectsGrid"></div>
+    </section>
+
+    <!-- ═══ CONTACT ═══ -->
+    <section id="contact" class="section contact" role="region" aria-label="Aloqa">
+      <div class="contact-box">
+        <h2 class="section-title">Keling, <span class="highlight">birga</span> yaratamiz</h2>
+        <p class="contact-lead">Loyiha g'oyangiz, hamkorlik taklifi bormi yoki shunchaki salomlashmoqchimisiz? Istalgan vaqtda yozing.</p>
+        <div class="contact-links">
+          <a class="btn btn-primary btn-lg" href="https://t.me/Wxoleric" target="_blank" rel="noopener noreferrer">Telegram</a>
+          <a class="btn btn-ghost btn-lg" href="mailto:devxoleric@gmail.com">Email yozish</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a class="social-icon yt" href="https://youtube.com/@xoleric" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a class="social-icon ig" href="https://www.instagram.com/ixoleric" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a class="social-icon tg" href="https://t.me/Wxoleric" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      </a>
+      <a class="social-icon gh" href="https://github.com/xolerc" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
+      <a class="social-icon pin" href="https://pin.it/2BCXGGCba" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+        <svg viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
+      </a>
+      <!-- TODO: LinkedIn to'g'ri slug kerak
+      <a class="social-icon in" href="https://www.linkedin.com/in/xoleric-undefined-8b689b3a1" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      -->
+    </div>
+    <p class="footer-note">© <span id="year">2026</span> xoleric · qiziqish va kofe bilan yaratilgan</p>
+    <a class="footer-top" href="#hero">yuqoriga qaytish ↑</a>
+  </footer>
+
+  <!-- ═══ TOAST ═══ -->
+  <div class="ee-toast" id="eeToast" role="status" aria-live="polite">Konami Kodi Faollashdi</div>
+
+  <!-- failsafe: never let the loader freeze the page.
+       If app.js ever dies, this still reveals the content. -->
+  <script>
+    (function () {
+      var revealed = false;
+      var hide = function () {
+        /* app.js sets this flag when it finishes its own loader sequence */
+        if (window.__xolericLoaded || revealed) return;
+        revealed = true;
+        var l = document.getElementById('loader');
+        if (l) l.classList.add('hidden');
+        var hero = document.querySelector('.hero');
+        if (hero) hero.classList.add('ready');
+        var h = document.getElementById('siteHeader');
+        if (h) h.classList.add('visible');
+        var v = document.getElementById('vignette');
+        if (v) v.classList.add('visible');
+      };
+      if (window.addEventListener) {
+        window.addEventListener('load', function () { setTimeout(hide, 4000); });
+        setTimeout(hide, 9000);
+      }
+    })();
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- ═══ PORTRAIT LIGHTBOX — QR uslubidagi markaziy ko'rinish ═══ -->
+  <dialog class="lb" id="portraitLB" aria-label="Xoleric portreti">
+    <figure class="lb-figure">
+      <img class="lb-img" src="images/main.webp" alt="Xoleric — portret" width="640" height="426" decoding="async">
+    </figure>
+    <p class="lb-hint">Tashqariga bosing — yopiladi</p>
+  </dialog>
+
+  <script>
+/* ===== webgl-bg ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — global WebGL background · SUV (NULL//SHIFT 13-Suv port)
+   NULL__SHIFT.html dagi 13-Suv (mode 12) to'liq ko'chirma:
+   WVS/WFS point-water shader + 8 ripple + yomg'ir + tomchi + iz.
+   Portfolio foni sifatida moslashtirilgan:
+   - canvas#webgl-bg (fixed, z-index -1, pointer-events none)
+   - interaksiya window dan (bosish=to'lqin, sudrash=iz, scroll=yomg'ir)
+   - window.xolericGL API saqlangan (app.js o'zgarmaydi)
+   SAFETY: watchdog + DPR cap + reduced-motion + THREE yuklanmasa fallback.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('webgl-bg');
+  if (!canvas) return;
+
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  var coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
+
+  var smallScreen = (window.innerWidth || 800) < 768;
+  var hw = (navigator.hardwareConcurrency || 4);
+  var devMem = 8;
+  if (typeof navigator.deviceMemory === 'number') devMem = navigator.deviceMemory;
+  var lowEnd = coarse || smallScreen || hw <= 4 || devMem <= 4;
+  var isMobile = coarse || smallScreen;
+
+  /* ── NULL//SHIFT 13-Suv shaderlari (to'liq, o'zgarmagan) ── */
+  var WVS = [
+    'uniform float t,asp,pr,size,tsc,ent,res,dirA,en;',
+    'uniform vec4 R[8];',
+    'attribute vec3 a;',
+    'varying float vH,vD;',
+    'void main(){',
+    'vec2 p=a.xy*2.1-1.05;',
+    'vec2 w=vec2(cos(dirA),sin(dirA)),q2=vec2(-w.y,w.x);',
+    'float ph=dot(p,w)*(2.2+ent*2.)-t*tsc*.8,qq=dot(p,q2);',
+    'float h0=(.5*sin(ph+1.4*sin(qq*3.+t*tsc*.5))+.3*sin(qq*5.-t*tsc*.7+ph*.5)+.15*sin((p.x+p.y)*7.+t*tsc))*(.6+en*.4);',
+    'float hr=0.;vec2 dp=vec2(0.);',
+    'for(int i=0;i<8;i++){vec4 r=R[i];float dt=t-r.z;if(dt>0.&&dt<7.){vec2 dv=(p-r.xy)*vec2(asp,1.);float d=length(dv);float x=d-dt*.95;float env=exp(-x*x*9.)*exp(-dt*.55)/(1.+d*1.6);float hh=r.w*env*cos(x*22.)*(.7+res*.6);hr+=hh;dp+=normalize(dv+1e-5)/vec2(asp,1.)*hh*.025;}}',
+    'p+=dp+.01*vec2(cos(t*.7+a.z*6.2832),sin(t*.6+a.z*6.2832))*(1.+h0);',
+    'p.y+=h0*.015+hr*.04;',
+    'vH=clamp(hr*1.4+h0*.35,-1.,1.);vD=a.z;',
+    'gl_Position=vec4(p,0.,1.);',
+    'gl_PointSize=size*pr*(1.+max(vH,0.)*1.6)*(.7+.6*a.z);}'
+  ].join('\n');
+
+  var WFS = [
+    'uniform float cp,gd;',
+    'varying float vH,vD;',
+    'void main(){',
+    'float d=length(gl_PointCoord-.5);if(d>.5)discard;',
+    'float al=smoothstep(.5,.1,d);',
+    /* MONOXROM: tinch suv — qora (faqat juda nozik kulrang relyef) */
+    'float m=smoothstep(-.9,.9,vH);',
+    'vec3 deep=vec3(mix(.03,.13,m));',
+    /* REAKSIYA (bosish / scroll to'lqini) — toza oq */
+    'float hi=smoothstep(.22,1.,vH);',
+    'vec3 c=deep+mix(vec3(1.),vec3(1.,.8,.38),gd)*hi;',
+    'gl_FragColor=vec4(c*al*.9,al*.9);}'
+  ].join('\n');
+
+  /* ── Suv sozlamalari (NULL//SHIFT dagi jonli qiymatlar) ── */
+  var ENT = 0.75, RES = 0.55, CP = 0.55, TSC = 1.0, DIRA = 0.0;
+
+  /* ── MOOD: bo'limga qarab suv "kayfiyati" (shamol yo'nalishi, kuch, oltin) ── */
+  var MOODS = {
+    hero:    { ent: 0.75, res: 0.55, dir: 0.0,   gd: 0.0,  tsc: 1.0 },
+    about:   { ent: 1.05, res: 0.60, dir: 0.9,   gd: 0.18, tsc: 1.1 },
+    work:    { ent: 1.40, res: 0.70, dir: -0.7,  gd: 0.40, tsc: 1.25 },
+    contact: { ent: 0.50, res: 0.90, dir: 1.57,  gd: 1.0,  tsc: 0.8 }
+  };
+  var moodName = 'hero', tgt = MOODS.hero;
+  var curM = { ent: ENT, res: RES, dir: DIRA, gd: 0, tsc: TSC };
+  var moodRaf = 0;
+
+  function pickMood() {
+    moodRaf = 0;
+    var vh = window.innerHeight || 800, best = moodName;
+    for (var id in MOODS) {
+      var el = document.getElementById(id);
+      if (!el) continue;
+      var r = el.getBoundingClientRect();
+      if (r.top <= vh * 0.5 && r.bottom > vh * 0.5) best = id;
+    }
+    if (best !== moodName) {
+      moodName = best; tgt = MOODS[best];
+      if (running) ripple(0, 0, 0.55);   /* bo'lim almashganda yumshoq to'lqin */
+    }
+  }
+
+  var gl = null, renderer = null, scene = null, cam = null;
+  var wpts = null, WU = null, RP = [], ri = 0;
+  var WN = [22000, 40000, 65000], PRS = [1, 1.25, 1.5];
+  var q = lowEnd ? 0 : 1;
+
+  var running = false, disabled = false, animationId = 0;
+  var lastTime = null, elapsed = 0;
+  var lx = 0, ly = 0, lastWake = 0, nextRain = 0, nextDrop = 0;
+  var vel = 0, holdT = null, holdI = null;
+
+  function ndc(cx, cy) {
+    return [cx / Math.max(window.innerWidth, 1) * 2 - 1, 1 - cy / Math.max(window.innerHeight, 1) * 2];
+  }
+
+  function ripple(x, y, a) {
+    if (!WU) return;
+    RP[ri].set(x, y, elapsed, a);
+    ri = (ri + 1) % 8;
+  }
+
+  function buildWater() {
+    if (!wpts || !WU) return;
+    var asp = window.innerWidth / Math.max(window.innerHeight, 1);
+    var N = WN[q];
+    var cols = Math.max(2, Math.round(Math.sqrt(N * asp)));
+    var rows = Math.max(2, Math.round(N / cols));
+    var A = new Float32Array(cols * rows * 3), k = 0;
+    for (var j = 0; j < rows; j++) {
+      for (var i2 = 0; i2 < cols; i2++) {
+        A[k++] = (i2 + Math.random()) / cols;
+        A[k++] = (j + Math.random()) / rows;
+        A[k++] = Math.random();
+      }
+    }
+    var ng = new THREE.BufferGeometry();
+    ng.setAttribute('a', new THREE.BufferAttribute(A, 3));
+    ng.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cols * rows * 3), 3));
+    wpts.geometry.dispose();
+    wpts.geometry = ng;
+    WU.asp.value = asp;
+  }
+
+  function resize() {
+    if (!renderer) return;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PRS[q]));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    if (WU) {
+      WU.pr.value = renderer.getPixelRatio();
+      WU.size.value = 2.3;
+    }
+    buildWater();
+  }
+
+  function setQ(n) {
+    q = n;
+    resize();
+  }
+
+  /* ── watchdog (eski chrome fon bilan bir xil) ── */
+  var frameCount = 0, slowFrames = 0, fastFrames = 0, hugeFrames = 0, warmingUp = 0;
+  var lastFrameNow = null;
+  var FPS_TIERS = isMobile ? [2, 4] : [1, 2, 4];
+  var fpsTier = 0;
+
+  function draw(now) {
+    if (!renderer) return false;
+    /* 1:1 — originaldagi kabi dt (clamp .1s) */
+    var dt = 0;
+    if (lastTime != null) dt = Math.min((now - lastTime) / 1000, 0.1);
+    elapsed += dt;
+    lastTime = now;
+    try {
+      WU.t.value = elapsed;
+      /* 1:1 — av/vel faqat wheel dan keladi (original formula bilan).
+         Bosilmagan sichqoncha harakati en ga ta'sir QILMAYDI. */
+      var av = Math.abs(vel);
+      vel *= Math.pow(0.92, dt * 60);
+      WU.en.value = Math.min(av * 40, 2);
+      var mk = 1 - Math.exp(-dt * 1.6);
+      curM.ent += (tgt.ent - curM.ent) * mk;
+      curM.res += (tgt.res - curM.res) * mk;
+      curM.dir += (tgt.dir - curM.dir) * mk;
+      curM.gd  += (tgt.gd  - curM.gd)  * mk;
+      curM.tsc += (tgt.tsc - curM.tsc) * mk;
+      WU.ent.value = curM.ent; WU.res.value = curM.res;
+      WU.dirA.value = curM.dir; WU.tsc.value = curM.tsc; WU.gd.value = curM.gd;
+      /* avtomatik yomg'ir + tomchi (NULL//SHIFT dagi kabi) */
+      if (av > 0.02 && elapsed > nextRain) {
+        ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.45);
+        nextRain = elapsed + 0.25;
+      }
+      if (elapsed > nextDrop) {
+        ripple(Math.random() * 2 - 1, Math.random() * 2 - 1, 0.3);
+        nextDrop = elapsed + 1.8 + Math.random() * 2.5;
+      }
+      renderer.setClearColor(0x000000, 1);
+      renderer.render(scene, cam);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function render(now) {
+    if (!running) return;
+    frameCount++;
+    if (lastFrameNow != null) {
+      var dt = now - lastFrameNow;
+      if (warmingUp > 0) { warmingUp--; hugeFrames = 0; }
+      else if (dt > 500) {
+        hugeFrames++;
+        if (hugeFrames >= 3) { disableBackground(); return; }
+      } else { hugeFrames = 0; }
+      if (dt > 80) {
+        slowFrames++; fastFrames = 0;
+        if (slowFrames >= 12 && fpsTier < FPS_TIERS.length - 1) { slowFrames = 0; fpsTier++; }
+        else if (slowFrames >= 12) { disableBackground(); return; }
+      } else {
+        slowFrames = 0; fastFrames++;
+        if (fpsTier > 0 && fastFrames >= 60) { fpsTier--; fastFrames = 0; }
+      }
+    }
+    lastFrameNow = now;
+    if (frameCount % FPS_TIERS[fpsTier] !== 0) {
+      animationId = requestAnimationFrame(render);
+      return;
+    }
+    if (!draw(now)) {
+      cancelAnimationFrame(animationId);
+      animationId = 0; running = false;
+      return;
+    }
+    animationId = requestAnimationFrame(render);
+  }
+
+  function stopLoop() {
+    cancelAnimationFrame(animationId);
+    animationId = 0;
+  }
+
+  function disableBackground() {
+    running = false; disabled = true;
+    stopLoop();
+    try { sessionStorage.setItem('xoleric-gl-off', String(Date.now())); } catch (e) {}
+    try { canvas.style.display = 'none'; } catch (e) {}
+    try { if (window.xolericGL && typeof window.xolericGL.onDisable === 'function') window.xolericGL.onDisable(); } catch (e) {}
+  }
+
+  function killedThisSession() {
+    try {
+      var v = parseInt(sessionStorage.getItem('xoleric-gl-off') || '0', 10);
+      if (!v) return false;
+      if (Date.now() - v > 3 * 60 * 1000) {
+        sessionStorage.removeItem('xoleric-gl-off');
+        disabled = false;
+        return false;
+      }
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function enableBackground() {
+    if (disabled || running || reduceMotion) return false;
+    if (killedThisSession()) { disabled = true; return false; }
+    if (typeof THREE === 'undefined') return false;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: 'high-performance' });
+    } catch (e) { return false; }
+    try {
+      scene = new THREE.Scene();
+      cam = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+      RP = [];
+      for (var i = 0; i < 8; i++) RP.push(new THREE.Vector4(0, 0, -99, 0));
+      var uniforms = {
+        t: { value: 0 }, tsc: { value: TSC }, ent: { value: ENT }, res: { value: RES },
+        cp: { value: CP }, pr: { value: 1 }, asp: { value: 1 }, size: { value: 2.3 },
+        dirA: { value: DIRA }, en: { value: 0 }, gd: { value: 0 }, R: { value: RP }
+      };
+      WU = uniforms;
+      wpts = new THREE.Points(
+        new THREE.BufferGeometry(),
+        new THREE.ShaderMaterial({
+          uniforms: uniforms, vertexShader: WVS, fragmentShader: WFS,
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        })
+      );
+      wpts.frustumCulled = false;
+      scene.add(wpts);
+      resize();
+      /* ilk to'lqin — sahifa ochilganda markazda */
+      elapsed = 0;
+      ripple(0, 0, 0.9);
+      running = true;
+      lastTime = null;
+      warmingUp = 8; hugeFrames = 0; slowFrames = 0; fastFrames = 0; fpsTier = 0;
+      animationId = requestAnimationFrame(render);
+      try { canvas.style.display = ''; } catch (e) {}
+      return true;
+    } catch (e) {
+      stopLoop(); running = false; disabled = true;
+      return false;
+    }
+  }
+
+  function disableGl() {
+    running = false; disabled = true;
+    stopLoop();
+    try { canvas.style.display = 'none'; } catch (e) {}
+  }
+
+  window.xolericGL = {
+    enable: enableBackground,
+    disable: disableGl,
+    isOn: function () { return running; },
+    canRun: function () {
+      return typeof window.WebGLRenderingContext !== 'undefined' && !reduceMotion && !killedThisSession();
+    },
+    onDisable: null
+  };
+
+  /* ── interaksiya 1:1 (NULL//SHIFT 122–131 qatorlar) ──
+     canvas pointer-events:none → window dan, lekin formula bir xil:
+     - bosish → darhol ripple(1)
+     - ushlab turish (350ms+) → har 500ms ripple(.9)
+     - bosib sudrash → 70ms throttle bilan iz ripple(.3)
+     - bosilmagan harakat → HECH NIMA (en ga ta'sir yo'q)
+     - wheel → vel += -deltaY*.0008 (sahifa scrolli to'xtatilmaydi)
+     - double-tap mutate ATAYLAB yo'q (fon barqaror turishi kerak) */
+  function clearHold() {
+    if (holdT) clearTimeout(holdT);
+    if (holdI) clearInterval(holdI);
+    holdT = null; holdI = null;
+  }
+
+  window.addEventListener('pointerdown', function (e) {
+    if (!running) return;
+    if (e.target && (e.target.closest('a') || e.target.closest('button'))) return;
+    var n = ndc(e.clientX, e.clientY);
+    lx = n[0]; ly = n[1];
+    ripple(lx, ly, 1);
+    clearHold();
+    holdT = setTimeout(function () {
+      holdI = setInterval(function () { ripple(lx, ly, 0.9); }, 500);
+    }, 350);
+  }, { passive: true });
+
+  window.addEventListener('pointermove', function (e) {
+    if (!running) return;
+    if (e.buttons > 0) {
+      var n = ndc(e.clientX, e.clientY);
+      lx = n[0]; ly = n[1];
+      var now = performance.now();
+      if (now - lastWake > 70) { lastWake = now; ripple(lx, ly, 0.3); }
+    }
+  }, { passive: true });
+
+  window.addEventListener('pointerup', clearHold, { passive: true });
+  window.addEventListener('pointercancel', clearHold, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!running) return;
+    var t = e.touches[0];
+    if (!t) return;
+    var n = ndc(t.clientX, t.clientY);
+    var now = performance.now();
+    if (now - lastWake > 70) { lastWake = now; ripple(n[0], n[1], 0.3); }
+  }, { passive: true });
+
+  window.addEventListener('wheel', function (e) {
+    if (!running) return;
+    vel += -(e.deltaY || 0) * 0.0008;
+  }, { passive: true });
+
+  window.addEventListener('scroll', function () {
+    if (!moodRaf) moodRaf = requestAnimationFrame(pickMood);
+  }, { passive: true });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { try { if (running) resize(); } catch (e) {} }, 100);
+  }, { passive: true });
+
+  canvas.addEventListener('webglcontextlost', function (e) {
+    e.preventDefault();
+    running = false;
+    stopLoop();
+    lastTime = null;
+  }, false);
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { stopLoop(); }
+    else if (running) {
+      lastFrameNow = null; slowFrames = 0; fastFrames = 0; hugeFrames = 0;
+      warmingUp = 8; fpsTier = 0; lastTime = null;
+      animationId = requestAnimationFrame(render);
+    }
+  });
+})();
+
+  </script>
+  <script>
+/* ===== app ===== */
+/* ═══════════════════════════════════════════════════════════
+   XOLERIC — app.js (qayta yozilgan)
+   Loader (matrix) · header/progress · spotlight · crosshair ·
+   hero reveal · orbit ikonlar · GitHub loyihalar · reveal-up · Konami
+   Boshqa skriptlar bilan shartnoma: window.__xolericLoaded,
+   #loader.hidden, .hero.ready, #siteHeader.visible, #vignette.visible
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var GH_USER = 'xolerc';
+  var $ = function (id) { return document.getElementById(id); };
+  var fine = false, reduce = false;
+  try { fine = window.matchMedia('(pointer: fine)').matches; } catch (e) {}
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  /* yil */
+  var yr = $('year'); if (yr) yr.textContent = new Date().getFullYear();
+
+  /* ───────── LOADER ───────── */
+  var finished = false;
+  function finishLoader() {
+    if (finished) return;
+    finished = true;
+    var l = $('loader'), hero = document.querySelector('.hero'),
+        h = $('siteHeader'), v = $('vignette');
+    if (l) l.classList.add('hidden');
+    if (hero) hero.classList.add('ready');
+    if (h) h.classList.add('visible');
+    if (v) v.classList.add('visible');
+    window.__xolericLoaded = true;
+  }
+
+  function runLoader() {
+    var loader = $('loader'), cv = $('matrix-canvas'), logoBox = $('logo-container'), logo = $('mainLogo');
+    if (!loader || !cv || reduce) { finishLoader(); return; }
+    var ctx = cv.getContext('2d');
+    if (!ctx) { finishLoader(); return; }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = cv.width = Math.floor(window.innerWidth * dpr);
+    var H = cv.height = Math.floor(window.innerHeight * dpr);
+    var size = Math.round(16 * dpr);
+    var rows = Math.ceil(H / size), cols = Math.ceil(W / size);
+    var glyphs = 'XOLERIC01∞<>/{}[]';
+    var heads = [];
+    for (var r = 0; r < rows; r++) heads.push(-Math.random() * cols * 0.6);
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+    ctx.font = size + 'px monospace';
+    var t0 = performance.now(), DURATION = 1900, raf = 0;
+
+    function frame(now) {
+      var t = now - t0;
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.fillRect(0, 0, W, H);
+      for (var i = 0; i < rows; i++) {
+        heads[i] += 0.9 + (i % 5) * 0.12;      /* chapdan o'ngga shamol */
+        var x = Math.floor(heads[i]) * size, y = i * size + size;
+        if (x < -size || x > W) continue;
+        ctx.fillStyle = '#e8ecf4';
+        ctx.fillText(glyphs.charAt((Math.random() * glyphs.length) | 0), x, y);
+        ctx.fillStyle = 'rgba(142,160,184,0.7)';
+        ctx.fillText(glyphs.charAt((Math.random() * glyphs.length) | 0), x - size, y);
+      }
+      if (t < DURATION) { raf = requestAnimationFrame(frame); return; }
+      cancelAnimationFrame(raf);
+      cv.style.display = 'none';
+      if (logoBox) logoBox.style.display = 'flex';
+      setTimeout(function () { if (logo) logo.classList.add('stable'); }, 450);
+      setTimeout(finishLoader, 1100);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ───────── SCROLL: progress + header ───────── */
+  var prog = $('scrollProgress'), header = $('siteHeader'), ticking = false;
+  function onScroll() {
+    ticking = false;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    if (prog) prog.style.transform = 'scaleX(' + Math.min(1, y / max).toFixed(4) + ')';
+    if (header) header.classList.toggle('scrolled', y > 24);
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  onScroll();
+
+  /* ───────── SPOTLIGHT + CROSSHAIR ───────── */
+  if (fine) {
+    var spot = $('spotlight'), ch = $('crosshair');
+    var chx = ch && ch.querySelector('.ch-x'), chy = ch && ch.querySelector('.ch-y'), chd = ch && ch.querySelector('.ch-dot');
+    var px = 0, py = 0, mt = false;
+    document.addEventListener('mousemove', function (e) {
+      px = e.clientX; py = e.clientY;
+      if (mt) return; mt = true;
+      requestAnimationFrame(function () {
+        mt = false;
+        if (spot) spot.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0)';
+        if (ch) {
+          ch.classList.add('on');
+          if (chx) chx.style.transform = 'translateY(' + py + 'px)';
+          if (chy) chy.style.transform = 'translateX(' + px + 'px)';
+          if (chd) chd.style.transform = 'translate(' + px + 'px,' + py + 'px)';
+        }
+      });
+    }, { passive: true });
+    document.addEventListener('mouseleave', function () { if (ch) ch.classList.remove('on'); });
+  }
+
+  /* ───────── HERO ART: fonar-reveal + sheen ───────── */
+  var art = $('heroArt'), rev = $('reveal');
+  if (art && fine) {
+    art.addEventListener('mousemove', function (e) {
+      var b = art.getBoundingClientRect();
+      var x = e.clientX - b.left, y = e.clientY - b.top;
+      var m = 'radial-gradient(circle 90px at ' + x + 'px ' + y + 'px, #000 0%, transparent 100%)';
+      if (rev) { rev.style.webkitMaskImage = m; rev.style.maskImage = m; }
+      art.style.setProperty('--mx', (x / b.width * 100).toFixed(1) + '%');
+      art.style.setProperty('--my', (y / b.height * 100).toFixed(1) + '%');
+    });
+    art.addEventListener('mouseleave', function () {
+      var m = 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+      if (rev) { rev.style.webkitMaskImage = m; rev.style.maskImage = m; }
+    });
+  }
+
+  /* ───────── ORBIT: footer ikonlaridan halqa ───────── */
+  var ring = $('orbitRing'), orb = $('orbitContainer');
+  if (ring && orb) {
+    var src = document.querySelectorAll('.footer-social .social-icon');
+    var n = src.length;
+    Array.prototype.forEach.call(src, function (a, i) {
+      var cls = (a.className.match(/\b(yt|ig|tg|gh|pin|in)\b/) || [''])[0];
+      var el = document.createElement('a');
+      el.className = 'orbit-icon ' + cls;
+      el.href = a.href; el.target = '_blank'; el.rel = 'noopener noreferrer';
+      el.setAttribute('aria-label', a.getAttribute('aria-label') || '');
+      el.style.setProperty('--a', (360 / n * i) + 'deg');
+      var inner = document.createElement('span'); inner.className = 'icon-inner';
+      var svg = a.querySelector('svg'); if (svg) inner.appendChild(svg.cloneNode(true));
+      el.appendChild(inner); ring.appendChild(el);
+    });
+    var sizeOrbit = function () {
+      var d = Math.max(220, Math.min(340, window.innerWidth * 0.3));
+      orb.style.setProperty('--orbit-d', d + 'px');
+      orb.style.setProperty('--orbit-r', (d / 2) + 'px');
+    };
+    sizeOrbit(); window.addEventListener('resize', sizeOrbit);
+  }
+
+  /* ───────── REVEAL-UP ───────── */
+  var io = null;
+  if ('IntersectionObserver' in window) {
+    io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12 });
+  }
+  function watch(el) {
+    if (io) io.observe(el); else el.classList.add('in-view');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.reveal-up'), watch);
+
+  /* ───────── GITHUB LOYIHALAR ───────── */
+  var grid = $('projectsGrid');
+  var LANG = { JavaScript: '#f1e05a', TypeScript: '#3178c6', HTML: '#e34c26', CSS: '#7c5cff',
+               Python: '#3572A5', Dart: '#00B4AB', Kotlin: '#A97BFF', Java: '#b07219', 'C++': '#f34b7d' };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function card(r) {
+    var a = document.createElement('a');
+    a.className = 'project-card';
+    a.href = r.homepage && /^https?:\/\//.test(r.homepage) ? r.homepage : r.html_url;
+    a.target = '_blank'; a.rel = 'noopener noreferrer';
+    var col = LANG[r.language] || '#8ea0b8';
+    a.innerHTML =
+      '<div class="card-art"><span class="card-art-lang" style="background:' + col + ';color:' + col + '"></span>' +
+      '<span class="card-art-name">' + esc(r.name) + '</span></div>' +
+      '<div class="card-body"><span class="card-tag">' + esc(r.language || 'kod') + '</span>' +
+      '<h3>' + esc(r.name.replace(/[-_]/g, ' ')) + '</h3>' +
+      '<p>' + esc(r.description || 'GitHub loyihasi') + '</p>' +
+      '<div class="card-meta"><span class="meta-stars">★ ' + (r.stargazers_count | 0) + '</span>' +
+      '<span>⑂ ' + (r.forks_count | 0) + '</span></div>' +
+      '<span class="card-link">Ochish →</span></div>';
+    return a;
+  }
+
+  function showCards(list) {
+    grid.innerHTML = '';
+    list.forEach(function (r, i) {
+      var c = card(r);
+      c.style.transition += ', opacity .6s ease ' + (i * 60) + 'ms';
+      grid.appendChild(c);
+      if (io) {
+        var o = new IntersectionObserver(function (es) {
+          if (es[0].isIntersecting) { c.style.opacity = '1'; o.disconnect(); }
+        }, { threshold: 0.1 });
+        o.observe(c);
+      } else c.style.opacity = '1';
+    });
+  }
+
+  function loadProjects() {
+    if (!grid) return;
+    var KEY = 'xol_repos_v1';
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (cached && cached.length) { showCards(cached); return; }
+    fetch('https://api.github.com/users/' + GH_USER + '/repos?per_page=100&sort=updated')
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (all) {
+        var list = all.filter(function (r) {
+          return !r.fork && !r.archived && r.name.toLowerCase() !== GH_USER + '.github.io';
+        }).sort(function (a, b) {
+          return (b.stargazers_count - a.stargazers_count) || (new Date(b.pushed_at) - new Date(a.pushed_at));
+        }).slice(0, 9);
+        try { sessionStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+        if (!list.length) throw new Error('empty');
+        showCards(list);
+      })
+      .catch(function () {
+        grid.innerHTML = '<a class="project-card" style="opacity:1" href="https://github.com/' + GH_USER +
+          '" target="_blank" rel="noopener noreferrer"><div class="card-body"><span class="card-tag">github</span>' +
+          '<h3>Loyihalar GitHub\'da</h3><p>Ro\'yxat hozir yuklanmadi — barcha ishlarim GitHub profilimda.</p>' +
+          '<span class="card-link">Ochish →</span></div></a>';
+      });
+  }
+  loadProjects();
+
+  /* ───────── KONAMI ───────── */
+  var seq = [38,38,40,40,37,39,37,39,66,65], pos = 0, toast = $('eeToast');
+  document.addEventListener('keydown', function (e) {
+    pos = (e.keyCode === seq[pos]) ? pos + 1 : (e.keyCode === seq[0] ? 1 : 0);
+    if (pos === seq.length) {
+      pos = 0;
+      document.body.classList.toggle('ee-mode');
+      if (toast) { toast.classList.add('show'); setTimeout(function () { toast.classList.remove('show'); }, 2200); }
+    }
+  });
+
+  /* ───────── START ───────── */
+  runLoader();
+  setTimeout(finishLoader, 6000); /* xavfsizlik */
+})();
+
+  </script>
+  <script>
+/* ===== text-swim ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — TEXT SWIM (XOLERIC ∞ SO'Z demosidan ko'chirma)
+   Harflar kursor atrofida "suzadi": yaqin harflar itariladi,
+   yaylovdan chiqqach prujina bilan joyiga qaytadi.
+   MUHIM: faqat DOM matnlar (inline-block span) — fon canvasiga
+   (WebGL suv) hech qanday ta'sir yo'q. Layout siljimaydi:
+   faqat transform ishlatiladi.
+   SAFETY: prefers-reduced-motion, char cap, rAF faqat aktiv
+   harflar bo'lganda, MutationObserver bilan dinamik kartalar.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (reduce) return;
+
+  var coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
+
+  /* ── sozlamalar ── */
+  var RADIUS = coarse ? 88 : 132;      /* kursor ta'sir radiusi (px) */
+  var AMP_MIN = 5;                     /* minimal siljish (px) */
+  var AMP_MAX = coarse ? 11 : 18;      /* maksimal siljish (px) */
+  var FOLLOW = 0.16;                   /* nishonga ergashish prujinasi */
+  var DAMP = 0.82;                     /* ishqalanish */
+  var SWIRL = 0.22;                    /* girdob (tangensial) komponenti */
+  var CELL = 150;                      /* spatial grid katagi */
+  var MAXCHARS = 16000;                /* xotira himoyasi */
+
+  var SKIP_TAGS = {
+    SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, INPUT: 1,
+    SELECT: 1, OPTION: 1, CODE: 1, PRE: 1, SVG: 1, CANVAS: 1, IFRAME: 1
+  };
+  var SKIP_SEL = '[data-swim="off"], .sw-w, .sw-c, #loader, .grain-top, .skip-link, .build-layer';
+
+  var chars = [];
+  var grid = new Map();
+  var active = new Set();
+  var total = 0;
+  var raf = 0;
+  var px = -1e5, py = -1e5;            /* pointer (viewport) */
+  var hasPointer = false;
+  var measuring = false;
+  var splitTimer = 0, measureTimer = 0;
+
+  /* ── DOM bo'lish ── */
+  function skipNode(node) {
+    var p = node.parentNode;
+    if (!p || p.nodeType !== 1) return true;
+    if (SKIP_TAGS[p.nodeName]) return true;
+    if (p.closest && p.closest(SKIP_SEL)) return true;
+    if (!node.nodeValue || !node.nodeValue.trim()) return true;
+    return false;
+  }
+
+  function splitNode(node) {
+    if (total > MAXCHARS) return;
+    var text = node.nodeValue;
+    if (!text || !text.trim()) return;
+    var parent = node.parentNode;
+    if (!parent) return;
+
+    var frag = document.createDocumentFragment();
+    var parts = text.split(/(\s+)/);
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i];
+      if (!part) continue;
+      if (/^\s+$/.test(part)) {
+        frag.appendChild(document.createTextNode(part));
+        continue;
+      }
+      var word = document.createElement('span');
+      word.className = 'sw-w';
+      var glyphs = Array.from ? Array.from(part) : part.split('');
+      for (var g = 0; g < glyphs.length; g++) {
+        var ch = document.createElement('span');
+        ch.className = 'sw-c';
+        ch.textContent = glyphs[g];
+        word.appendChild(ch);
+        chars.push({ el: ch, ox: 0, oy: 0, dx: 0, dy: 0, vx: 0, vy: 0, dead: false });
+        total++;
+      }
+      frag.appendChild(word);
+    }
+    parent.replaceChild(frag, node);
+  }
+
+  function splitAll(root) {
+    if (!root || total > MAXCHARS) return;
+    var walker;
+    try {
+      walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          return skipNode(n) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+        }
+      });
+    } catch (e) { return; }
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (var i = 0; i < nodes.length; i++) splitNode(nodes[i]);
+  }
+
+  /* ── o'lchash (doc koordinatalari) ── */
+  function key(cx, cy) {
+    return (cx / CELL | 0) + ':' + (cy / CELL | 0);
+  }
+
+  function measure() {
+    if (measuring) return;
+    measuring = true;
+    /* aktiv transformlarni tozalab, toza joylashuvni o'lchaymiz */
+    active.forEach(function (c) {
+      c.dx = c.dy = c.vx = c.vy = 0;
+      c.el.style.transform = '';
+    });
+    active.clear();
+    grid.clear();
+    var sx = window.scrollX || 0;
+    var sy = window.scrollY || 0;
+    var ampCache = new Map();
+    for (var i = 0; i < chars.length; i++) {
+      var c = chars[i];
+      var r = c.el.getBoundingClientRect();
+      if (!r.width && !r.height) { c.dead = true; continue; }
+      c.dead = false;
+      var par = c.el.parentNode;
+      var amp = ampCache.get(par);
+      if (amp === undefined) {
+        var fs = 16;
+        try {
+          fs = parseFloat(window.getComputedStyle(par).fontSize) || 16;
+        } catch (e) {}
+        amp = Math.max(AMP_MIN, Math.min(AMP_MAX, fs * 0.6));
+        ampCache.set(par, amp);
+      }
+      c.amp = amp;
+      c.ox = r.left + r.width * 0.5 + sx;
+      c.oy = r.top + r.height * 0.5 + sy;
+      var k = key(c.ox, c.oy);
+      var bucket = grid.get(k);
+      if (!bucket) { bucket = []; grid.set(k, bucket); }
+      bucket.push(c);
+    }
+    measuring = false;
+  }
+
+  function scheduleMeasure(delay) {
+    if (measureTimer) clearTimeout(measureTimer);
+    measureTimer = setTimeout(function () {
+      measureTimer = 0;
+      requestAnimationFrame(measure);
+    }, delay || 120);
+  }
+
+  /* ── fizika ── */
+  function kick() {
+    if (!raf && !document.hidden) raf = requestAnimationFrame(tick);
+  }
+
+  function splash(clientX, clientY) {
+    var sx = window.scrollX || 0, sy = window.scrollY || 0;
+    var cx = clientX + sx, cy = clientY + sy;
+    var gx = Math.floor(cx / CELL), gy = Math.floor(cy / CELL);
+    for (var j = -1; j <= 1; j++) {
+      for (var i = -1; i <= 1; i++) {
+        var b = grid.get((gx + i) + ':' + (gy + j));
+        if (!b) continue;
+        for (var n = 0; n < b.length; n++) {
+          var c = b[n];
+          var kx = c.ox + c.dx - cx, ky = c.oy + c.dy - cy;
+          var d = Math.sqrt(kx * kx + ky * ky) + 0.001;
+          if (d > RADIUS) continue;
+          var w = 1 - d / RADIUS;
+          c.vx += (kx / d) * w * (coarse ? 2.2 : 4.5);
+          c.vy += (ky / d) * w * (coarse ? 2.2 : 4.5);
+          active.add(c);
+        }
+      }
+    }
+    kick();
+  }
+
+  function tick() {
+    raf = 0;
+    if (document.hidden) return;
+
+    var sx = window.scrollX || 0, sy = window.scrollY || 0;
+    var cx = px + sx, cy = py + sy;
+
+    if (hasPointer && !measuring) {
+      var gx = Math.floor(cx / CELL), gy = Math.floor(cy / CELL);
+      for (var j = -1; j <= 1; j++) {
+        for (var i = -1; i <= 1; i++) {
+          var b = grid.get((gx + i) + ':' + (gy + j));
+          if (!b) continue;
+          for (var n = 0; n < b.length; n++) {
+            var cc = b[n];
+            var ddx = cc.ox + cc.dx - cx, ddy = cc.oy + cc.dy - cy;
+            if (ddx * ddx + ddy * ddy < RADIUS * RADIUS) active.add(cc);
+          }
+        }
+      }
+    }
+
+    var R2 = RADIUS * RADIUS;
+    active.forEach(function (c) {
+      if (c.dead) { active.delete(c); return; }
+      /* nishon siljishi — harf o'lchamiga moslab cheklangan (amp) */
+      var tx = 0, ty = 0;
+      if (hasPointer) {
+        var kx = c.ox + c.dx - cx, ky = c.oy + c.dy - cy;
+        var d2 = kx * kx + ky * ky;
+        if (d2 < R2) {
+          var d = Math.sqrt(d2) + 0.001;
+          var w = 1 - d / RADIUS;
+          var amp = c.amp || 16;
+          var s = w * w * amp;
+          tx = (kx / d) * s - (ky / d) * s * SWIRL;
+          ty = (ky / d) * s + (kx / d) * s * SWIRL;
+        }
+      }
+      c.vx = (c.vx + (tx - c.dx) * FOLLOW) * DAMP;
+      c.vy = (c.vy + (ty - c.dy) * FOLLOW) * DAMP;
+      c.dx += c.vx;
+      c.dy += c.vy;
+
+      var still = Math.abs(c.dx) < 0.05 && Math.abs(c.dy) < 0.05 &&
+                  Math.abs(c.vx) < 0.05 && Math.abs(c.vy) < 0.05 &&
+                  tx === 0 && ty === 0;
+      if (still) {
+        c.dx = c.dy = c.vx = c.vy = 0;
+        c.el.style.transform = '';
+        active.delete(c);
+        return;
+      }
+      var rot = c.dx * 0.08;
+      if (rot > 3) rot = 3; else if (rot < -3) rot = -3;
+      c.el.style.transform =
+        'translate(' + c.dx.toFixed(2) + 'px,' + c.dy.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+    });
+
+    if (active.size) kick();
+  }
+
+  /* ── pointer ── */
+  window.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;      /* barmoq bilan surash — matnni buzmaymiz */
+    px = e.clientX; py = e.clientY;
+    hasPointer = true;
+    kick();
+  }, { passive: true });
+
+  window.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'touch') return;
+    px = e.clientX; py = e.clientY;
+    hasPointer = true;
+    splash(px, py);
+  }, { passive: true });
+
+  window.addEventListener('pointerleave', function () { hasPointer = false; }, { passive: true });
+  window.addEventListener('blur', function () { hasPointer = false; });
+
+  window.addEventListener('scroll', function () {
+    if (active.size) kick();      /* scroll paytida faqat aktivlar qaytadi */
+  }, { passive: true });
+
+  var rzT = 0;
+  window.addEventListener('resize', function () {
+    clearTimeout(rzT);
+    rzT = setTimeout(function () { measure(); }, 220);
+  }, { passive: true });
+
+  document.addEventListener('transitionend', function () { scheduleMeasure(160); }, true);
+
+  /* ── dinamik kontent (GitHub kartalari) ── */
+  var mo = null;
+  function watch() {
+    if (!mo || !document.body) return;
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  function resplit() {
+    if (mo) mo.disconnect();
+    splitAll(document.body);
+    measure();
+    watch();
+  }
+  function scheduleSplit() {
+    if (splitTimer) clearTimeout(splitTimer);
+    splitTimer = setTimeout(function () {
+      splitTimer = 0;
+      resplit();
+    }, 320);
+  }
+
+  /* ── start ── */
+  function boot() {
+    splitAll(document.body);
+    measure();
+    if (window.MutationObserver) {
+      mo = new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          /* build HUD (foiz matni) har scrollda o'zgaradi — qayta bo'lish/o'lchash shart emas */
+          var tn = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentNode);
+          if (tn && tn.closest && tn.closest('.build-layer, [data-swim="off"]')) continue;
+          if (m.type === 'childList') {
+            var one = (m.addedNodes.length === 1 && !m.removedNodes.length) ? m.addedNodes[0]
+                    : (m.removedNodes.length === 1 && !m.addedNodes.length) ? m.removedNodes[0] : null;
+            if (one && one.nodeType === 1 && one.matches &&
+                one.matches('.build-layer, [data-swim="off"]')) continue;
+          }
+          if (m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length)) { scheduleSplit(); return; }
+          if (m.type === 'characterData') { scheduleSplit(); return; }
+        }
+      });
+      watch();
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { scheduleMeasure(80); });
+    }
+    window.addEventListener('load', function () { scheduleMeasure(200); });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+
+  </script>
+  <script>
+/* ===== lightbox ===== */
+/* XOLERIC — lightbox.js: portret <dialog> (tashqariga bosish / Esc yopadi) */
+(function () {
+  'use strict';
+  var art = document.getElementById('heroArt');
+  var dlg = document.getElementById('portraitLB');
+  if (!art || !dlg || typeof dlg.showModal !== 'function') return;
+
+  function open() { if (!dlg.open) dlg.showModal(); document.documentElement.classList.add('lb-lock'); }
+  function close() { if (dlg.open) dlg.close(); }
+
+  art.addEventListener('click', open);
+  art.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+  });
+  dlg.addEventListener('click', close);            /* istalgan joyga bosilsa yopiladi */
+  dlg.addEventListener('close', function () { document.documentElement.classList.remove('lb-lock'); });
+})();
+
+  </script>
+  <script>
+/* ===== build ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — BUILD SCROLL
+   Loaderdan keyin sahifa "toza" holatda boshlanadi: faqat fon.
+   Pastga scroll (2x sekin) davomida kursorlar to'r bo'lib
+   ko'rinadi va bo'limlar pastdan yuqoriga quriladi.
+   To'liq pastga tushilgach qurilish tugaydi; yuqoriga qaytishda
+   hech narsa o'zgarmaydi. Har bir to'liq sahifa yuklanishida
+   (refresh / yangi kirish) ishlaydi — loader kabi.
+   SAFETY: prefers-reduced-motion, JS xatosi yoki app.js o'lsa —
+   build o'chadi va sahifa normal ko'rinadi.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (reduce) return;
+
+  var root = document.documentElement;
+  var started = false;
+  var done = false;
+  var armed = false;
+  var targets = [];
+  var layer = null;
+  var grid = null;
+  var hudState = null;
+  var hudPct = null;
+  var hudBar = null;
+  var cursors = [];
+  var activeCount = 0;
+  var maxReached = 0;
+  var raf = 0;
+  var lastPct = -1;
+  var lastState = '';
+  var bootTimer = 0;
+  var failsafe = 0;
+  var resizeTimer = 0;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  var NAMES = [['Xoleric', '#eceff4'], ['Design', '#ff6bd6'], ['Code', '#7df9ff'],
+               ['Motion', '#ffd166'], ['Water', '#8ea0b8'], ['Audio', '#b794ff']];
+  var frameN = 0;
+
+  /* agents.js ga xabar: bo'lim qurildi → kursor-agentlar ichini tayyorlaydi */
+  function fire(el) {
+    try { document.dispatchEvent(new CustomEvent('xol:built', { detail: { el: el } })); } catch (e) {}
+  }
+
+  function maxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
+  /* Loader ostida darhol yashiramiz — flash bo'lmasin. */
+  root.classList.add('is-building');
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+  try { window.scrollTo(0, 0); } catch (e) {}
+
+  function createLayer() {
+    layer = document.createElement('div');
+    layer.className = 'build-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML =
+      '<div class="build-grid"></div>' +
+      '<div class="build-hud" role="status" aria-live="polite">' +
+        '<span class="build-mouse" aria-hidden="true"><i></i></span>' +
+        '<span class="build-state">Pastga scroll</span>' +
+        '<span class="build-pct">000%</span>' +
+        '<span class="build-track"><i></i></span>' +
+      '</div>';
+    document.body.appendChild(layer);
+    grid = layer.querySelector('.build-grid');
+    hudState = layer.querySelector('.build-state');
+    hudPct = layer.querySelector('.build-pct');
+    hudBar = layer.querySelector('.build-track > i');
+  }
+
+  function makeCursors() {
+    if (!grid) return;
+    grid.innerHTML = '';
+    cursors = [];
+    activeCount = 0;
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var cols = clamp(Math.ceil(vw / 104), 4, 14);
+    var rows = clamp(Math.ceil(vh / 96), 4, 10);
+    var cellW = vw / cols;
+    var cellH = vh / rows;
+    var list = [];
+    var max = 112;
+
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        if (list.length >= max) break;
+        list.push({
+          x: (c + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.36,
+          y: (r + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.36
+        });
+      }
+    }
+
+    /* Yuqoridan pastga to'lqin — #hero dan boshlanadi. */
+    list.sort(function (a, b) { return (a.y - b.y) || (a.x - b.x); });
+
+    var frag = document.createDocumentFragment();
+    var named = 0;
+    var every = Math.max(7, Math.round(list.length / 6));
+    list.forEach(function (p, i) {
+      var el = document.createElement('span');
+      el.className = 'bc';
+      el.style.setProperty('--x', p.x.toFixed(1) + 'px');
+      el.style.setProperty('--y', p.y.toFixed(1) + 'px');
+      el.style.setProperty('--r', (Math.random() * 28 - 14).toFixed(1) + 'deg');
+      el.style.setProperty('--d', ((i % 7) * 22) + 'ms');
+      el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.2L9.4 20z"/></svg>';
+      /* Figma multiplayer uslubi: ba'zi kursorlar ismli va rangli */
+      if (named < 6 && i % every === 3) {
+        var nm = NAMES[named++];
+        el.classList.add('has-name');
+        el.style.setProperty('--c', nm[1]);
+        el.insertAdjacentHTML('beforeend', '<b class="bn">' + nm[0] + '</b>');
+      }
+      frag.appendChild(el);
+      cursors.push(el);
+    });
+    grid.appendChild(frag);
+  }
+
+  function activate(i, quiet) {
+    var el = cursors[i];
+    if (!el || el.classList.contains('on')) return;
+    el.classList.add('on');
+    if (quiet) el.classList.add('quiet');
+  }
+
+  function updateHud(pct, finished) {
+    var n = Math.round(pct * 100);
+    if (n !== lastPct) {
+      lastPct = n;
+      if (hudPct) hudPct.textContent = ('00' + n).slice(-3) + '%';
+      if (hudBar) hudBar.style.width = n + '%';
+    }
+    var text = finished ? 'Tayyor' : (armed ? "Yig'ilmoqda" : 'Pastga scroll');
+    if (hudState && text !== lastState) {
+      lastState = text;
+      hudState.textContent = text;
+    }
+    if (hudPct) hudPct.classList.toggle('is-live', armed || finished);
+  }
+
+  function buildAll() {
+    for (var i = 0; i < targets.length; i++) {
+      var fresh = !targets[i].classList.contains('is-built');
+      targets[i].classList.add('is-built');
+      if (fresh) fire(targets[i]);
+    }
+    root.classList.add('is-hero-built');
+    for (var j = 0; j < cursors.length; j++) activate(j, false);
+    activeCount = cursors.length;
+  }
+
+  function complete() {
+    if (done) return;
+    done = true;
+    buildAll();
+    updateHud(1, true);
+    unbind();
+
+    setTimeout(function () {
+      if (layer) layer.classList.add('is-done');
+      root.classList.add('is-build-done');
+    }, 350);
+
+    setTimeout(function () {
+      root.classList.remove('is-building');
+      setTimeout(function () {
+        if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
+        layer = null;
+      }, 2000);
+    }, 1050);
+  }
+
+  /* Selection frame: bo'lim qurilganda burchakdan tortilib, 8 handle va
+     "W × H" yorlig'i bilan ismli kursor cho'zadi (Figma resize hissi).
+     Hammasi fixed qatlamda, bo'lim layoutiga tegmaydi. */
+  function showFrame(el) {
+    try {
+      if (!layer || el.classList.contains('site-header')) return;
+      var r0 = el.getBoundingClientRect();
+      if (r0.width < 80 || r0.height < 80) return;
+      var nm = NAMES[frameN++ % NAMES.length];
+      var f = document.createElement('div');
+      f.className = 'bf';
+      f.style.setProperty('--c', nm[1]);
+      f.innerHTML =
+        '<div class="bf-box"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>' +
+        '<div class="bf-cur"><svg viewBox="0 0 24 24"><path d="M5 3l14 8.5-6.2 1.2L9.4 20z"/></svg>' +
+        '<span><b>' + nm[0] + '</b> <em></em></span></div>';
+      layer.appendChild(f);
+      var box = f.querySelector('.bf-box');
+      var cur = f.querySelector('.bf-cur');
+      var lab = f.querySelector('em');
+      var t0 = performance.now();
+      var dead = false;
+      setTimeout(function () { f.classList.add('out'); }, 1500);
+      setTimeout(function () { dead = true; if (f.parentNode) f.parentNode.removeChild(f); }, 2100);
+      (function step(now) {
+        if (dead || !f.parentNode) return;
+        var r = el.getBoundingClientRect();
+        var p = clamp((now - t0) / 950, 0, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        f.style.transform = 'translate(' + r.left.toFixed(1) + 'px,' + r.top.toFixed(1) + 'px)';
+        f.style.width = r.width.toFixed(1) + 'px';
+        f.style.height = r.height.toFixed(1) + 'px';
+        var cx = clamp(r.width * e, 0, r.width);
+        var cy = clamp(r.height * e, 0, r.height);
+        /* kursor viewport ichida qolsin */
+        var ax = clamp(r.left + cx, 10, window.innerWidth - 150) - r.left;
+        var ay = clamp(r.top + cy, 10, window.innerHeight - 40) - r.top;
+        cur.style.transform = 'translate(' + ax.toFixed(1) + 'px,' + ay.toFixed(1) + 'px)';
+        if (p < 1) lab.textContent = Math.round(r.width * e) + ' × ' + Math.round(r.height * e);
+        else lab.textContent = Math.round(r.width) + ' × ' + Math.round(r.height);
+        requestAnimationFrame(step);
+      })(t0);
+    } catch (err) { /* dekor — xato sahifani buzmasin */ }
+  }
+
+  function sync() {
+    if (!started || done) return;
+    try {
+      var max = maxScroll();
+      var y = clamp(window.scrollY || 0, 0, max);
+      maxReached = Math.max(maxReached, y);
+      var pct = max > 0 ? clamp(maxReached / max, 0, 1) : 1;
+
+      if (!armed) {
+        if ((window.scrollY || 0) > 2) armed = true;
+        else { updateHud(0, false); return; }
+      }
+
+      var want = Math.round(pct * cursors.length);
+      if (want > activeCount) {
+        for (var i = activeCount; i < want; i++) activate(i, false);
+        activeCount = want;
+      }
+
+      var vh = window.innerHeight;
+      for (var t = 0; t < targets.length; t++) {
+        var el = targets[t];
+        if (el.classList.contains('is-built')) continue;
+        var r = el.getBoundingClientRect();
+        /* Ekranning 90% chizig'idan o'tgan (yoki undan yuqorida qolgan)
+           har bir blok qurilgan hisoblanadi — tez scrollda ham
+           o'tkazib yuborilmaydi. */
+        if (r.top < vh * 0.9) {
+          el.classList.add('is-built');
+          if (el.id === 'hero') root.classList.add('is-hero-built');
+          showFrame(el);
+          fire(el);
+        }
+      }
+
+      updateHud(pct, false);
+
+      if (maxReached >= max - 2) complete();
+    } catch (e) {
+      /* Har qanday xatoda sahifani ochib yuboramiz. */
+      complete();
+    }
+  }
+
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      sync();
+    });
+  }
+
+  function onWheel(e) {
+    if (!started || done || e.ctrlKey) return;
+    if (root.classList.contains('lb-lock')) return;
+    var max = maxScroll();
+    if (max <= 0) return;
+    var d = e.deltaY;
+    if (e.deltaMode === 1) d *= 16;
+    else if (e.deltaMode === 2) d *= window.innerHeight;
+    if (!d) return;
+    var y = window.scrollY || 0;
+    if ((d < 0 && y <= 0) || (d > 0 && y >= max - 1)) return;
+    e.preventDefault();
+    /* Pastga — 2x sekin (qurilish); yuqoriga — normal tezlik. */
+    window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
+  }
+
+  /* Telefon: barmoq bilan pastga surish ham 2x sekin; yuqoriga — normal. */
+  var touchY = 0, touchOne = false;
+  function onTouchStart(e) {
+    if (!started || done) return;
+    touchOne = e.touches.length === 1;
+    if (touchOne) touchY = e.touches[0].clientY;
+  }
+  function onTouchMove(e) {
+    if (!started || done || !touchOne || e.touches.length !== 1) return;
+    if (root.classList.contains('lb-lock')) return;
+    var y = e.touches[0].clientY;
+    var d = touchY - y;
+    touchY = y;
+    if (!d) return;
+    var max = maxScroll();
+    if (max <= 0) return;
+    var sy = window.scrollY || 0;
+    if ((d < 0 && sy <= 0) || (d > 0 && sy >= max - 1)) return;
+    if (e.cancelable) e.preventDefault();
+    window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
+  }
+
+  function onKey(e) {
+    if (!started || done) return;
+    var tag = (e.target && e.target.tagName) || '';
+    if (/INPUT|TEXTAREA|SELECT/.test(tag) || (e.target && e.target.isContentEditable)) return;
+    if ((e.key === ' ' || e.key === 'Spacebar') && /^A$|^BUTTON$/.test(tag)) return;
+
+    var step = 0;
+    if (e.key === 'ArrowDown') step = 20;
+    else if (e.key === 'ArrowUp') step = -40;
+    else if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'PageDown') step = window.innerHeight * 0.45;
+    else if (e.key === 'PageUp') step = -window.innerHeight * 0.9;
+    if (!step) return;
+    e.preventDefault();
+    window.scrollBy(0, step);
+  }
+
+  function onResize() {
+    if (!started || done) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      try {
+        var keep = activeCount;
+        makeCursors();
+        for (var i = 0; i < keep && i < cursors.length; i++) activate(i, true);
+        activeCount = Math.min(keep, cursors.length);
+        sync();
+      } catch (e) { complete(); }
+    }, 180);
+  }
+
+  function bind() {
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('keydown', onKey, false);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+  }
+
+  function unbind() {
+    window.removeEventListener('wheel', onWheel, false);
+    window.removeEventListener('touchstart', onTouchStart, false);
+    window.removeEventListener('touchmove', onTouchMove, false);
+    window.removeEventListener('keydown', onKey, false);
+    window.removeEventListener('scroll', onScroll, false);
+    window.removeEventListener('resize', onResize, false);
+  }
+
+  function collect() {
+    targets = [];
+    var nodes = document.querySelectorAll('.site-header, main > .section, .site-footer');
+    for (var i = 0; i < nodes.length; i++) targets.push(nodes[i]);
+  }
+
+  function start() {
+    if (started || done) return;
+    try {
+      started = true;
+      try { window.scrollTo(0, 0); } catch (e) {}
+      createLayer();
+      collect();
+      makeCursors();
+      bind();
+      updateHud(0, false);
+      if (maxScroll() <= 2) { complete(); return; }
+      requestAnimationFrame(sync);
+    } catch (e) {
+      abort();
+    }
+  }
+
+  function abort() {
+    if (done) return;
+    done = true;
+    try { unbind(); } catch (e) {}
+    root.classList.remove('is-building');
+    root.classList.add('is-build-done');
+    if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer = null;
+  }
+
+  function boot() {
+    if (started || done) return;
+    if (!window.__xolericLoaded) return;
+    clearInterval(bootTimer);
+    clearTimeout(failsafe);
+    setTimeout(start, 320);
+  }
+
+  if (window.__xolericLoaded) {
+    setTimeout(start, 320);
+  } else {
+    bootTimer = setInterval(boot, 80);
+    /* app.js o'lib qolsa, inline failsafe sahifani ochadi — biz ham qo'shilamiz. */
+    failsafe = setTimeout(function () {
+      if (!started && !done) abort();
+    }, 5600);
+  }
+})();
+
+  </script>
+  <script>
+/* ===== agents ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — CURSOR AGENTS
+   1) BUILD CREW: build.js har bo'limni qurganda "xol:built" yuboradi.
+      Ismli kursor-agentlar shu bo'limdagi HAR BIR elementni tayyorlaydi:
+        • panel / tugma / karta — burchakdan tortib o'lchamini beradi
+          (selection frame + "W × H"), shakli doiradan to'rtburchakka o'zgaradi,
+          rang tanlaydi (swatch) va element shu rangda yonib o'chadi;
+        • matn — harfma-harf "qo'lda yozilgandek" yoziladi (rang chaqnashi bilan).
+      #hero (header) dan footer'gacha. Fon (WebGL) ga tegmaydi.
+   2) ORBIT PILOTS: har bir ijtimoiy ikonni doimiy kursor ushlab aylantiradi.
+      Qurilish tugagach ham saqlanadi — orbita bor ekan, kursorlar aylantiraveradi.
+   SAFETY: prefers-reduced-motion, har qanday xatoda hammasi darhol ko'rsatiladi
+   (ag-run olinadi), 6s failsafe, rAF faqat kerak bo'lganda.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var reduce = false, coarse = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
+  if (reduce) return;
+
+  var root = document.documentElement;
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.2L9.4 20z"/></svg>';
+  var CREW = [['Design', '#ff6bd6'], ['Code', '#7df9ff'], ['Motion', '#ffd166'],
+              ['Water', '#8ea0b8'], ['Audio', '#b794ff'], ['Xoleric', '#eceff4']];
+  var SWATCH = ['#ff6bd6', '#7df9ff', '#ffd166', '#b794ff', '#6bffb0'];
+  var PLAT = { yt: 'YouTube', ig: 'Instagram', tg: 'Telegram', gh: 'GitHub', pin: 'Pinterest', 'in': 'LinkedIn' };
+  var TEXT_SEL = 'h1,h2,h3,p,.eyebrow,.section-sub,.logo,.site-nav a,.btn,.card-tag,.card-impact,.card-meta,.card-link,.card-art-name,.footer-note,.footer-top';
+  var SHAPE_SEL = '.btn,.project-card,.blurb,.contact-box,.hero-art,.section-head,.site-nav,.footer-social';
+  var MAXAG = coarse ? 3 : 5;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+
+  /* ── qatlam ── */
+  var layer = null;
+  function getLayer() {
+    if (layer) return layer;
+    layer = document.createElement('div');
+    layer.className = 'ag-layer';
+    layer.id = 'agentLayer';
+    layer.setAttribute('data-swim', 'off');
+    layer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(layer);
+    return layer;
+  }
+
+  /* ── kursor (agent yoki pilot) ── */
+  function makeAgent(nm, pilot) {
+    var el = document.createElement('div');
+    el.className = 'ag' + (pilot ? ' ag-pilot' : '');
+    el.style.setProperty('--c', nm[1]);
+    el.innerHTML = ARROW + '<span class="ag-l"></span>' + (pilot ? '' :
+      '<div class="ag-sw">' + SWATCH.map(function (c) { return '<i style="--s:' + c + '"></i>'; }).join('') + '</div>');
+    getLayer().appendChild(el);
+    var a = {
+      el: el, lab: el.querySelector('.ag-l'), sw: el.querySelector('.ag-sw'), nm: nm,
+      x: -60, y: -60, tx: -60, ty: -60, task: null, idle: 0, label: '', born: false, rate: pilot ? 11 : 0
+    };
+    a.setLabel = function (t) {
+      var s = nm[0] + (t ? ' · ' + t : '');
+      if (s !== a.label) { a.label = s; a.lab.textContent = s; }
+    };
+    a.setLabel('');
+    return a;
+  }
+
+  function stepAgent(a, dt) {
+    var k = 1 - Math.exp(-dt * (a.rate || (a.task ? 10 : 5)));
+    a.x += (a.tx - a.x) * k;
+    a.y += (a.ty - a.y) * k;
+    a.el.style.transform = 'translate(' + a.x.toFixed(1) + 'px,' + a.y.toFixed(1) + 'px)';
+  }
+
+  /* ── selection frame (shape vazifalari uchun) ── */
+  function makeFrame(color, dur) {
+    var f = document.createElement('div');
+    f.className = 'bf';
+    f.style.setProperty('--c', color);
+    f.style.setProperty('--bf-d', dur + 'ms');
+    f.innerHTML = '<div class="bf-box"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div><div class="bf-tag"></div>';
+    getLayer().appendChild(f);
+    return { el: f, tag: f.querySelector('.bf-tag') };
+  }
+  function placeFrame(fr, r, e) {
+    fr.el.style.transform = 'translate(' + r.left.toFixed(1) + 'px,' + r.top.toFixed(1) + 'px)';
+    fr.el.style.width = r.width.toFixed(1) + 'px';
+    fr.el.style.height = r.height.toFixed(1) + 'px';
+    fr.tag.textContent = Math.round(r.width * e) + ' × ' + Math.round(r.height * e);
+  }
+  function dropFrame(fr) {
+    if (!fr) return;
+    fr.el.classList.add('out');
+    setTimeout(function () { if (fr.el.parentNode) fr.el.parentNode.removeChild(fr.el); }, 520);
+  }
+
+  /* ── vazifalar ── */
+  var tasks = [], agents = [], running = false, raf = 0, last = 0, endT = 0, spawnN = 0;
+
+  function reveal(c, instant) {
+    c.classList.add('tw');
+    if (instant) c.classList.add('tw-i');
+  }
+
+  function instantTask(t) {
+    if (t.type === 'shape') {
+      t.el.classList.remove('ag-hold');
+      t.el.classList.remove('ag-morph');
+    } else {
+      for (var i = t.k || 0; i < t.chars.length; i++) reveal(t.chars[i], true);
+    }
+  }
+
+  function makeTimes(chars) {
+    var n = chars.length, dur = clamp(n * 30, 420, 1700), w = [], sum = 0, i;
+    for (i = 0; i < n; i++) {
+      var wt = 0.5 + Math.random();
+      if (/[.,:;!?]/.test(chars[i].textContent)) wt += 2.2;   /* qalam "to'xtab" oladi */
+      w.push(wt); sum += wt;
+    }
+    var acc = 0, times = [];
+    for (i = 0; i < n; i++) { times.push(acc / sum * dur); acc += w[i]; }
+    return times;
+  }
+
+  function startTask(a, t) {
+    t.taken = true; t.a = a; t.t = 0; a.task = t; a.idle = 0;
+    if (t.type === 'shape') {
+      var r = t.el.getBoundingClientRect();
+      t.dur = clamp(600 + (r.width + r.height) * 0.35, 700, 1400);
+      t.pick = Math.floor(Math.random() * SWATCH.length);
+      t.picked = false;
+      t.el.style.setProperty('--ag-d', t.dur + 'ms');
+      t.el.classList.remove('ag-hold');
+      t.el.classList.add('ag-morph');
+      t.frame = makeFrame(a.nm[1], t.dur);
+      a.x = clamp(r.left - 80, 0, innerWidth); a.y = clamp(r.top - 60, 0, innerHeight);
+      a.setLabel('o‘lchamlamoqda');
+    } else {
+      t.k = 0;
+      t.times = makeTimes(t.chars);
+      t.el.style.setProperty('--tw-c', a.nm[1]);
+      a.setLabel('yozmoqda');
+    }
+  }
+
+  function endTask(a, t, instant) {
+    if (t.type === 'shape') {
+      t.el.classList.remove('ag-hold');
+      if (instant) t.el.classList.remove('ag-morph');
+      else setTimeout(function () { t.el.classList.remove('ag-morph'); }, 120);
+      if (t.picked && !instant) {
+        t.el.classList.add('ag-flash');
+        setTimeout(function () { t.el.classList.remove('ag-flash'); }, 950);
+      }
+      dropFrame(t.frame);
+      if (a.sw) a.sw.classList.remove('on');
+    } else if (instant) {
+      instantTask(t);
+    }
+    var i = tasks.indexOf(t);
+    if (i > -1) tasks.splice(i, 1);
+    a.task = null; a.idle = 0; a.setLabel('');
+  }
+
+  function inBand(r) { return r.bottom > -20 && r.top < innerHeight * 0.96; }
+
+  function pickTask(building) {
+    for (var i = 0; i < tasks.length; i++) {
+      var t = tasks[i];
+      if (t.taken) continue;
+      var r = t.el.getBoundingClientRect();
+      var hidden = !r.width && !r.height;
+      var above = r.bottom <= -20;
+      if (hidden || above || (!building && !inBand(r))) {   /* ko'rinmaydi / o'tib ketgan → darhol */
+        instantTask(t); tasks.splice(i, 1); i--; continue;
+      }
+      if (!inBand(r)) continue;                              /* pastda — scroll kelguncha kutadi */
+      if (t.type === 'type' && t.el.closest('.ag-hold')) continue;
+      return t;
+    }
+    return null;
+  }
+
+  /* true — vazifa tugadi */
+  function updateTask(a, t, dtMs, speed, building) {
+    var r = t.el.getBoundingClientRect();
+    if (r.bottom <= -20 || (!building && !inBand(r))) { endTask(a, t, true); return true; }
+    t.t += dtMs * speed;
+    var vw = innerWidth, vh = innerHeight;
+    if (t.type === 'shape') {
+      var p = clamp(t.t / t.dur, 0, 1.2), e = ease(Math.min(p, 1));
+      a.tx = clamp(r.left + r.width * e, 6, vw - 130);
+      a.ty = clamp(r.top + r.height * e, 6, vh - 30);
+      placeFrame(t.frame, r, e);
+      if (p > 0.5 && a.sw) {
+        a.sw.classList.add('on');
+        a.setLabel('rang tanlamoqda');
+        var hi = Math.min(t.pick, Math.floor((p - 0.5) / 0.08));
+        var dots = a.sw.children;
+        for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('hl', d === hi);
+      }
+      if (p >= 0.86 && !t.picked) {
+        t.picked = true;
+        t.el.style.setProperty('--ag-c', SWATCH[t.pick]);
+      }
+      if (p >= 1.1) { endTask(a, t, false); return true; }
+    } else {
+      var n = t.chars.length;
+      while (t.k < n && t.times[t.k] <= t.t) { reveal(t.chars[t.k], false); t.k++; }
+      var c = t.chars[Math.max(0, t.k - 1)];
+      var cr = c.getBoundingClientRect();
+      a.tx = clamp(cr.right + 2, 6, vw - 130);
+      a.ty = clamp(cr.bottom - 2, 6, vh - 30);
+      if (t.k >= n && t.t > t.times[n - 1] + 260) { endTask(a, t, false); return true; }
+    }
+    return false;
+  }
+
+  function removeAgent(a) {
+    a.el.classList.remove('on');
+    setTimeout(function () { if (a.el.parentNode) a.el.parentNode.removeChild(a.el); }, 450);
+  }
+
+  function finishAll() {
+    try {
+      agents.forEach(function (a) { if (a.task) endTask(a, a.task, true); removeAgent(a); });
+      tasks.slice().forEach(instantTask);
+    } catch (e) {}
+    agents = []; tasks = [];
+    root.classList.remove('ag-run');
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+  }
+
+  function tick(now) {
+    raf = 0;
+    if (!running) return;
+    try {
+      var dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+      last = now;
+      var building = root.classList.contains('is-building');
+      var speed = building ? 1 : 3;
+      var i, a, t;
+
+      /* bo'sh agentlarga vazifa */
+      for (i = 0; i < agents.length; i++) {
+        a = agents[i];
+        if (!a.task) {
+          t = pickTask(building);
+          if (t) startTask(a, t); else a.idle += dt;
+        }
+      }
+      /* yangi agent chaqirish */
+      if (agents.length < MAXAG) {
+        t = pickTask(building);
+        if (t) {
+          a = makeAgent(CREW[spawnN++ % CREW.length], false);
+          a.x = Math.random() * innerWidth; a.y = -40;
+          agents.push(a);
+          setTimeout(function (ag) { return function () { ag.el.classList.add('on'); }; }(a), 16);
+          startTask(a, t);
+        }
+      }
+      /* yangilash */
+      for (i = agents.length - 1; i >= 0; i--) {
+        a = agents[i];
+        if (a.task && updateTask(a, a.task, dt * 1000, speed, building)) {
+          var nt = pickTask(building);
+          if (nt) startTask(a, nt);
+        }
+        stepAgent(a, dt);
+        if (!a.task && a.idle > 1.1) { removeAgent(a); agents.splice(i, 1); }
+      }
+
+      if (!building) {
+        endT += dt;
+        var busy = agents.some(function (x) { return x.task; });
+        if ((!tasks.length && !busy) || endT > 6) { finishAll(); return; }
+      }
+      raf = requestAnimationFrame(tick);
+    } catch (err) {
+      finishAll();          /* xato bo'lsa — sahifa to'liq ko'rinadi */
+    }
+  }
+
+  function cmp(a, b) {
+    if (a.el === b.el) return a.type === 'shape' ? -1 : 1;
+    return (a.el.compareDocumentPosition(b.el) & 4) ? -1 : 1;
+  }
+
+  var seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+
+  function plan(sec) {
+    if (!running) {
+      running = true; endT = 0; last = performance.now();
+      root.classList.add('ag-run');
+      raf = requestAnimationFrame(tick);
+    }
+    var i, el;
+    var shapes = sec.querySelectorAll(SHAPE_SEL);
+    for (i = 0; i < shapes.length; i++) {
+      el = shapes[i];
+      if (el.__agShape) continue;
+      el.__agShape = true;
+      el.classList.add('ag-hold');
+      tasks.push({ type: 'shape', el: el });
+    }
+    var texts = sec.querySelectorAll(TEXT_SEL);
+    for (i = 0; i < texts.length; i++) {
+      el = texts[i];
+      if (el.__agText) continue;
+      var cs = el.querySelectorAll('.sw-c'), list = [];
+      for (var k = 0; k < cs.length; k++) {
+        if (seen) { if (seen.has(cs[k])) continue; seen.add(cs[k]); }
+        list.push(cs[k]);
+      }
+      el.__agText = true;
+      if (list.length) tasks.push({ type: 'type', el: el, chars: list });
+    }
+    tasks.sort(cmp);
+  }
+
+  document.addEventListener('xol:built', function (e) {
+    try {
+      var el = e && e.detail && e.detail.el;
+      if (el) plan(el);
+    } catch (err) { finishAll(); }
+  });
+
+  /* failsafe: build.js o'lsa yoki class olib tashlansa */
+  setInterval(function () {
+    if (running && !root.classList.contains('is-building') && endT === 0) endT = 0.001;
+  }, 1000);
+
+  /* ═══════════════════════════════════════
+     ORBIT PILOTS — ikonlarni doim kursorlar aylantiradi
+     ═══════════════════════════════════════ */
+  var pilots = [], pLast = 0;
+
+  function pilotTick(now) {
+    requestAnimationFrame(pilotTick);
+    var dt = Math.min(0.05, (now - pLast) / 1000 || 0.016);
+    pLast = now;
+    var orb = document.getElementById('orbitContainer');
+    var vis = false;
+    if (orb) {
+      var cs = getComputedStyle(orb);
+      vis = cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0.2;
+    }
+    for (var i = 0; i < pilots.length; i++) {
+      var a = pilots[i];
+      if (!vis) { a.el.classList.remove('on'); continue; }
+      var r = a.icon.getBoundingClientRect();
+      if (!r.width) { a.el.classList.remove('on'); continue; }
+      a.tx = r.left + r.width * 0.7 + Math.sin(now / 700 + a.ph) * 2.5;
+      a.ty = r.top + r.height * 0.62 + Math.cos(now / 830 + a.ph) * 2.5;
+      if (!a.born) { a.x = a.tx; a.y = a.ty; a.born = true; }
+      a.el.classList.add('on');
+      stepAgent(a, dt);
+    }
+  }
+
+  function initPilots() {
+    var icons = document.querySelectorAll('.orbit-icon');
+    if (!icons.length) return false;
+    var cols = ['#ff6bd6', '#7df9ff', '#ffd166', '#b794ff', '#6bffb0', '#eceff4'];
+    for (var i = 0; i < icons.length; i++) {
+      var key = '';
+      for (var k in PLAT) { if (icons[i].classList.contains(k)) key = k; }
+      var a = makeAgent([PLAT[key] || 'Orbit', cols[i % cols.length]], true);
+      a.icon = icons[i];
+      a.ph = Math.random() * 6.28;
+      pilots.push(a);
+    }
+    pLast = performance.now();
+    requestAnimationFrame(pilotTick);
+    return true;
+  }
+
+  var tries = 0;
+  (function wait() {
+    try { if (initPilots()) return; } catch (e) { return; }
+    if (++tries < 40) setTimeout(wait, 400);
+  })();
+})();
+
+  </script>
+  <script>
+/* ===== editor ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — LIVE EDITOR (haqiqiy kursor bilan tahrirlash)
+   E tugmasi yoki Ctrl/Cmd+K → "Tahrirlash rejimi".
+   Element tanla (bosish) → sudrab ko'chir, 8 handle bilan o'lchamini
+   o'zgartir, matn/fon rangi, shakl (radius), shrift o'lchami,
+   ikki marta bosib matnni yoz, yashir, orqaga (Ctrl+Z), CSS nusxa.
+   Fon (WebGL) ga tegmaydi. O'zgarishlar sessiya uchun (yangilansa tiklanadi);
+   "CSS" tugmasi ularni styles.css ga ko'chirish uchun nusxalaydi.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var ED_SEL = '.btn,.project-card,.blurb,.contact-box,.hero-art,.section-head,.card-body,.card-art,' +
+    'h1,h2,h3,p,.eyebrow,.logo,.site-nav a,.site-nav,.hero-content,.footer-social,.social-icon,section.section';
+  var SW_TXT = ['#eceff4', '#ffd166', '#ff6bd6', '#7df9ff', '#b794ff', '#6bffb0', '#05070c'];
+  var SW_BG = ['transparent', '#111921', '#2a1233', '#0f3d3e', '#3d2f0f', '#eceff4'];
+  var DIRS = { nw: [0, 0], n: [50, 0], ne: [100, 0], e: [100, 50], se: [100, 100], s: [50, 100], sw: [0, 100], w: [0, 50] };
+
+  var on = false, sel = null, editing = null, ui = null, frame = null, hovBox = null, bar = null;
+  var raf = 0, hist = [], touched = [], toastEl = null, toastT = 0, hoverEl = null;
+
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'ed-toast';
+      toastEl.setAttribute('data-swim', 'off');
+      toastEl.setAttribute('role', 'status');
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+  }
+
+  /* ── tarix / tiklash ── */
+  function track(el) {
+    if (el.__edO === undefined) { el.__edO = el.getAttribute('style'); touched.push(el); }
+  }
+  function snap(el) {
+    track(el);
+    hist.push({ el: el, s: el.getAttribute('style') });
+    if (hist.length > 80) hist.shift();
+  }
+  function setS(el, prop, val) { el.style.setProperty(prop, val, 'important'); }
+  function undo() {
+    var h = hist.pop();
+    if (!h) { toast('Orqaga qaytariladigan narsa yo‘q'); return; }
+    if (h.s === null) h.el.removeAttribute('style'); else h.el.setAttribute('style', h.s);
+  }
+  function resetAll() {
+    touched.forEach(function (el) {
+      if (el.__edO === null) el.removeAttribute('style'); else el.setAttribute('style', el.__edO);
+      delete el.__edO;
+    });
+    touched = []; hist = [];
+    toast('Hammasi asl holatiga qaytdi');
+  }
+
+  /* ── UI ── */
+  function sw(arr, k) {
+    return arr.map(function (c) {
+      return '<i class="sw" data-k="' + k + '" data-v="' + c + '" style="--s:' + c + '"></i>';
+    }).join('');
+  }
+  function buildUI() {
+    ui = document.createElement('div');
+    ui.className = 'ed-ui';
+    ui.setAttribute('data-swim', 'off');
+    var h = '';
+    for (var d in DIRS) {
+      h += '<i class="ed-h" data-d="' + d + '" style="left:' + DIRS[d][0] + '%;top:' + DIRS[d][1] + '%"></i>';
+    }
+    ui.innerHTML =
+      '<div class="ed-hov"></div><div class="ed-frame">' + h + '</div>' +
+      '<div class="ed-bar" role="toolbar" aria-label="Tahrirlash paneli">' +
+        '<b class="ed-t">Tahrir</b>' +
+        '<span class="ed-g">Matn ' + sw(SW_TXT, 'color') + '</span>' +
+        '<span class="ed-g">Fon ' + sw(SW_BG, 'background') + '</span>' +
+        '<label class="ed-g">Shakl <input type="range" min="0" max="60" value="12" data-k="radius"></label>' +
+        '<span class="ed-g"><button data-a="fs-">A−</button><button data-a="fs+">A+</button></span>' +
+        '<button data-a="text">Matn yozish</button><button data-a="hide">Yashirish</button>' +
+        '<button data-a="undo">Orqaga</button><button data-a="css">CSS</button>' +
+        '<button data-a="reset">Tiklash</button><button data-a="exit" class="ed-x">Chiqish</button>' +
+      '</div>';
+    document.body.appendChild(ui);
+    frame = ui.querySelector('.ed-frame');
+    hovBox = ui.querySelector('.ed-hov');
+    bar = ui.querySelector('.ed-bar');
+    ui.addEventListener('pointerdown', onUIDown);
+    bar.addEventListener('click', onBar);
+    bar.addEventListener('input', onRange);
+  }
+
+  function onRange(e) {
+    var t = e.target;
+    if (!sel || t.getAttribute('data-k') !== 'radius') return;
+    if (!t.__snapped) { snap(sel); t.__snapped = true; }
+    setS(sel, 'border-radius', t.value + 'px');
+    setS(sel, 'overflow', 'hidden');
+  }
+  bindChange();
+  function bindChange() { /* range snap reset */
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.__snapped) e.target.__snapped = false;
+    });
+  }
+
+  function onBar(e) {
+    var t = e.target;
+    var k = t.getAttribute && t.getAttribute('data-k');
+    if (k === 'color' || k === 'background') {
+      if (!sel) return;
+      snap(sel);
+      setS(sel, k === 'color' ? 'color' : 'background', t.getAttribute('data-v'));
+      if (k === 'color') setS(sel, '-webkit-text-fill-color', t.getAttribute('data-v'));
+      return;
+    }
+    var a = t.getAttribute && t.getAttribute('data-a');
+    if (!a) return;
+    if (a === 'exit') { toggle(false); return; }
+    if (a === 'undo') { undo(); return; }
+    if (a === 'reset') { resetAll(); return; }
+    if (a === 'css') { copyCSS(); return; }
+    if (!sel) { toast('Avval elementni tanlang'); return; }
+    if (a === 'hide') { snap(sel); setS(sel, 'display', 'none'); select(null); return; }
+    if (a === 'text') { startText(sel); return; }
+    if (a === 'fs+' || a === 'fs-') {
+      snap(sel);
+      var fs = parseFloat(getComputedStyle(sel).fontSize) || 16;
+      setS(sel, 'font-size', Math.max(8, fs + (a === 'fs+' ? 2 : -2)) + 'px');
+    }
+  }
+
+  /* ── tanlash ── */
+  function pick(t) { return t && t.closest ? t.closest(ED_SEL) : null; }
+  function select(el) {
+    sel = el;
+    frame.style.display = el ? 'block' : 'none';
+  }
+
+  function trOf(el) {
+    var m = (el.style.translate || '').match(/(-?[\d.]+)px\s+(-?[\d.]+)px/);
+    return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 0, y: 0 };
+  }
+
+  function drag(e, dir) {
+    var el = sel;
+    if (!el) return;
+    var r = el.getBoundingClientRect(), tr = trOf(el);
+    var x0 = e.clientX, y0 = e.clientY, moved = false;
+    function mv(ev) {
+      var dx = ev.clientX - x0, dy = ev.clientY - y0;
+      if (!moved) {
+        if (Math.abs(dx) + Math.abs(dy) < 3) return;
+        moved = true; snap(el);
+      }
+      if (!dir) {
+        setS(el, 'translate', (tr.x + dx) + 'px ' + (tr.y + dy) + 'px');
+        return;
+      }
+      var nw = r.width, nh = r.height, tx = tr.x, ty = tr.y;
+      if (dir.indexOf('e') > -1) nw += dx;
+      if (dir.indexOf('w') > -1) { nw -= dx; tx += dx; }
+      if (dir.indexOf('s') > -1) nh += dy;
+      if (dir.indexOf('n') > -1) { nh -= dy; ty += dy; }
+      setS(el, 'box-sizing', 'border-box');
+      setS(el, 'max-width', 'none');
+      setS(el, 'width', Math.max(24, nw) + 'px');
+      setS(el, 'height', Math.max(16, nh) + 'px');
+      setS(el, 'translate', tx + 'px ' + ty + 'px');
+    }
+    function up() {
+      window.removeEventListener('pointermove', mv);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+    }
+    window.addEventListener('pointermove', mv);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  }
+
+  function onUIDown(e) {
+    var h = e.target.closest && e.target.closest('.ed-h');
+    if (h) { e.preventDefault(); e.stopPropagation(); drag(e, h.getAttribute('data-d')); }
+  }
+
+  /* ── matn tahriri ── */
+  function unswim(el) {
+    var ws = el.querySelectorAll('.sw-w');
+    for (var i = 0; i < ws.length; i++) ws[i].replaceWith(document.createTextNode(ws[i].textContent));
+    el.normalize();
+  }
+  function startText(el) {
+    if (editing) stopText();
+    snap(el);
+    unswim(el);
+    el.setAttribute('data-swim', 'off');
+    el.contentEditable = 'true';
+    editing = el;
+    frame.classList.add('typing');
+    el.focus();
+    try {
+      var rg = document.createRange(); rg.selectNodeContents(el); rg.collapse(false);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(rg);
+    } catch (e) {}
+  }
+  function stopText() {
+    if (!editing) return;
+    editing.contentEditable = 'false';
+    editing.removeAttribute('contenteditable');
+    editing = null;
+    frame.classList.remove('typing');
+  }
+
+  /* ── CSS eksport ── */
+  function path(el) {
+    var p = [];
+    while (el && el.nodeType === 1 && el !== document.body) {
+      if (el.id) { p.unshift('#' + el.id); break; }
+      var i = 1, s = el;
+      while ((s = s.previousElementSibling)) i++;
+      p.unshift(el.tagName.toLowerCase() + ':nth-child(' + i + ')');
+      el = el.parentElement;
+    }
+    return p.join(' > ');
+  }
+  function copyCSS() {
+    var out = touched.map(function (el) {
+      var st = (el.getAttribute('style') || '').split(';').map(function (x) { return x.trim(); })
+        .filter(Boolean).join(';\n  ');
+      return st ? path(el) + ' {\n  ' + st + ';\n}' : '';
+    }).filter(Boolean).join('\n\n');
+    if (!out) { toast('Hali o‘zgarish yo‘q'); return; }
+    try {
+      navigator.clipboard.writeText(out).then(function () { toast('CSS nusxalandi · ' + touched.length + ' ta element'); },
+        function () { toast('Nusxalab bo‘lmadi'); });
+    } catch (e) { toast('Nusxalab bo‘lmadi'); }
+  }
+
+  /* ── hodisalar ── */
+  function inUI(t) { return ui && ui.contains(t); }
+
+  function onDown(e) {
+    if (!on || inUI(e.target)) return;
+    if (editing && editing.contains(e.target)) return;
+    if (editing) stopText();
+    var el = pick(e.target);
+    e.preventDefault(); e.stopPropagation();
+    if (!el) { select(null); return; }
+    select(el);
+    drag(e, null);
+  }
+  function onClick(e) {
+    if (!on || inUI(e.target)) return;
+    if (editing && editing.contains(e.target)) return;
+    e.preventDefault(); e.stopPropagation();
+  }
+  function onDbl(e) {
+    if (!on || inUI(e.target)) return;
+    var el = pick(e.target);
+    if (el && /^(H[1-6]|P|A|BUTTON|SPAN|DIV)$/.test(el.tagName)) { e.preventDefault(); select(el); startText(el); }
+  }
+  function onMove(e) {
+    if (!on || inUI(e.target)) { hoverEl = null; return; }
+    hoverEl = pick(e.target);
+  }
+  function typing(e) {
+    var t = e.target, tag = (t && t.tagName) || '';
+    return /INPUT|TEXTAREA|SELECT/.test(tag) || (t && t.isContentEditable);
+  }
+  function onKey(e) {
+    if (e.key === 'Escape' && on) {
+      if (editing) stopText(); else if (sel) select(null); else toggle(false);
+      return;
+    }
+    if (typing(e)) return;
+    if (on && (e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undo(); return; }
+    if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === 'e' || e.key === 'E')) toggle();
+  }
+
+  function place(box, el) {
+    if (!el || !el.isConnected) { box.style.display = 'none'; return; }
+    var r = el.getBoundingClientRect();
+    box.style.display = 'block';
+    box.style.transform = 'translate(' + r.left.toFixed(1) + 'px,' + r.top.toFixed(1) + 'px)';
+    box.style.width = r.width.toFixed(1) + 'px';
+    box.style.height = r.height.toFixed(1) + 'px';
+  }
+  function loop() {
+    if (!on) { raf = 0; return; }
+    place(frame, sel);
+    if (hoverEl && hoverEl !== sel) place(hovBox, hoverEl); else hovBox.style.display = 'none';
+    raf = requestAnimationFrame(loop);
+  }
+
+  function toggle(force) {
+    var want = force === undefined ? !on : !!force;
+    if (want === on) return on;
+    if (want) {
+      if (root.classList.contains('is-building')) { toast('Avval sahifa qurilib bo‘lsin ↓'); return false; }
+      if (!ui) buildUI();
+      on = true;
+      root.classList.add('ed-on');
+      ui.style.display = 'block';
+      document.addEventListener('pointerdown', onDown, true);
+      document.addEventListener('click', onClick, true);
+      document.addEventListener('dblclick', onDbl, true);
+      document.addEventListener('pointermove', onMove, { capture: true, passive: true });
+      select(null);
+      raf = requestAnimationFrame(loop);
+      toast('Tahrirlash rejimi · E yoki Esc — chiqish');
+    } else {
+      stopText();
+      on = false;
+      root.classList.remove('ed-on');
+      document.removeEventListener('pointerdown', onDown, true);
+      document.removeEventListener('click', onClick, true);
+      document.removeEventListener('dblclick', onDbl, true);
+      document.removeEventListener('pointermove', onMove, true);
+      sel = null; hoverEl = null;
+      if (ui) ui.style.display = 'none';
+    }
+    return on;
+  }
+
+  document.addEventListener('keydown', onKey);
+  window.xolEditor = { toggle: toggle, isOn: function () { return on; } };
+})();
+
+  </script>
+  <script>
+/* ===== extras ===== */
+/* ═══════════════════════════════════════════════════════════
+   xoleric — EXTRAS
+   1) Command palette: Ctrl/Cmd+K yoki "/" — bo'limlar, sahifalar, havolalar,
+      Tahrirlash rejimi. Mobilda pastki o'ng burchakda tugma.
+   2) Spotlight: loyiha kartalarida kursor ergashadigan yorug' nur.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var isMac = /Mac|iPhone|iPad/.test(navigator.platform || '');
+  var coarse = false;
+  try { coarse = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
+
+  var CMDS = [
+    { t: 'Bosh sahifa', s: 'bo‘lim', k: 'hero home bosh yuqori', go: '#hero' },
+    { t: 'Men haqimda', s: 'bo‘lim', k: 'about haqida', go: '#about' },
+    { t: 'Loyihalar', s: 'bo‘lim', k: 'work ishlar projects', go: '#work' },
+    { t: 'Aloqa', s: 'bo‘lim', k: 'contact bog‘lanish', go: '#contact' },
+    { t: 'APK Store', s: 'sahifa', k: 'store apk ilova', href: 'store.html' },
+    { t: 'CV / Rezyume', s: 'sahifa', k: 'cv resume rezyume', href: 'cv.html' },
+    { t: 'Tahrirlash rejimi', s: 'E', k: 'edit tahrir dizayn editor', fn: function () { if (window.xolEditor) window.xolEditor.toggle(true); } },
+    { t: 'Telegram', s: 'havola', k: 'telegram tg', ext: 'https://t.me/Wxoleric' },
+    { t: 'GitHub', s: 'havola', k: 'github git', ext: 'https://github.com/xolerc' },
+    { t: 'Email', s: 'havola', k: 'email pochta mail', ext: 'mailto:devxoleric@gmail.com' },
+    { t: 'Instagram', s: 'havola', k: 'instagram ig', ext: 'https://www.instagram.com/ixoleric' },
+    { t: 'YouTube', s: 'havola', k: 'youtube yt', ext: 'https://youtube.com/@xoleric' }
+  ];
+
+  var kp = null, input = null, list = null, items = [], idx = 0, lastFocus = null;
+
+  function build() {
+    kp = document.createElement('div');
+    kp.className = 'kp';
+    kp.setAttribute('data-swim', 'off');
+    kp.setAttribute('role', 'dialog');
+    kp.setAttribute('aria-modal', 'true');
+    kp.setAttribute('aria-label', 'Buyruqlar paneli');
+    kp.innerHTML =
+      '<div class="kp-bg"></div><div class="kp-box">' +
+      '<input class="kp-in" type="text" placeholder="Qayerga boramiz? (yozing…)" autocomplete="off" spellcheck="false" aria-label="Buyruq qidirish">' +
+      '<ul class="kp-list" role="listbox"></ul>' +
+      '<div class="kp-foot"><span>↑↓ tanlash</span><span>Enter — ochish</span><span>Esc — yopish</span></div></div>';
+    document.body.appendChild(kp);
+    input = kp.querySelector('.kp-in');
+    list = kp.querySelector('.kp-list');
+    kp.querySelector('.kp-bg').addEventListener('click', close);
+    input.addEventListener('input', render);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+      else if (e.key === 'Enter') { e.preventDefault(); run(items[idx]); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(); }
+      else if (e.key === 'Tab') { e.preventDefault(); }
+    });
+    list.addEventListener('click', function (e) {
+      var li = e.target.closest && e.target.closest('.kp-it');
+      if (li) run(items[+li.getAttribute('data-i')]);
+    });
+  }
+
+  function render() {
+    var q = input.value.trim().toLowerCase();
+    items = CMDS.filter(function (c) { return !q || (c.t + ' ' + c.k).toLowerCase().indexOf(q) > -1; });
+    idx = 0;
+    list.textContent = '';
+    if (!items.length) {
+      var e = document.createElement('li');
+      e.className = 'kp-empty'; e.textContent = 'Hech narsa topilmadi';
+      list.appendChild(e);
+      return;
+    }
+    items.forEach(function (c, i) {
+      var li = document.createElement('li');
+      li.className = 'kp-it' + (i === 0 ? ' on' : '');
+      li.setAttribute('role', 'option');
+      li.setAttribute('data-i', i);
+      var a = document.createElement('span'); a.textContent = c.t;
+      var b = document.createElement('small'); b.textContent = c.s;
+      li.appendChild(a); li.appendChild(b);
+      list.appendChild(li);
+    });
+  }
+
+  function move(d) {
+    if (!items.length) return;
+    var els = list.querySelectorAll('.kp-it');
+    els[idx].classList.remove('on');
+    idx = (idx + d + items.length) % items.length;
+    els[idx].classList.add('on');
+    els[idx].scrollIntoView({ block: 'nearest' });
+  }
+
+  function run(c) {
+    if (!c) return;
+    close();
+    if (c.fn) { c.fn(); return; }
+    if (c.ext) { window.open(c.ext, '_blank', 'noopener'); return; }
+    if (c.href) { window.location.href = c.href; return; }
+    if (c.go) {
+      if (c.go === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      var el = document.querySelector(c.go);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function open() {
+    if (!kp) build();
+    if (window.xolEditor && window.xolEditor.isOn()) return;
+    lastFocus = document.activeElement;
+    kp.classList.add('open');
+    input.value = '';
+    render();
+    input.focus();
+  }
+  function close() {
+    if (!kp || !kp.classList.contains('open')) return;
+    kp.classList.remove('open');
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+  }
+  function isOpen() { return kp && kp.classList.contains('open'); }
+
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (isOpen()) close(); else open();
+      return;
+    }
+    var t = e.target, tag = (t && t.tagName) || '';
+    if (e.key === '/' && !isOpen() && !/INPUT|TEXTAREA|SELECT/.test(tag) && !(t && t.isContentEditable)) {
+      e.preventDefault(); open();
+    }
+  });
+
+  /* header'dagi kichik tugma (desktop) + mobil fab */
+  function addHint() {
+    var ha = document.querySelector('.header-actions');
+    if (ha && !ha.querySelector('.kp-hint')) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'kp-hint';
+      b.setAttribute('data-swim', 'off');
+      b.setAttribute('aria-label', 'Buyruqlar panelini ochish');
+      b.textContent = isMac ? '⌘K' : 'Ctrl K';
+      b.addEventListener('click', open);
+      ha.insertBefore(b, ha.firstChild);
+    }
+    if (coarse && !document.querySelector('.kp-fab')) {
+      var f = document.createElement('button');
+      f.type = 'button';
+      f.className = 'kp-fab';
+      f.setAttribute('data-swim', 'off');
+      f.setAttribute('aria-label', 'Menyu');
+      f.textContent = 'Menyu';
+      f.addEventListener('click', open);
+      document.body.appendChild(f);
+    }
+  }
+  addHint();
+
+  /* ── spotlight ── */
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    var c = e.target.closest && e.target.closest('.project-card');
+    if (!c) return;
+    var r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
+    c.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
+  }, { passive: true });
+})();
+
+  </script>
+</body>
+</html>

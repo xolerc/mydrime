@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://xolerc.github.io/sitemap.xml

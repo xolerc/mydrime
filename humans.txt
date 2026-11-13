@@ -1,8 +1,0 @@
-/* TEAM */
-Developer: Xoleric
-Contact: https://t.me/Wxoleric
-Site: https://xolerc.github.io/mydrime/
-
-/* SITE */
-Portfolio of Xoleric.
-Stack: HTML, CSS, JavaScript, React, WebGL.

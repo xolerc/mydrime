@@ -215,38 +215,6 @@
     if (loaded && heroVisible && !reduceMotion && revealEl && !rafId) startMasterLoop();
   }, { passive: true });
 
-  /* ═══════════════════════════════════════
-     CROSSHAIR — kursor joylashuv nishoni.
-     Faqat haqiqiy sichqoncha (pointerType mouse) uchun, rAF bilan
-     trottle qilingan transform — kompozitor qatlami, arzon.
-     ═══════════════════════════════════════ */
-  (function initCrosshair() {
-    if (reduceMotion) return;
-    const ch = document.getElementById('crosshair');
-    if (!ch) return;
-    const chX = ch.querySelector('.ch-x');
-    const chY = ch.querySelector('.ch-y');
-    const chDot = ch.querySelector('.ch-dot');
-    if (!chX || !chY || !chDot) return;
-    let shown = false;
-    window.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      /* rAF siz — har bir harakatda darhol transform (nol kechikish) */
-      const x = e.clientX, y = e.clientY;
-      chX.style.transform = 'translateY(' + y + 'px)';
-      chY.style.transform = 'translateX(' + x + 'px)';
-      chDot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-      if (!shown) {
-        shown = true;
-        ch.classList.add('on');
-      }
-    }, { passive: true });
-    document.documentElement.addEventListener('mouseleave', () => {
-      shown = false;
-      ch.classList.remove('on');
-    });
-  })();
-
   if (!isFine) {
     document.addEventListener('touchstart', (e) => {
       const t = e.touches && e.touches[0];

@@ -1473,7 +1473,11 @@ main > .section,
 .grain-top,
 .spotlight,
 .scroll-progress,
-.hero-art-sheen {
+.hero-art-sheen,
+.crosshair,
+.ch-x,
+.ch-y,
+.ch-dot {
   display: none !important;
 }
 

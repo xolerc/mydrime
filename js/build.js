@@ -233,6 +233,21 @@
 
     function R() { return el.getBoundingClientRect(); }
 
+    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — elementlarga
+       faqat shaffof bezak: chegara, matn rangi va mayin yorug'lik. */
+    function rgba(hex, a) {
+      var h = hex.replace('#', '');
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+    }
+    function applyColor(p) {
+      el.style.background = 'transparent';
+      el.style.color = p[1];
+      el.style.borderColor = p[0];
+      el.style.boxShadow = '0 0 26px ' + rgba(p[0], 0.22);
+    }
+
     (async function run() {
       try {
         if (delay) await sleep(delay);
@@ -267,14 +282,12 @@
           await fly(B, function () { var r = R(); return [r.left + r.width / 2, r.top + r.height / 2]; }, 300);
           for (var i = 0; i < 6; i++) {
             var p = pick(PAL);
-            el.style.background = p[0];
-            el.style.color = p[1];
+            applyColor(p);
             B.label(p[0]);
             await sleep(110);
           }
           var fin = pick(PAL);
-          el.style.background = fin[0];
-          el.style.color = fin[1];
+          applyColor(fin);
           B.label('rang ' + fin[0]);
         })();
 

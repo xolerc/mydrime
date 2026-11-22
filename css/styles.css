@@ -1230,6 +1230,31 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
   -webkit-user-drag: none;
 }
 
+/* Zoom oynasida ham orqadagi rasm kursor bilan ochiladi. */
+.lb-reveal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('../images/bg.webp');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, #000 40%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Rasm markazga chiqqanda chiqadigan mayda yulduzsimon qumlar. */
+.lb-sparkles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
 .lb-hint {
   margin: 0;
   font-size: 12px;

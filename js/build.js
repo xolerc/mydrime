@@ -1,10 +1,11 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — BUILD SCROLL · AGENT KURSORLAR
+   xoleric — BUILD SCROLL · AGENT KURSORLAR v2
    Loaderdan keyin sahifa "toza" holatda boshlanadi: faqat fon.
    Pastga scroll qilinganda har bir element oldiga 3 ta agent
-   uchib keladi (tahlil / shakl / rang / matn): punktir reja ramka,
-   burchakdan oyna tortish + shakl o'zgarishi, rang sinovi va
-   harf-harf yozish. Natija (rang + shakl) saqlanadi.
+   uchib keladi: avval aylanib tahlil qiladi, keyin tasodifiy
+   burchakdan eni va bo'yi mustaqil tezlikda tortib ochiladi,
+   radius ikki marta almashadi, rang agenti aylanib rang sinaydi,
+   matn agenti notekis tezlikda harf-harf yozadi.
    SAFETY: prefers-reduced-motion, JS xatosi yoki app.js o'lsa —
    build o'chadi va sahifa normal ko'rinadi.
    ═══════════════════════════════════════════════════════════ */
@@ -43,6 +44,7 @@
     ['#1f2330', '#eceff4']
   ];
   var RAD = ['0px', '10px', '28px', '999px'];
+  /* To'rtta tasodifiy burchak — chapga ham, o'ngga ham tortadi. */
   var CORNERS = [
     { ox: 0, oy: 0 },
     { ox: 1, oy: 0 },
@@ -51,17 +53,23 @@
   ];
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-  function ease(t) { return 1 - Math.pow(1 - t, 3); }
-  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
-  function pick(a) { return a[Math.random() * a.length | 0]; }
   function rand(n) { return Math.random() * n; }
+  function pick(a) { return a[Math.random() * a.length | 0]; }
+  function jit(n) { return (Math.random() - 0.5) * 2 * n; }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
+  /* Inson qo'lidek: sekin boshlaydi, tezlashadi, oxirida sekinlashadi. */
+  function easeHuman(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  /* fn(eased, raw) — raw kerak: radius almashinuvi vaqtlarini bilish uchun. */
   function tween(ms, fn) {
     return new Promise(function (res) {
       var t0 = performance.now();
       (function frame(now) {
         var t = Math.min((now - t0) / ms, 1);
-        fn(ease(t));
+        fn(easeHuman(t), t);
         if (t < 1) requestAnimationFrame(frame);
         else res();
       })(t0);
@@ -129,6 +137,11 @@
       var i = node.querySelector('i');
       if (i) i.textContent = text;
     };
+    /* Bosish: kursor kichrayadi (tortishdan oldin va keyin). */
+    c.press = function (ms) {
+      node.classList.add('is-press');
+      return sleep(ms || 130).then(function () { node.classList.remove('is-press'); });
+    };
     c.fade = function () {
       node.style.transition = 'opacity .4s ease';
       node.style.opacity = '0';
@@ -138,13 +151,53 @@
     return c;
   }
 
-  /* Agent ma'lum bir nuqtaga uchadi (get() har kadrda yangi o'lcham oladi). */
-  function fly(c, get, ms) {
-    var x0 = c.x, y0 = c.y;
+  /* To'g'ri chiziq emas — egri (quadratic bezier) yo'l, yo'lda titrayish. */
+  function curveFly(c, get, ms, bend) {
+    var sx = c.x, sy = c.y;
+    var cx = 0, cy = 0, ready = false;
     return tween(ms, function (e) {
       var p = get();
-      c.x = x0 + (p[0] - x0) * e;
-      c.y = y0 + (p[1] - y0) * e;
+      if (!ready) {
+        var dx = p[0] - sx, dy = p[1] - sy;
+        var len = Math.sqrt(dx * dx + dy * dy) || 1;
+        cx = (sx + p[0]) / 2 - dy / len * bend;
+        cy = (sy + p[1]) / 2 + dx / len * bend;
+        ready = true;
+      }
+      var u = 1 - e;
+      var wobble = Math.sin(Math.PI * e);
+      c.x = u * u * sx + 2 * u * e * cx + e * e * p[0] + jit(1.3) * wobble;
+      c.y = u * u * sy + 2 * u * e * cy + e * e * p[1] + jit(1.3) * wobble;
+      place(c);
+    });
+  }
+
+  function pointAt(r, fx, fy) {
+    return [r.left + r.width * fx, r.top + r.height * fy];
+  }
+
+  /* Tahlil: agent element atrofida aylanib chiqadi (egri, sekin-tez-sekin). */
+  function orbit(c, getRect, rx, ry, ms, turns, phase) {
+    var sx = c.x, sy = c.y;
+    return tween(ms, function (e, raw) {
+      var r = getRect();
+      var a = phase + turns * Math.PI * 2 * e;
+      var ox = r.left + r.width / 2 + Math.cos(a) * r.width * rx + jit(1.6);
+      var oy = r.top + r.height / 2 + Math.sin(a) * r.height * ry + jit(1.6);
+      var blend = Math.min(1, raw * 5);
+      c.x = sx + (ox - sx) * blend;
+      c.y = sy + (oy - sy) * blend;
+      place(c);
+    });
+  }
+
+  /* Rang agenti uchun qisqa aylanish segmenti — to'xtashlar orasida. */
+  function orbitSegment(c, getRect, a0, a1, rx, ry, ms) {
+    return tween(ms, function (e) {
+      var r = getRect();
+      var a = a0 + (a1 - a0) * e;
+      c.x = r.left + r.width / 2 + Math.cos(a) * r.width * rx + jit(1.4);
+      c.y = r.top + r.height / 2 + Math.sin(a) * r.height * ry + jit(1.4);
       place(c);
     });
   }
@@ -153,8 +206,8 @@
     return el.querySelector('.hero-name, .section-title, .logo, h2, h1, .footer-note');
   }
 
-  /* Matn agenti harf-harf yozadi: ▍ kursori faqat yozilayotgan qismda. */
-  function typeText(node, text, per) {
+  /* Harf-harf, notekis tezlik: tinish belgilarida va tasodifan pauza. */
+  function typeText(node, text) {
     return new Promise(function (res) {
       var html = node.innerHTML;
       node.textContent = '';
@@ -167,16 +220,19 @@
       node.appendChild(rest);
       var i = 0;
       (function step() {
-        if (node.parentNode && i < text.length) {
-          i++;
-          typed.textContent = text.slice(0, i);
-          rest.textContent = text.slice(i);
-          setTimeout(step, per);
-        } else {
+        if (!node.parentNode || i >= text.length) {
           typed.classList.remove('is-typing');
-          node.innerHTML = html;
+          try { node.innerHTML = html; } catch (e) {}
           res();
+          return;
         }
+        var ch = text.charAt(i++);
+        typed.textContent = text.slice(0, i);
+        rest.textContent = text.slice(i);
+        var per = 24 + rand(52);
+        if (/[ .!?,:;—-]/.test(ch)) per += 80 + rand(120);
+        if (Math.random() < 0.08) per += 130 + rand(90);
+        setTimeout(step, per);
       })();
     });
   }
@@ -224,6 +280,7 @@
       A.fade(); B.fade(); C.fade();
       el.style.clipPath = 'none';
       el.style.willChange = '';
+      el.style.transition = '';
       el.classList.add('build-el-done');
       var i = active.indexOf(inst);
       if (i > -1) active.splice(i, 1);
@@ -233,8 +290,7 @@
 
     function R() { return el.getBoundingClientRect(); }
 
-    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — rang faqat
-       matnda saqlanadi, chegara/halo yo'q, elementlar shaffof. */
+    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — rang faqat matnda. */
     function applyColor(p) {
       el.style.background = 'transparent';
       el.style.color = p[1];
@@ -242,76 +298,110 @@
       el.style.boxShadow = '';
     }
 
+    /* Tortiladigan (harakatlanuvchi) burchak — tanlangan burchakning qarshisi. */
+    function moving(corner, r) {
+      return [corner.ox ? r.left : r.right, corner.oy ? r.top : r.bottom];
+    }
+
+    function insetFor(corner, px, py) {
+      var left = corner.ox ? 100 - px : 0;
+      var right = corner.ox ? 0 : 100 - px;
+      var top = corner.oy ? 100 - py : 0;
+      var bottom = corner.oy ? 0 : 100 - py;
+      return 'inset(' + top.toFixed(2) + '% ' + right.toFixed(2) + '% ' +
+             bottom.toFixed(2) + '% ' + left.toFixed(2) + '%)';
+    }
+
+    /* Eni va bo'yi ALOHIDA tezlikda 0 dan to'liq o'lchamgacha o'sadi. */
+    function pull(c, corner, radii, ms) {
+      var vx = 0.78 + rand(0.22);
+      var vy = 0.78 + rand(0.22);
+      var step = 0;
+      el.style.transition = 'border-radius .42s cubic-bezier(.2,.85,.3,1)';
+      return tween(ms, function (e, raw) {
+        var px = clamp(e * vx, 0, 1);
+        var py = clamp(e * vy, 0, 1);
+        el.style.clipPath = insetFor(corner, px * 100, py * 100);
+        var m = moving(corner, R());
+        c.x = m[0] + jit(1.7);
+        c.y = m[1] + jit(1.7);
+        place(c);
+        /* Tortish paytida radius ikki marta almashtiriladi. */
+        if (step < 1 && raw >= 0.34) { el.style.borderRadius = radii[0]; step = 1; }
+        if (step < 2 && raw >= 0.68) { el.style.borderRadius = radii[1]; step = 2; }
+        if (raw > 0.995 && el.style.borderRadius !== radii[2]) {
+          el.style.borderRadius = radii[2];
+        }
+      });
+    }
+
+    async function colorTour(c, stops) {
+      c.label('rang');
+      var base = rand(Math.PI * 2);
+      for (var i = 0; i < stops; i++) {
+        var a0 = base + (i / stops) * Math.PI * 2;
+        var a1 = base + ((i + 1) / stops) * Math.PI * 2;
+        await orbitSegment(c, R, a0, a1, 0.62, 0.62, 230 + rand(90));
+        var p = pick(PAL);
+        applyColor(p);
+        c.label(p[0]);
+        await sleep(90 + rand(70));
+      }
+      var fin = pick(PAL);
+      applyColor(fin);
+      c.label('rang ' + fin[0]);
+      await sleep(120);
+    }
+
     (async function run() {
       try {
         if (delay) await sleep(delay);
 
-        /* 1. Agentlar elementga uchib keladi — o'lchab, o'ylab turadi. */
-        var ua = 0.15 + rand(0.7), va = 0.15 + rand(0.7);
-        var ub = 0.2 + rand(0.6), vb = 0.2 + rand(0.6);
-        var uc = 0.2 + rand(0.6), vc = 0.2 + rand(0.6);
+        /* 1. Tahlil: 3 agent egri yo'llar bilan kelib, elementni aylanib o'rganadi. */
         await Promise.all([
-          fly(A, function () { var r = R(); return [r.left + r.width * ua, r.top + r.height * va]; }, 520),
-          fly(B, function () { var r = R(); return [r.left + r.width * ub, r.top + r.height * vb]; }, 600),
-          fly(C, function () { var r = R(); return [r.left + r.width * uc, r.top + r.height * vc]; }, 680)
+          curveFly(A, function () { return pointAt(R(), 0.12, 0.18); }, 620, 110),
+          curveFly(B, function () { return pointAt(R(), 0.88, 0.24); }, 690, -130),
+          curveFly(C, function () { return pointAt(R(), 0.22, 0.86); }, 750, 140)
         ]);
-        await sleep(180);
+        await Promise.all([
+          orbit(A, R, 0.64, 0.60, 950, 1.15, 0),
+          orbit(B, R, 0.50, 0.78, 1050, 1.30, 2.1),
+          orbit(C, R, 0.78, 0.52, 1150, 1.40, 4.2)
+        ]);
+        await sleep(140);
 
-        /* 2. Shakl agenti: tasodifiy burchakdan oynani tortadi. */
+        /* 2. Qaror: tasodifiy burchak, ikki oraliq radius va yakuniy radius. */
         var corner = pick(CORNERS);
-        var ox = corner.ox, oy = corner.oy;
+        var radii = [pick(RAD), pick(RAD), pick(RAD)];
+
+        /* 3. Shakl agenti burchakni bosadi, ushlab tortadi, keyin yana bosadi. */
+        await A.press(140);
         A.label('shakl');
-        await fly(A, function () {
-          var r = R();
-          return [ox ? r.right : r.left, oy ? r.bottom : r.top];
-        }, 320);
-        var radius = pick(RAD);
-        el.style.borderRadius = '50%';
-        el.style.transition = 'border-radius 1s cubic-bezier(.2,.9,.27,1)';
-        requestAnimationFrame(function () { el.style.borderRadius = radius; });
-
-        /* 3. Rang agenti: o'rtaga borib bir necha rangni sinaydi. */
-        B.label('rang');
-        var colorDone = (async function () {
-          await fly(B, function () { var r = R(); return [r.left + r.width / 2, r.top + r.height / 2]; }, 300);
-          for (var i = 0; i < 6; i++) {
-            var p = pick(PAL);
-            applyColor(p);
-            B.label(p[0]);
-            await sleep(110);
-          }
-          var fin = pick(PAL);
-          applyColor(fin);
-          B.label('rang ' + fin[0]);
-        })();
-
-        /* 4. Oyna burchakdan ochiladi; shakl agenti uning qirrasini sudraydi. */
-        var shapeDone = tween(900, function (e) {
-          var r = R(), p = (1 - e) * 100;
-          el.style.clipPath = 'inset(' + (oy ? p : 0) + '% ' + (ox ? 0 : p) + '% ' + (oy ? 0 : p) + '% ' + (ox ? p : 0) + '%)';
-          A.x = ox ? r.right - r.width * e : r.left + r.width * e;
-          A.y = oy ? r.bottom - r.height * e : r.top + r.height * e;
-          place(A);
-        });
-        await Promise.all([colorDone, shapeDone]);
+        await curveFly(A, function () { return moving(corner, R()); }, 300, 70);
+        A.node.classList.add('is-hold');
+        var shapeDone = pull(A, corner, radii, 1050);
+        var colorDone = colorTour(B, 6);
+        await Promise.all([shapeDone, colorDone]);
+        A.node.classList.remove('is-hold');
+        await A.press(110);
         A.label('tayyor');
         el.style.clipPath = 'none';
 
-        /* 5. Matn agenti boshiga borib, harf-harf yozadi. */
-        await fly(C, function () {
+        /* 4. Matn agenti boshiga egri yo'l bilan borib, notekis yozadi. */
+        await curveFly(C, function () {
           var r = R();
           var t = titleNode ? titleNode.getBoundingClientRect() : r;
           return [t.left + 14, Math.max(r.top + 14, t.top + t.height / 2)];
-        }, 380);
+        }, 400, 80);
         if (titleNode && savedHTML !== null) {
+          await C.press(90);
           C.label('yozyapti');
-          var text = titleNode.textContent.trim();
-          var per = Math.min(40, 1400 / Math.max(text.length, 1));
-          await typeText(titleNode, text, per);
+          await typeText(titleNode, titleNode.textContent.trim());
+          await C.press(90);
         }
         await sleep(120);
 
-        /* 6. Agentlar so'nadi — rang va shakl elementda qoladi. */
+        /* 5. Agentlar so'nadi — rang va shakl elementda qoladi. */
         finish();
       } catch (e) {
         finish();
@@ -373,8 +463,6 @@
         var el = targets[t];
         if (el.dataset.buildStarted) continue;
         var r = el.getBoundingClientRect();
-        /* Ekranning 90% chizig'idan o'tgan blok quriladi — tez
-           scrollda ham o'tkazib yuborilmaydi. */
         if (r.top < vh * 0.9) {
           buildElement(el, (n++) * 300);
         }
@@ -406,7 +494,6 @@
     var y = window.scrollY || 0;
     if ((d < 0 && y <= 0) || (d > 0 && y >= max - 1)) return;
     e.preventDefault();
-    /* Pastga — 2x sekin (qurilish); yuqoriga — normal tezlik. */
     window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
   }
 
@@ -491,7 +578,6 @@
     setTimeout(start, 320);
   } else {
     bootTimer = setInterval(boot, 80);
-    /* app.js o'lib qolsa, inline failsafe sahifani ochadi — biz ham qo'shilamiz. */
     failsafe = setTimeout(function () {
       if (!started && !done) abort();
     }, 5600);

@@ -1337,7 +1337,7 @@ html.is-building .site-footer.is-built {
   will-change: transform;
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
 }
-.build-cursor svg { display: block; width: 18px; height: 18px; }
+.build-cursor svg { display: block; width: 18px; height: 18px; transform-origin: 2px 2px; }
 .build-cursor i {
   position: absolute;
   left: 16px;
@@ -1349,7 +1349,15 @@ html.is-building .site-footer.is-built {
   font-style: normal;
   letter-spacing: .04em;
   white-space: nowrap;
+  transform-origin: 0 0;
 }
+.build-cursor svg,
+.build-cursor i { transition: transform .18s ease, opacity .18s ease; }
+/* Bosish — kursor kichrayadi (tortishdan oldin/so'ng). */
+.build-cursor.is-press svg { transform: scale(.5) rotate(-10deg); }
+.build-cursor.is-press i { transform: scale(.85); opacity: .75; }
+/* Ushlab turish — burchakni tortayotganda biroz kichrayadi. */
+.build-cursor.is-hold svg { transform: scale(.78) rotate(8deg); }
 
 /* Matn agenti yozayotgan harflar: oldida ▍ kursori turadi. */
 .build-typing.is-typing::after {

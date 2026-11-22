@@ -233,19 +233,13 @@
 
     function R() { return el.getBoundingClientRect(); }
 
-    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — elementlarga
-       faqat shaffof bezak: chegara, matn rangi va mayin yorug'lik. */
-    function rgba(hex, a) {
-      var h = hex.replace('#', '');
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      var n = parseInt(h, 16);
-      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
-    }
+    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — rang faqat
+       matnda saqlanadi, chegara/halo yo'q, elementlar shaffof. */
     function applyColor(p) {
       el.style.background = 'transparent';
       el.style.color = p[1];
-      el.style.borderColor = p[0];
-      el.style.boxShadow = '0 0 26px ' + rgba(p[0], 0.22);
+      el.style.borderColor = '';
+      el.style.boxShadow = '';
     }
 
     (async function run() {

@@ -1350,29 +1350,26 @@ html.is-building .site-footer.is-built {
   z-index: 60;
   pointer-events: none;
   will-change: transform;
-  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
 }
-.build-cursor svg { display: block; width: 18px; height: 18px; transform-origin: 2px 2px; }
+.build-cursor svg { display: block; width: 18px; height: 18px; }
 .build-cursor i {
   position: absolute;
   left: 16px;
   top: 14px;
   padding: 3px 7px;
   border-radius: 999px;
-  color: #05070c;
-  font: 600 11px/1 var(--font);
+  color: #000;
+  font: 600 11px/1 system-ui, sans-serif;
   font-style: normal;
-  letter-spacing: .04em;
   white-space: nowrap;
-  transform-origin: 0 0;
 }
 .build-cursor svg,
-.build-cursor i { transition: transform .18s ease, opacity .18s ease; }
-/* Bosish — kursor kichrayadi (tortishdan oldin/so'ng). */
-.build-cursor.is-press svg { transform: scale(.5) rotate(-10deg); }
-.build-cursor.is-press i { transform: scale(.85); opacity: .75; }
-/* Ushlab turish — burchakni tortayotganda biroz kichrayadi. */
-.build-cursor.is-hold svg { transform: scale(.78) rotate(8deg); }
+.build-cursor i { transition: transform .1s ease, opacity .1s ease; }
+/* Bosish — namunadagidek svg kichrayadi. */
+.build-cursor.is-press svg { transform: scale(.7); }
+.build-cursor.is-press i { opacity: .75; }
+/* Burchakni ushlab turishda ham biroz kichrayadi. */
+.build-cursor.is-hold svg { transform: scale(.78); }
 
 /* Matn agenti yozayotgan harflar: oldida ▍ kursori turadi. */
 .build-typing.is-typing::after {

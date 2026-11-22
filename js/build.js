@@ -1,11 +1,9 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — BUILD SCROLL · AGENT KURSORLAR v2
-   Loaderdan keyin sahifa "toza" holatda boshlanadi: faqat fon.
-   Pastga scroll qilinganda har bir element oldiga 3 ta agent
-   uchib keladi: avval aylanib tahlil qiladi, keyin tasodifiy
-   burchakdan eni va bo'yi mustaqil tezlikda tortib ochiladi,
-   radius ikki marta almashadi, rang agenti aylanib rang sinaydi,
-   matn agenti notekis tezlikda harf-harf yozadi.
+   xoleric — BUILD SCROLL · AGENT KURSORLAR v3
+   Kursorlar namunadagidek: kichik o'q + yorliq, egri yo'l,
+   sekin-tez-sekin, yo'lda titroq, bosishda kichrayish.
+   Tahlil paytida agentlar element ichida erkin kezadi.
+   Elementlar shaffof — global suv foni hech o'zgartirilmaydi.
    SAFETY: prefers-reduced-motion, JS xatosi yoki app.js o'lsa —
    build o'chadi va sahifa normal ko'rinadi.
    ═══════════════════════════════════════════════════════════ */
@@ -34,7 +32,6 @@
   var failsafe = 0;
   var resizeTimer = 0;
 
-  /* Demo palitrasi — agentlar shu ranglarni sinab ko'radi. */
   var PAL = [
     ['#7cf7ff', '#001318'],
     ['#ff5d8f', '#24010d'],
@@ -44,26 +41,20 @@
     ['#1f2330', '#eceff4']
   ];
   var RAD = ['0px', '10px', '28px', '999px'];
-  /* To'rtta tasodifiy burchak — chapga ham, o'ngga ham tortadi. */
+  /* Tasodifiy burchak: chap-tepa / o'ng-tepa / chap-past / o'ng-past. */
   var CORNERS = [
-    { ox: 0, oy: 0 },
-    { ox: 1, oy: 0 },
-    { ox: 0, oy: 1 },
-    { ox: 1, oy: 1 }
+    { ox: 0, oy: 0 }, { ox: 1, oy: 0 },
+    { ox: 0, oy: 1 }, { ox: 1, oy: 1 }
   ];
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function rand(n) { return Math.random() * n; }
   function pick(a) { return a[Math.random() * a.length | 0]; }
-  function jit(n) { return (Math.random() - 0.5) * 2 * n; }
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-  /* Inson qo'lidek: sekin boshlaydi, tezlashadi, oxirida sekinlashadi. */
   function easeHuman(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
-
-  /* fn(eased, raw) — raw kerak: radius almashinuvi vaqtlarini bilish uchun. */
   function tween(ms, fn) {
     return new Promise(function (res) {
       var t0 = performance.now();
@@ -75,12 +66,10 @@
       })(t0);
     });
   }
-
   function maxScroll() {
     return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
 
-  /* Loader ostida darhol yashiramiz — flash bo'lmasin. */
   root.classList.add('is-building');
   try { history.scrollRestoration = 'manual'; } catch (e) {}
   try { window.scrollTo(0, 0); } catch (e) {}
@@ -117,10 +106,10 @@
     if (hudPct) hudPct.classList.toggle('is-live', armed || finished);
   }
 
-  /* ── AGENT KURSORLAR ───────────────────────────────────── */
+  /* ── KURSORLAR ─────────────────────────────────────────── */
 
   function place(c) {
-    c.node.style.transform = 'translate3d(' + c.x.toFixed(1) + 'px,' + c.y.toFixed(1) + 'px,0)';
+    c.node.style.transform = 'translate(' + c.x.toFixed(1) + 'px,' + c.y.toFixed(1) + 'px)';
   }
 
   function cursor(label, hue) {
@@ -129,7 +118,7 @@
     node.setAttribute('aria-hidden', 'true');
     var color = 'hsl(' + hue + ' 90% 62%)';
     node.innerHTML =
-      '<svg viewBox="0 0 18 18" width="18" height="18"><path d="M2 1l13 7-6 1.5L7 16z" fill="' + color + '" stroke="#05070c" stroke-width="1.2" stroke-linejoin="round"/></svg>' +
+      '<svg viewBox="0 0 18 18" width="18" height="18"><path d="M2 1l13 7-6 1.5L7 16z" fill="' + color + '" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>' +
       '<i style="background:' + color + '">' + label + '</i>';
     document.body.appendChild(node);
     var c = { node: node, x: rand(window.innerWidth), y: rand(window.innerHeight) };
@@ -137,10 +126,9 @@
       var i = node.querySelector('i');
       if (i) i.textContent = text;
     };
-    /* Bosish: kursor kichrayadi (tortishdan oldin va keyin). */
     c.press = function (ms) {
       node.classList.add('is-press');
-      return sleep(ms || 130).then(function () { node.classList.remove('is-press'); });
+      return sleep(ms || 150).then(function () { node.classList.remove('is-press'); });
     };
     c.fade = function () {
       node.style.transition = 'opacity .4s ease';
@@ -151,23 +139,18 @@
     return c;
   }
 
-  /* To'g'ri chiziq emas — egri (quadratic bezier) yo'l, yo'lda titrayish. */
-  function curveFly(c, get, ms, bend) {
-    var sx = c.x, sy = c.y;
-    var cx = 0, cy = 0, ready = false;
+  /* Namunadagi fly: sinus egilishi + vaqt o'tishi bilan susayadigan titroq. */
+  function fly(c, get, ms) {
+    var x0 = c.x, y0 = c.y;
+    var bend = (Math.random() < 0.5 ? -1 : 1) * (0.12 + rand(0.2));
+    var phase = rand(6.28);
     return tween(ms, function (e) {
       var p = get();
-      if (!ready) {
-        var dx = p[0] - sx, dy = p[1] - sy;
-        var len = Math.sqrt(dx * dx + dy * dy) || 1;
-        cx = (sx + p[0]) / 2 - dy / len * bend;
-        cy = (sy + p[1]) / 2 + dx / len * bend;
-        ready = true;
-      }
-      var u = 1 - e;
-      var wobble = Math.sin(Math.PI * e);
-      c.x = u * u * sx + 2 * u * e * cx + e * e * p[0] + jit(1.3) * wobble;
-      c.y = u * u * sy + 2 * u * e * cy + e * e * p[1] + jit(1.3) * wobble;
+      var dx = p[0] - x0, dy = p[1] - y0;
+      var bow = Math.sin(Math.PI * e) * bend;
+      var j = Math.sin(e * 40 + phase) * 1.6 * (1 - e);
+      c.x = x0 + dx * e - dy * bow + j;
+      c.y = y0 + dy * e + dx * bow + j * 0.6;
       place(c);
     });
   }
@@ -176,37 +159,24 @@
     return [r.left + r.width * fx, r.top + r.height * fy];
   }
 
-  /* Tahlil: agent element atrofida aylanib chiqadi (egri, sekin-tez-sekin). */
-  function orbit(c, getRect, rx, ry, ms, turns, phase) {
-    var sx = c.x, sy = c.y;
-    return tween(ms, function (e, raw) {
-      var r = getRect();
-      var a = phase + turns * Math.PI * 2 * e;
-      var ox = r.left + r.width / 2 + Math.cos(a) * r.width * rx + jit(1.6);
-      var oy = r.top + r.height / 2 + Math.sin(a) * r.height * ry + jit(1.6);
-      var blend = Math.min(1, raw * 5);
-      c.x = sx + (ox - sx) * blend;
-      c.y = sy + (oy - sy) * blend;
-      place(c);
-    });
-  }
-
-  /* Rang agenti uchun qisqa aylanish segmenti — to'xtashlar orasida. */
-  function orbitSegment(c, getRect, a0, a1, rx, ry, ms) {
-    return tween(ms, function (e) {
-      var r = getRect();
-      var a = a0 + (a1 - a0) * e;
-      c.x = r.left + r.width / 2 + Math.cos(a) * r.width * rx + jit(1.4);
-      c.y = r.top + r.height / 2 + Math.sin(a) * r.height * ry + jit(1.4);
-      place(c);
-    });
+  /* Erkin kezish: agent element ichidagi tasodifiy nuqtalarga uchadi. */
+  function wander(c, getRect, ms, onStop) {
+    var end = performance.now() + ms;
+    return (async function () {
+      while (performance.now() < end) {
+        var u = 0.1 + rand(0.8), v = 0.1 + rand(0.8);
+        await fly(c, function () { return pointAt(getRect(), u, v); }, 320 + rand(380));
+        if (onStop) onStop();
+        await sleep(70 + rand(200));
+      }
+    })();
   }
 
   function titleInside(el) {
     return el.querySelector('.hero-name, .section-title, .logo, h2, h1, .footer-note');
   }
 
-  /* Harf-harf, notekis tezlik: tinish belgilarida va tasodifan pauza. */
+  /* Harf-harf, notekis tezlik — pauzalar bilan. */
   function typeText(node, text) {
     return new Promise(function (res) {
       var html = node.innerHTML;
@@ -274,7 +244,7 @@
 
     function R() { return el.getBoundingClientRect(); }
 
-    /* Suv foni (canvas#webgl-bg) global bo'lib qoladi — rang faqat matnda. */
+    /* FONGA TA'SIR YO'Q: element shaffof, rang faqat matnda. */
     function applyColor(p) {
       el.style.background = 'transparent';
       el.style.color = p[1];
@@ -282,9 +252,12 @@
       el.style.boxShadow = '';
     }
 
-    /* Tortiladigan (harakatlanuvchi) burchak — tanlangan burchakning qarshisi. */
-    function moving(corner, r) {
-      return [corner.ox ? r.left : r.right, corner.oy ? r.top : r.bottom];
+    /* Kursor ushlab tortadigan nuqta: oyna kengayayotgan qirra. */
+    function grip(corner, r, px, py) {
+      return [
+        corner.ox ? r.right - r.width * px : r.left + r.width * px,
+        corner.oy ? r.bottom - r.height * py : r.top + r.height * py
+      ];
     }
 
     function insetFor(corner, px, py) {
@@ -296,7 +269,7 @@
              bottom.toFixed(2) + '% ' + left.toFixed(2) + '%)';
     }
 
-    /* Eni va bo'yi ALOHIDA tezlikda 0 dan to'liq o'lchamgacha o'sadi. */
+    /* Eni va bo'yi alohida tezlikda 0 dan to'liq o'lchamgacha. */
     function pull(c, corner, radii, ms) {
       var vx = 0.78 + rand(0.22);
       var vy = 0.78 + rand(0.22);
@@ -306,86 +279,78 @@
         var px = clamp(e * vx, 0, 1);
         var py = clamp(e * vy, 0, 1);
         el.style.clipPath = insetFor(corner, px * 100, py * 100);
-        var m = moving(corner, R());
-        c.x = m[0] + jit(1.7);
-        c.y = m[1] + jit(1.7);
+        var g = grip(corner, R(), px, py);
+        var now = performance.now();
+        c.x = g[0] + Math.sin(now / 45) * 1.2;
+        c.y = g[1] + Math.cos(now / 55) * 1.2;
         place(c);
-        /* Tortish paytida radius ikki marta almashtiriladi. */
-        if (step < 1 && raw >= 0.34) { el.style.borderRadius = radii[0]; step = 1; }
-        if (step < 2 && raw >= 0.68) { el.style.borderRadius = radii[1]; step = 2; }
-        if (raw > 0.995 && el.style.borderRadius !== radii[2]) {
-          el.style.borderRadius = radii[2];
-        }
+        if (step < 1 && raw >= 0.45) { el.style.borderRadius = radii[0]; step = 1; }
+        if (step < 2 && raw >= 1) { el.style.borderRadius = radii[1]; step = 2; }
       });
-    }
-
-    async function colorTour(c, stops) {
-      c.label('rang');
-      var base = rand(Math.PI * 2);
-      for (var i = 0; i < stops; i++) {
-        var a0 = base + (i / stops) * Math.PI * 2;
-        var a1 = base + ((i + 1) / stops) * Math.PI * 2;
-        await orbitSegment(c, R, a0, a1, 0.62, 0.62, 230 + rand(90));
-        var p = pick(PAL);
-        applyColor(p);
-        c.label(p[0]);
-        await sleep(90 + rand(70));
-      }
-      var fin = pick(PAL);
-      applyColor(fin);
-      c.label('rang ' + fin[0]);
-      await sleep(120);
     }
 
     (async function run() {
       try {
         if (delay) await sleep(delay);
 
-        /* 1. Tahlil: 3 agent egri yo'llar bilan kelib, elementni aylanib o'rganadi. */
+        /* 1. Agentlar elementga uchib keladi. */
         await Promise.all([
-          curveFly(A, function () { return pointAt(R(), 0.12, 0.18); }, 620, 110),
-          curveFly(B, function () { return pointAt(R(), 0.88, 0.24); }, 690, -130),
-          curveFly(C, function () { return pointAt(R(), 0.22, 0.86); }, 750, 140)
+          fly(A, function () { return pointAt(R(), 0.12, 0.18); }, 620 + rand(220)),
+          fly(B, function () { return pointAt(R(), 0.86, 0.24); }, 690 + rand(220)),
+          fly(C, function () { return pointAt(R(), 0.22, 0.84); }, 750 + rand(220))
         ]);
-        await Promise.all([
-          orbit(A, R, 0.64, 0.60, 950, 1.15, 0),
-          orbit(B, R, 0.50, 0.78, 1050, 1.30, 2.1),
-          orbit(C, R, 0.78, 0.52, 1150, 1.40, 4.2)
-        ]);
-        await sleep(140);
 
-        /* 2. Qaror: tasodifiy burchak, ikki oraliq radius va yakuniy radius. */
+        /* 2. Tahlil: element ichida erkin kezib o'rganadi. */
+        await Promise.all([
+          wander(A, R, 900),
+          wander(B, R, 960),
+          wander(C, R, 1020)
+        ]);
+
+        /* 3. Qaror: tasodifiy burchak, ikki radius, yakuniy rang. */
         var corner = pick(CORNERS);
-        var radii = [pick(RAD), pick(RAD), pick(RAD)];
+        var radii = [pick(RAD), pick(RAD)];
 
-        /* 3. Shakl agenti burchakni bosadi, ushlab tortadi, keyin yana bosadi. */
-        await A.press(140);
+        /* 4. Shakl burchakni ushlab tortadi; rang va matn agentlari kezadi. */
         A.label('shakl');
-        await curveFly(A, function () { return moving(corner, R()); }, 300, 70);
+        await fly(A, function () { return grip(corner, R(), 0, 0); }, 450);
+        await A.press(150);
         A.node.classList.add('is-hold');
-        var shapeDone = pull(A, corner, radii, 1050);
-        var colorDone = colorTour(B, 6);
-        await Promise.all([shapeDone, colorDone]);
+        B.label('rang');
+        var shapeDone = pull(A, corner, radii, 1200);
+        var colorDone = (async function () {
+          await wander(B, R, 1200, function () {
+            var p = pick(PAL);
+            applyColor(p);
+            B.label(p[0]);
+          });
+          var fin = pick(PAL);
+          applyColor(fin);
+          B.label('rang ' + fin[0]);
+          await B.press(130);
+        })();
+        var textIdle = wander(C, R, 1050);
+        await Promise.all([shapeDone, colorDone, textIdle]);
         A.node.classList.remove('is-hold');
-        await A.press(110);
+        await A.press(130);
         A.label('tayyor');
         el.style.clipPath = 'none';
 
-        /* 4. Matn agenti boshiga egri yo'l bilan borib, notekis yozadi. */
-        await curveFly(C, function () {
+        /* 5. Matn agenti boshiga borib, harf-harf yozadi. */
+        await fly(C, function () {
           var r = R();
           var t = titleNode ? titleNode.getBoundingClientRect() : r;
           return [t.left + 14, Math.max(r.top + 14, t.top + t.height / 2)];
-        }, 400, 80);
+        }, 420);
         if (titleNode && savedHTML !== null) {
-          await C.press(90);
+          await C.press(100);
           C.label('yozyapti');
           await typeText(titleNode, titleNode.textContent.trim());
-          await C.press(90);
+          await C.press(100);
         }
         await sleep(120);
 
-        /* 5. Agentlar so'nadi — rang va shakl elementda qoladi. */
+        /* 6. Agentlar so'nadi — rang va shakl elementda qoladi. */
         finish();
       } catch (e) {
         finish();
@@ -399,25 +364,21 @@
       if (targets[i].id === 'hero') root.classList.add('is-hero-built');
     }
   }
-
   function finishAll() {
     for (var i = active.length - 1; i >= 0; i--) {
       try { active[i].finish(); } catch (e) {}
     }
   }
-
   function complete() {
     if (done) return;
     done = true;
     buildAll();
     updateHud(1, true);
     unbind();
-
     setTimeout(function () {
       if (layer) layer.classList.add('is-done');
       root.classList.add('is-build-done');
     }, 350);
-
     setTimeout(function () {
       finishAll();
       root.classList.remove('is-building');
@@ -427,7 +388,6 @@
       }, 900);
     }, 1050);
   }
-
   function sync() {
     if (!started || done) return;
     try {
@@ -435,38 +395,28 @@
       var y = clamp(window.scrollY || 0, 0, max);
       maxReached = Math.max(maxReached, y);
       var pct = max > 0 ? clamp(maxReached / max, 0, 1) : 1;
-
       if (!armed) {
         if ((window.scrollY || 0) > 2) armed = true;
         else { updateHud(0, false); return; }
       }
-
       var vh = window.innerHeight;
       var n = 0;
       for (var t = 0; t < targets.length; t++) {
         var el = targets[t];
         if (el.dataset.buildStarted) continue;
         var r = el.getBoundingClientRect();
-        if (r.top < vh * 0.9) {
-          buildElement(el, (n++) * 300);
-        }
+        if (r.top < vh * 0.9) buildElement(el, (n++) * 300);
       }
-
       updateHud(pct, false);
       if (maxReached >= max - 2) complete();
     } catch (e) {
       complete();
     }
   }
-
   function onScroll() {
     if (raf) return;
-    raf = requestAnimationFrame(function () {
-      raf = 0;
-      sync();
-    });
+    raf = requestAnimationFrame(function () { raf = 0; sync(); });
   }
-
   function onWheel(e) {
     if (!started || done || e.ctrlKey) return;
     var max = maxScroll();
@@ -480,13 +430,11 @@
     e.preventDefault();
     window.scrollBy(0, d * (d > 0 ? 0.5 : 1));
   }
-
   function onKey(e) {
     if (!started || done) return;
     var tag = (e.target && e.target.tagName) || '';
     if (/INPUT|TEXTAREA|SELECT/.test(tag) || (e.target && e.target.isContentEditable)) return;
     if ((e.key === ' ' || e.key === 'Spacebar') && /^A$|^BUTTON$/.test(tag)) return;
-
     var step = 0;
     if (e.key === 'ArrowDown') step = 20;
     else if (e.key === 'ArrowUp') step = -40;
@@ -496,33 +444,28 @@
     e.preventDefault();
     window.scrollBy(0, step);
   }
-
   function onResize() {
     if (!started || done) return;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(sync, 180);
   }
-
   function bind() {
     window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('keydown', onKey, false);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize, { passive: true });
   }
-
   function unbind() {
     window.removeEventListener('wheel', onWheel, false);
     window.removeEventListener('keydown', onKey, false);
     window.removeEventListener('scroll', onScroll, false);
     window.removeEventListener('resize', onResize, false);
   }
-
   function collect() {
     targets = [];
     var nodes = document.querySelectorAll('.site-header, main > .section, .site-footer');
     for (var i = 0; i < nodes.length; i++) targets.push(nodes[i]);
   }
-
   function start() {
     if (started || done) return;
     try {
@@ -538,7 +481,6 @@
       abort();
     }
   }
-
   function abort() {
     if (done) return;
     done = true;
@@ -549,7 +491,6 @@
     if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
     layer = null;
   }
-
   function boot() {
     if (started || done) return;
     if (!window.__xolericLoaded) return;
@@ -557,7 +498,6 @@
     clearTimeout(failsafe);
     setTimeout(start, 320);
   }
-
   if (window.__xolericLoaded) {
     setTimeout(start, 320);
   } else {

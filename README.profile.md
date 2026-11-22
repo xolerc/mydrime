@@ -20,7 +20,7 @@ tajribaga aylantiradi. Freelance loyihalar va hamkorlik uchun ochiq.
 - Telegram: [@Wxoleric](https://t.me/Wxoleric)
 - Email: devxoleric@gmail.com
 - GitHub: [@xolerc](https://github.com/xolerc)
-- Instagram: [@ixoleric](https://www.instagram.com/ixoleric)
+- Instagram: [@bonaparteuz](https://www.instagram.com/bonaparteuz/)
 - YouTube: [@xoleric](https://youtube.com/@xoleric)
 
 ## Ko'nikmalar

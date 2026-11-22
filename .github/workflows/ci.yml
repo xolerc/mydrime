@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  static-check:
+    name: Statik tekshiruv
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reponi olish
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: JS sintaksisi
+        run: |
+          for f in js/*.js; do
+            echo "checking $f"
+            node --check "$f"
+          done
+
+      - name: Tuzilma va havolalar
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          root = Path('.')
+          html = (root / 'index.html').read_text(encoding='utf-8')
+          fail = []
+
+          # AgentBuild integratsiyasi joyida bo'lishi kerak
+          if 'css/agent-build.css' not in html: fail.append('agent-build.css ulanmagan')
+          if 'js/agent-build.js' not in html: fail.append('agent-build.js ulanmagan')
+          if "classList.add('ab-on')" not in html: fail.append('ab-on sinfi yoq')
+
+          # data-ab faqat mavjud UI elementlarida, 8..25 ta
+          tags = len(re.findall(r'\sdata-ab(?=[\s>])', html))
+          if not 8 <= tags <= 25: fail.append(f'data-ab soni notogri: {tags}')
+
+          # Eski qo'lda yozilgan dvizhok havolalari qolmasligi kerak
+          for f in [*root.glob('*.html'), *root.glob('*.md')]:
+              if 'js/build.js' in f.read_text(encoding='utf-8'):
+                  fail.append(f'eski js/build.js havoli: {f}')
+
+          # Instagram havolasi yangilangan bo'lishi kerak
+          for f in [*root.glob('*.html'), *root.glob('*.md')]:
+              t = f.read_text(encoding='utf-8')
+              if 'instagram.com/ixoleric' in t: fail.append(f'eski Instagram: {f}')
+
+          # Mahalliy src/href fayllari mavjud bo'lishi kerak
+          for ref in re.findall(r'(?:src|href)="([^"]+)"', html):
+              if re.match(r'^(https?:|//|#|mailto:|data:)', ref): continue
+              local = ref.split('?', 1)[0]
+              if local and not (root / local).exists():
+                  fail.append(f'yoq fayl: {local}')
+
+          if fail:
+              print('\n'.join('XATO: ' + x for x in fail))
+              raise SystemExit(1)
+          print(f'OK: {tags} ta data-ab, barcha mahalliy fayllar mavjud')
+          PY

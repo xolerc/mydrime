@@ -1441,3 +1441,41 @@ html.is-building .site-footer.is-built {
   .build-hud { gap: 8px; padding: 9px 12px; font-size: 9px; letter-spacing: .14em; }
   .build-state { min-width: 96px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   TO'LIQ SHAFFOF UI — faqat global suv foni ko'rinadi.
+   Panellar, chiziqlar va tumanli overlaylar olib tashlandi.
+   ═══════════════════════════════════════════════════════════ */
+main > .section,
+.site-footer,
+.site-header,
+.hero-art,
+.hero-art-sheen,
+.about-bio,
+.blurb,
+.project-card,
+.card-art,
+.contact-box,
+.skip-link,
+.ee-toast,
+.social-icon,
+.orbit-icon,
+.build-hud {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Gorizontal chiziq va tumanli qatlamlar */
+.vignette,
+.grain-top,
+.spotlight,
+.scroll-progress,
+.hero-art-sheen {
+  display: none !important;
+}
+
+/* Agentlarning punktir "reja" ramkasi qurilish paytida qoladi */
+.build-ghost { display: block !important; }

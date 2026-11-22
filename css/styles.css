@@ -1293,15 +1293,14 @@ html.is-building .site-footer {
   clip-path: inset(0 0 100% 0);
   transform: translateY(26px);
   pointer-events: none;
-  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
+  transition: opacity .35s var(--ease-out), transform .85s var(--ease-out);
 }
+/* clip-path ni build.js har kadrda boshqaradi — unga CSS transition aralashmaydi */
 html.is-building main > .section.is-built,
 html.is-building .site-footer.is-built {
   opacity: 1;
-  clip-path: inset(0 0 0 0);
-  transform: none;
   pointer-events: auto;
-  transition: opacity .55s var(--ease-out), transform .85s var(--ease-out), clip-path .95s var(--ease-out);
+  transition: opacity .35s var(--ease-out), transform .85s var(--ease-out);
 }
 
 /* Kursor maydoni — joriy oyna o'lchamiga to'r bo'lib joylashadi. */
@@ -1316,57 +1315,54 @@ html.is-building .site-footer.is-built {
 }
 .build-layer.is-done { opacity: 0; }
 
-.build-grid { position: absolute; inset: 0; }
+/* Puntir "reja" ramka — agentlar element o'lchamini shu ichida oladi. */
+.build-ghost {
+  position: fixed;
+  z-index: 58;
+  pointer-events: none;
+  border: 1px dashed rgba(232, 236, 244, .75);
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(142, 160, 184, .18);
+}
 
-.bc {
+/* Uchta agent kursori: tahlil · shakl · rang · matn. */
+.build-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  z-index: 60;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
+}
+.build-cursor svg { display: block; width: 18px; height: 18px; }
+.build-cursor i {
   position: absolute;
-  left: var(--x, 50%);
-  top: var(--y, 50%);
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  opacity: 0;
-  transform: translateY(10px) scale(.35) rotate(var(--r, 0deg));
-  transition: opacity .35s ease, transform .65s var(--ease-spring);
-  transition-delay: var(--d, 0ms);
-  will-change: opacity, transform;
+  left: 16px;
+  top: 14px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #05070c;
+  font: 600 11px/1 var(--font);
+  font-style: normal;
+  letter-spacing: .04em;
+  white-space: nowrap;
 }
-.bc svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  fill: #e8ecf4;
-  stroke: #05070c;
-  stroke-width: 1.1;
-  stroke-linejoin: round;
-}
-.bc.on {
-  opacity: .86;
-  transform: translateY(0) scale(1) rotate(0deg);
-  filter: drop-shadow(0 0 7px rgba(232, 236, 244, .45));
-}
-.bc::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  margin: -3px;
-  border: 1px solid rgba(232, 236, 244, .9);
-  border-radius: 50%;
-  opacity: 0;
-  transform: scale(.4);
-}
-.bc.on::after {
-  animation: bc-ring .9s cubic-bezier(.2, .8, .3, 1) forwards;
-  animation-delay: calc(var(--d, 0ms) + 80ms);
-}
-.bc.quiet::after { animation: none; }
 
-@keyframes bc-ring {
-  0% { opacity: .85; transform: scale(.5); }
-  100% { opacity: 0; transform: scale(5); }
+/* Matn agenti yozayotgan harflar: oldida ▍ kursori turadi. */
+.build-typing.is-typing::after {
+  content: '▍';
+  margin-left: 1px;
+  color: currentColor;
+  animation: buildCaret .8s steps(1) infinite;
+}
+.build-typing-rest { visibility: hidden; }
+
+@keyframes buildCaret {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
 }
 
 /* HUD — scroll holati va progress. */
@@ -1439,7 +1435,9 @@ html.is-building .site-footer.is-built {
 }
 
 @media (max-width: 768px) {
-  .bc { width: 17px; height: 17px; margin: -8.5px 0 0 -8.5px; }
+  .build-cursor { width: 15px; height: 15px; }
+  .build-cursor svg { width: 15px; height: 15px; }
+  .build-cursor i { left: 13px; top: 12px; font-size: 10px; }
   .build-hud { gap: 8px; padding: 9px 12px; font-size: 9px; letter-spacing: .14em; }
   .build-state { min-width: 96px; }
 }

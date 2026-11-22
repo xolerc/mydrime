@@ -175,6 +175,8 @@
       loaded = true;
       window.__xolericLoaded = true; /* tells the inline failsafe we're alive */
       loaderEl.classList.add('hidden');
+      /* AgentBuild faqat loader yo'qolgach ishga tushadi */
+      if (window.__startAgentBuild) window.__startAgentBuild();
       initMainScene();
     }, hideWait);
   }

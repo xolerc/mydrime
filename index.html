@@ -3,6 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- AgentBuild: CSS'dan oldin qo'yiladi, aks holda kontent bir kadr ko'rinib qoladi -->
+  <script>
+    document.documentElement.classList.add('ab-on');
+    window.__startAgentBuild = function () {
+      if (window.__abStarted) return;
+      window.__abStarted = true;
+      var b = document.body;
+      if (b) b.setAttribute('data-swim', 'off');
+      document.addEventListener('agentbuild:done', function () {
+        if (b) b.removeAttribute('data-swim');
+      }, { once: true });
+      if (window.AgentBuild) window.AgentBuild.init({ targets: '[data-ab]' });
+      else document.documentElement.classList.remove('ab-on');
+    };
+  </script>
   <meta name="theme-color" content="#05070c">
   <meta name="color-scheme" content="dark">
   <title>Xoleric — Frontend Dasturchi | Rasmiy Portfolio</title>
@@ -71,6 +86,9 @@
   <meta name="twitter:image" content="https://xolerc.github.io/mydrime/og-image.png">
 
   <link rel="stylesheet" href="css/styles.css?v=20261122-demo2">
+  <link rel="stylesheet" href="css/agent-build.css">
+  <!-- Foydalanuvchi punktir ramka istamaydi: tahlil chizig'i o'chiriladi -->
+  <style>.ab-ghost { display: none !important; }</style>
 </head>
 <body>
   <canvas id="webgl-bg" aria-hidden="true"></canvas>
@@ -90,7 +108,7 @@
   <!-- ═══ SCROLL PROGRESS + HEADER ═══ -->
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
-  <header class="site-header" id="siteHeader">
+  <header class="site-header" id="siteHeader" data-ab>
     <a class="logo" href="#hero">xoleric<span class="logo-dot">.</span></a>
     <nav class="site-nav" aria-label="Asosiy">
       <a href="#work">ishlar</a>
@@ -111,15 +129,15 @@
 
     <!-- ═══ HERO — corner art (blur reveal) + orbit ═══ -->
     <section id="hero" class="section hero" role="region" aria-label="Kirish">
-      <div class="hero-art" id="heroArt" role="button" tabindex="0" aria-label="Portretni kattalashtirib ko'rish" aria-haspopup="dialog" aria-controls="portraitLB">
+      <div class="hero-art" id="heroArt" data-ab role="button" tabindex="0" aria-label="Portretni kattalashtirib ko'rish" aria-haspopup="dialog" aria-controls="portraitLB">
         <div class="hero-art-layer layer-bg"></div>
         <div class="hero-art-layer layer-main" id="layerMain"></div>
         <div class="reveal" id="reveal"></div>
         <div class="hero-art-sheen"></div>
       </div>
       <div class="hero-content">
-        <h1 class="hero-name">XOLERIC</h1>
-        <div class="hero-cta">
+        <h1 class="hero-name" data-ab>XOLERIC</h1>
+        <div class="hero-cta" data-ab>
           <a class="btn btn-primary btn-lg" href="#work">Ishlarni ko'rish</a>
           <a class="btn btn-ghost btn-lg" href="#contact">Bog'lanish</a>
         </div>
@@ -132,17 +150,17 @@
     <!-- ═══ ABOUT ═══ -->
     <section id="about" class="section about" role="region" aria-label="Men haqimda">
       <div class="about-content">
-        <p class="about-bio"><strong>Xoleric kim?</strong> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. HTML, CSS, JavaScript, React va WebGL texnologiyalari bilan tez hamda jonli veb-saytlar yaratadi. Ushbu sahifa — Xoleric'ning rasmiy portfoliosi.</p>
+        <p class="about-bio" data-ab><strong>Xoleric kim?</strong> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. HTML, CSS, JavaScript, React va WebGL texnologiyalari bilan tez hamda jonli veb-saytlar yaratadi. Ushbu sahifa — Xoleric'ning rasmiy portfoliosi.</p>
         <div class="about-blurbs">
-          <div class="blurb">
+          <div class="blurb" data-ab>
             <h3>Ko'nikmalar</h3>
             <p>Toza semantik HTML, zamonaviy CSS tizimlar, vanilla va framework JavaScript hamda har qanday qurilmada tez ishlaydigan motion-dizayn.</p>
           </div>
-          <div class="blurb">
+          <div class="blurb" data-ab>
             <h3>Jarayon</h3>
             <p>Dizayn-tokenlar → komponentli fikrlash → interaksiya xoreografiyasi → Lighthouse. Ko'rinishi kabi his qilinishi ham yoqimli interfeyslar topshiraman.</p>
           </div>
-          <div class="blurb">
+          <div class="blurb" data-ab>
             <h3>Mavjudlik</h3>
             <p>Freelance loyihalar, hamkorlik va full-time rollar uchun ochiqman. Telegram yoki email orqali tez javob beraman.</p>
           </div>
@@ -152,7 +170,7 @@
 
     <!-- ═══ WORK ═══ -->
     <section id="work" class="section work" role="region" aria-label="Loyihalar">
-      <header class="section-head">
+      <header class="section-head" data-ab>
         <p class="eyebrow">tanlangan ishlar</p>
         <h2 class="section-title">Loyihalar</h2>
         <p class="section-sub"><span class="dot-live"></span>GitHub'dan jonli — har push bilan yangilanadi</p>
@@ -162,7 +180,7 @@
 
     <!-- ═══ CONTACT ═══ -->
     <section id="contact" class="section contact" role="region" aria-label="Aloqa">
-      <div class="contact-box">
+      <div class="contact-box" data-ab>
         <h2 class="section-title">Keling, <span class="highlight">birga</span> yaratamiz</h2>
         <p class="contact-lead">Loyiha g'oyangiz, hamkorlik taklifi bormi yoki shunchaki salomlashmoqchimisiz? Istalgan vaqtda yozing.</p>
         <div class="contact-links">
@@ -198,8 +216,8 @@
       </a>
       -->
     </div>
-    <p class="footer-note">© <span id="year">2026</span> xoleric · qiziqish va kofe bilan yaratilgan</p>
-    <a class="footer-top" href="#hero">yuqoriga qaytish ↑</a>
+    <p class="footer-note" data-ab>© <span id="year">2026</span> xoleric · qiziqish va kofe bilan yaratilgan</p>
+    <a class="footer-top" href="#hero" data-ab>yuqoriga qaytish ↑</a>
   </footer>
 
   <!-- ═══ TOAST ═══ -->
@@ -222,6 +240,8 @@
         if (h) h.classList.add('visible');
         var v = document.getElementById('vignette');
         if (v) v.classList.add('visible');
+        /* app.js ishlamasa ham agentlar ishga tushadi yoki kontent ochiladi */
+        if (window.__startAgentBuild) window.__startAgentBuild();
       };
       if (window.addEventListener) {
         window.addEventListener('load', function () { setTimeout(hide, 4000); });
@@ -245,6 +265,7 @@
   <script src="js/app.js?v=20261012-opt"></script>
   <script src="js/text-swim.js?v=20261025-swim"></script>
   <script src="js/lightbox.js?v=20261122-lb2"></script>
-  <script src="js/build.js?v=20261122-demo2"></script>
+  <!-- AgentBuild dvizhoki — aynan paketdagi kodi, o'zgartirilmagan -->
+  <script src="js/agent-build.js"></script>
 </body>
 </html>

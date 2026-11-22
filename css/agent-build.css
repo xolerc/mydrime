@@ -1,0 +1,12 @@
+/* AgentBuild — majburiy CSS. Sayt CSS'idan KEYIN ulang. */
+/* JS ishlamasa kontent yashirin qolmasligi uchun: html.ab-on faqat <head> dagi inline skript qo'yadi */
+.ab-on [data-ab]:not(.ab-done){visibility:hidden}
+.ab-on [data-ab].ab-reveal:not(.ab-done){visibility:visible}
+.ab-skin{position:absolute;overflow:hidden;width:0;height:0;pointer-events:none;visibility:visible!important;
+  border-radius:50%;transition:border-radius .5s ease,background-color .12s,opacity .3s;z-index:1}
+.ab-ghost{position:fixed;z-index:2147482999;border:1px dashed currentColor;color:#7cf7ff;pointer-events:none;visibility:visible!important}
+.ab-cur{position:fixed;left:0;top:0;width:18px;height:18px;pointer-events:none;z-index:2147483000;visibility:visible!important}
+.ab-cur svg{transition:transform .1s}.ab-cur.ab-press svg{transform:scale(.7)}
+.ab-cur i{position:absolute;left:16px;top:14px;font:600 11px/1 system-ui,sans-serif;padding:3px 7px;border-radius:99px;color:#000;white-space:nowrap;font-style:normal}
+.ab-w.ab-typing::after{content:"\258D"}
+.ab-g{visibility:hidden}

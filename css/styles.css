@@ -1501,14 +1501,16 @@ main > .section,
   display: none !important;
 }
 
-/* HERO — hech qanday ramka, Outline yoki yumaloq chet qolmasin. */
+/* RASIM CHETLARI — keskin qirra yo'q, yumshoq bukilgan organik shakl.
+   Chegara/outline/soya qo'shilmaydi — faqat rasm o'zi yumaloqlanadi. */
 .hero-art,
 .hero-art:hover,
 .hero-art:focus,
-.hero-art:focus-visible {
+.hero-art:focus-visible,
+.lb-figure {
   border: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  border-radius: 34px 46px 38px 42px / 42px 36px 48px 40px !important;
   -webkit-tap-highlight-color: transparent !important;
 }

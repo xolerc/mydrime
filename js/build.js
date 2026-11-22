@@ -246,20 +246,6 @@
     var rect = el.getBoundingClientRect();
     if (rect.width < 10 || rect.height < 10) return;
 
-    var ghost = document.createElement('div');
-    ghost.className = 'build-ghost';
-    document.body.appendChild(ghost);
-    var live = true;
-    (function track() {
-      if (!live) return;
-      var r = el.getBoundingClientRect();
-      ghost.style.left = r.left + 'px';
-      ghost.style.top = r.top + 'px';
-      ghost.style.width = r.width + 'px';
-      ghost.style.height = r.height + 'px';
-      requestAnimationFrame(track);
-    })();
-
     var hue = rand(360) | 0;
     var A = cursor('tahlil', hue);
     var B = cursor('tahlil', (hue + 120) % 360);
@@ -272,8 +258,6 @@
     function finish() {
       if (cleaned) return;
       cleaned = true;
-      live = false;
-      if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
       if (titleNode && savedHTML !== null) {
         try { titleNode.innerHTML = savedHTML; } catch (e) {}
       }

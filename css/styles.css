@@ -1315,16 +1315,6 @@ html.is-building .site-footer.is-built {
 }
 .build-layer.is-done { opacity: 0; }
 
-/* Puntir "reja" ramka — agentlar element o'lchamini shu ichida oladi. */
-.build-ghost {
-  position: fixed;
-  z-index: 58;
-  pointer-events: none;
-  border: 1px dashed rgba(232, 236, 244, .75);
-  border-radius: 14px;
-  box-shadow: 0 0 20px rgba(142, 160, 184, .18);
-}
-
 /* Uchta agent kursori: tahlil · shakl · rang · matn. */
 .build-cursor {
   position: fixed;
@@ -1489,5 +1479,14 @@ main > .section,
   display: none !important;
 }
 
-/* Agentlarning punktir "reja" ramkasi qurilish paytida qoladi */
-.build-ghost { display: block !important; }
+/* HERO — hech qanday ramka, Outline yoki yumaloq chet qolmasin. */
+.hero-art,
+.hero-art:hover,
+.hero-art:focus,
+.hero-art:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  -webkit-tap-highlight-color: transparent !important;
+}

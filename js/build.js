@@ -32,13 +32,14 @@
   var failsafe = 0;
   var resizeTimer = 0;
 
+  /* [yorliqdagi hex, suv fonida o'qiladigan matn rangi] */
   var PAL = [
-    ['#7cf7ff', '#001318'],
-    ['#ff5d8f', '#24010d'],
-    ['#ffd166', '#1c1400'],
-    ['#8b7cff', '#0d0924'],
-    ['#3ddc97', '#001a0f'],
-    ['#1f2330', '#eceff4']
+    ['#7cf7ff', '#dffcff'],
+    ['#ff5d8f', '#ffd9e6'],
+    ['#ffd166', '#fff2c9'],
+    ['#8b7cff', '#e2dcff'],
+    ['#3ddc97', '#d3ffe9'],
+    ['#eceff4', '#eceff4']
   ];
   var RAD = ['0px', '10px', '28px', '999px'];
   /* Tasodifiy burchak: chap-tepa / o'ng-tepa / chap-past / o'ng-past. */
@@ -224,6 +225,7 @@
     var savedHTML = titleNode ? titleNode.innerHTML : null;
     var inst = { finish: null };
     var cleaned = false;
+    var finalRadius = '0px';
 
     function finish() {
       if (cleaned) return;
@@ -232,7 +234,9 @@
         try { titleNode.innerHTML = savedHTML; } catch (e) {}
       }
       A.fade(); B.fade(); C.fade();
-      el.style.clipPath = 'none';
+      /* Tanlangan shakl clip-path ichida saqlanadi — shaffof bo'lsa ham
+         burchaklar yumaloq bo'lib ko'rinadi. */
+      el.style.clipPath = 'inset(0% 0% 0% 0% round ' + finalRadius + ')';
       el.style.willChange = '';
       el.style.transition = '';
       el.classList.add('build-el-done');
@@ -248,6 +252,8 @@
     function applyColor(p) {
       el.style.background = 'transparent';
       el.style.color = p[1];
+      /* Sarlavhalarning o'z rangi bor — rang agenti ularga ham qo'llanadi. */
+      if (titleNode) titleNode.style.color = p[1];
       el.style.borderColor = '';
       el.style.boxShadow = '';
     }
@@ -260,13 +266,14 @@
       ];
     }
 
-    function insetFor(corner, px, py) {
+    /* clip-path ichida round radius — shakl o'zgarishi ko'rinadi. */
+    function insetFor(corner, px, py, radius) {
       var left = corner.ox ? 100 - px : 0;
       var right = corner.ox ? 0 : 100 - px;
       var top = corner.oy ? 100 - py : 0;
       var bottom = corner.oy ? 0 : 100 - py;
       return 'inset(' + top.toFixed(2) + '% ' + right.toFixed(2) + '% ' +
-             bottom.toFixed(2) + '% ' + left.toFixed(2) + '%)';
+             bottom.toFixed(2) + '% ' + left.toFixed(2) + '% round ' + radius + ')';
     }
 
     /* Eni va bo'yi alohida tezlikda 0 dan to'liq o'lchamgacha. */
@@ -274,18 +281,24 @@
       var vx = 0.78 + rand(0.22);
       var vy = 0.78 + rand(0.22);
       var step = 0;
-      el.style.transition = 'border-radius .42s cubic-bezier(.2,.85,.3,1)';
+      var radius = '0px';
       return tween(ms, function (e, raw) {
         var px = clamp(e * vx, 0, 1);
         var py = clamp(e * vy, 0, 1);
-        el.style.clipPath = insetFor(corner, px * 100, py * 100);
+
+        /* Tortish paytida radius ikki marta almashtiriladi. */
+        if (step < 1 && raw >= 0.45) { radius = radii[0]; step = 1; }
+        if (step < 2 && raw >= 1) { radius = radii[1]; step = 2; }
+
+        el.style.clipPath = insetFor(corner, px * 100, py * 100, radius);
+        el.style.borderRadius = radius;
+        finalRadius = radius;
+
         var g = grip(corner, R(), px, py);
         var now = performance.now();
         c.x = g[0] + Math.sin(now / 45) * 1.2;
         c.y = g[1] + Math.cos(now / 55) * 1.2;
         place(c);
-        if (step < 1 && raw >= 0.45) { el.style.borderRadius = radii[0]; step = 1; }
-        if (step < 2 && raw >= 1) { el.style.borderRadius = radii[1]; step = 2; }
       });
     }
 
@@ -334,7 +347,6 @@
         A.node.classList.remove('is-hold');
         await A.press(130);
         A.label('tayyor');
-        el.style.clipPath = 'none';
 
         /* 5. Matn agenti boshiga borib, harf-harf yozadi. */
         await fly(C, function () {

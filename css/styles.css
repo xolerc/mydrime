@@ -1324,6 +1324,7 @@ html.is-building .site-footer {
 html.is-building main > .section.is-built,
 html.is-building .site-footer.is-built {
   opacity: 1;
+  transform: none;
   pointer-events: auto;
   transition: opacity .35s var(--ease-out), transform .85s var(--ease-out);
 }

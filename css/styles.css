@@ -1372,6 +1372,27 @@ html.is-building .site-footer.is-built {
 /* Burchakni ushlab turishda ham biroz kichrayadi. */
 .build-cursor.is-hold svg { transform: scale(.78); }
 
+/* Namuna strategiyasi: oyna va yozilayotgan matn FAQAT element ichida.
+   Global suv foniga ta'siri yo'q — element o'chganda ular ham yo'qoladi. */
+.build-skin {
+  position: absolute;
+  left: auto;
+  top: auto;
+  width: 0;
+  height: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  transition: border-radius .5s ease, background .12s ease;
+}
+.build-text-layer {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* Matn agenti yozayotgan harflar: oldida ▍ kursori turadi. */
 .build-typing.is-typing::after {
   content: '▍';

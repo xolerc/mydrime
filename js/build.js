@@ -1,26 +1,24 @@
 /* ═══════════════════════════════════════════════════════════
-   xoleric — BUILD SCROLL · AGENT KURSORLAR
-   Namuna bilan bir xil ish printipi:
+   xoleric — BUILD SCROLL · NAMUNA STRATEGIYASI
+   Asosiy suv foni (canvas#webgl-bg) hech qachon o'zgarishsiz.
 
-   1) 3 agent egri yo'l bilan element ichiga uchadi.
-   2) 900 ms element ichida erkin kezib TAHLIL qiladi.
-   3) Qaror: tasodifiy burchak + boshlang'ich rang + 2 radius.
+   Namuna bilan bir xil tartib:
+   1) Elementdagi HAQIQIY matn yashiriladi (faqat qurilish paytida).
+   2) 3 agent egri yo'l bilan kelib, 900 ms erkin kezib tahlil qiladi.
+   3) Qaror: tasodifiy burchak, boshlang'ich rang, oraliq va oxirgi radius.
    4) Shakl agenti burchakka boradi, BOSADI (kichrayadi).
-   5) Rang agenti aylanib har to'xtashda rang sinaydi (hex yorliq),
-      Matn agenti tayyor bo'lguncha kutib turadi.
+   5) Rang agenti to'xtashlarda yangi rang sinaydi (hex yorliq),
+      matn agenti kutib turadi.
    6) Radius 450 va 1000 ms da ikki marta almashadi.
-   7) HAQIQIY O'LCHAM: eni 1200 ms, bo'yi 1500 ms — alohida
-      tezliklarda 0 dan to'liq o'lchamgacha tortiladi; kursor
-      harakatlanayotgan qirrali ushlab boradi.
-   8) Yana BOSADI → "tayyor". Rang agenti yakuniy rangni tanlaydi.
-   9) Matn agenti boshiga borib, ▍ kursori bilan harf-harf yozadi.
-  10) Oyna to'liq ochiladi, agentlar so'nadi, shakl qoladi.
+   7) Oyna eni 1200 ms, bo'yi 1500 ms — alohida tezliklarda ochiladi,
+      kursor harakatlanayotgan qirrali ushlab boradi.
+   8) Yana BOSADI → "tayyor", yakuniy rang tanlanadi.
+   9) Matn agenti sarlavha o'rniga kelib, ▍ bilan harf-harf YOZADI —
+      shundan keyingina haqiqiy UI matni ko'rinadi (ikki marta yozilmaydi).
+  10) Agentlar so'nadi, haqiqiy UI qaytadi, tanlangan shakl qoladi.
 
-   Global suv foni (canvas#webgl-bg) hech o'zgartirilmaydi: rangli
-   qatlam faqat element ichida, qurilish vaqtida paydo bo'lib,
-   oxirida yana shaffof holatga qaytadi.
-   SAFETY: prefers-reduced-motion, JS xatosi yoki app.js o'lsa —
-   build o'chadi va sahifa normal ko'rinadi.
+   SAFETY: reduced-motion, JS xatosi, app.js o'lmagani, ctx fail —
+   hammasida sahifa normal ko'rinishga qaytadi.
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -32,6 +30,9 @@
   var root = document.documentElement;
   var started = false;
   var done = false;
+  var finalizing = false;
+  var cleanedAll = false;
+  var cleanupTimer = 0;
   var armed = false;
   var targets = [];
   var layer = null;
@@ -47,14 +48,15 @@
   var failsafe = 0;
   var resizeTimer = 0;
 
-  /* [skin foni, skin ichidagi matn rangi] — namunadagi palitra. */
+  /* [yorliqdagi hex, suv fonida o'qiladigan matn rangi].
+     FON RANGLANMAYDI — faqat yozilayotgan matn rangi sinaladi. */
   var PAL = [
-    ['#7cf7ff', '#001318'],
-    ['#ff5d8f', '#24010d'],
-    ['#ffd166', '#1c1400'],
-    ['#8b7cff', '#0d0924'],
-    ['#3ddc97', '#001a0f'],
-    ['#1f2330', '#eceff4']
+    ['#7cf7ff', '#dffcff'],
+    ['#ff5d8f', '#ffd9e6'],
+    ['#ffd166', '#fff2c9'],
+    ['#8b7cff', '#e2dcff'],
+    ['#3ddc97', '#d3ffe9'],
+    ['#eceff4', '#eceff4']
   ];
   var RAD = ['0px', '10px', '28px', '999px'];
   var CORNERS = [
@@ -154,7 +156,6 @@
     return c;
   }
 
-  /* Inson qo'lidek: sinus egilish + sekin-tez-sekin + susayuvchi titroq. */
   function fly(c, get, ms) {
     var x0 = c.x, y0 = c.y;
     var bend = (Math.random() < 0.5 ? -1 : 1) * (0.12 + rand(0.2));
@@ -174,8 +175,6 @@
     return [r.left + r.width * fx, r.top + r.height * fy];
   }
 
-  /* Namunadagi idle: isOn() true ekan tasodifiy nuqtalarga kezadi,
-     har to'xtashda onStop() chaqiriladi (rang sinovi shunda). */
   function wander(c, getRect, isOn, onStop) {
     return (async function () {
       while (isOn()) {
@@ -191,25 +190,14 @@
     return el.querySelector('.hero-name, .section-title, .logo, h2, h1, .footer-note');
   }
 
-  /* Namuna tezligi: asos 45 ms dan kichik, jami ~1600 ms,
-     harflar oralig'i 0.6–1.4 barobar notekis. */
-  function typeText(node, text) {
+  /* Namunadagi yozish: min(45, 1600/len) ms, 0.6–1.4 notekislik. */
+  function typeText(typed, rest, text) {
     return new Promise(function (res) {
-      var html = node.innerHTML;
-      node.textContent = '';
-      var typed = document.createElement('span');
-      typed.className = 'build-typing is-typing';
-      var rest = document.createElement('span');
-      rest.className = 'build-typing-rest';
-      rest.textContent = text;
-      node.appendChild(typed);
-      node.appendChild(rest);
       var per = Math.min(45, 1600 / Math.max(text.length, 1));
       var i = 0;
       (function step() {
-        if (!node.parentNode || i >= text.length) {
+        if (i >= text.length) {
           typed.classList.remove('is-typing');
-          try { node.innerHTML = html; } catch (e) {}
           res();
           return;
         }
@@ -223,21 +211,65 @@
   function buildElement(el, delay) {
     if (!el || el.dataset.buildStarted) return;
     el.dataset.buildStarted = '1';
-    el.classList.add('is-built');
-    if (el.id === 'hero') root.classList.add('is-hero-built');
 
     var rect = el.getBoundingClientRect();
     if (rect.width < 10 || rect.height < 10) return;
     var W = rect.width, H = rect.height;
-
-    /* Asl holatni saqlaymiz — oxirida shaffoflik qaytariladi. */
-    var sBg = el.style.getPropertyValue('background');
-    var sBgPri = el.style.getPropertyPriority('background');
-    var sColor = el.style.color;
-    var sTransition = el.style.transition;
     var titleNode = titleInside(el);
-    var sTitleColor = titleNode ? titleNode.style.color : '';
-    var savedHTML = titleNode ? titleNode.innerHTML : null;
+    var text = titleNode ? titleNode.textContent.trim() : '';
+    if (!text) text = (el.textContent || '').trim().slice(0, 80);
+
+    var oldPos = el.style.position;
+    var csPos = window.getComputedStyle(el).position;
+    if (csPos === 'static') el.style.position = 'relative';
+
+    /* 1 — HAQIQIY UI MATNINI YASHIRAMIZ (faqat shu element ichida). */
+    var kids = [];
+    var vis = [];
+    for (var k = 0; k < el.children.length; k++) {
+      kids.push(el.children[k]);
+      vis.push(el.children[k].style.visibility);
+      el.children[k].style.visibility = 'hidden';
+    }
+    /* build.js o'zi boshqaradi — CSS clip endi aralashmaydi. */
+    el.style.clipPath = 'inset(0% 0% 0% 0%)';
+    el.classList.add('is-built');
+    if (el.id === 'hero') root.classList.add('is-hero-built');
+
+    /* 2 — Namunadagi "skin": shaffof, faqat element ichidagi vaqtinchalik
+       oyna. U hech qanday rang bermaydi — global suv foni o'zgarishsiz. */
+    var skin = document.createElement('div');
+    skin.className = 'build-skin';
+    el.appendChild(skin);
+
+    /* Matn qatlami sarlavha o'rnida, faqat yozish boshlanganda ko'rinadi. */
+    var textLayer = document.createElement('div');
+    textLayer.className = 'build-text-layer';
+    textLayer.style.visibility = 'hidden';
+    if (titleNode) {
+      var tr = titleNode.getBoundingClientRect();
+      var tc = window.getComputedStyle(titleNode);
+      textLayer.style.left = (tr.left - rect.left) + 'px';
+      textLayer.style.top = (tr.top - rect.top) + 'px';
+      textLayer.style.fontFamily = tc.fontFamily;
+      textLayer.style.fontSize = tc.fontSize;
+      textLayer.style.fontWeight = tc.fontWeight;
+      textLayer.style.lineHeight = tc.lineHeight;
+      textLayer.style.letterSpacing = tc.letterSpacing;
+      textLayer.style.maxWidth = Math.max(60, W - (tr.left - rect.left) - 12) + 'px';
+    } else {
+      textLayer.style.left = '24px';
+      textLayer.style.top = '24px';
+      textLayer.style.fontSize = '16px';
+    }
+    var typed = document.createElement('span');
+    typed.className = 'build-typing is-typing';
+    var rest = document.createElement('span');
+    rest.className = 'build-typing-rest';
+    rest.textContent = text;
+    textLayer.appendChild(typed);
+    textLayer.appendChild(rest);
+    el.appendChild(textLayer);
 
     var hue = rand(360) | 0;
     var A = cursor('tahlil', hue);
@@ -245,6 +277,7 @@
     var C = cursor('tahlil', (hue + 240) % 360);
     var inst = { finish: null };
     var cleaned = false;
+    var finalRadius = '0px';
     var rTimer1 = 0, rTimer2 = 0;
 
     function finish() {
@@ -252,56 +285,41 @@
       cleaned = true;
       clearTimeout(rTimer1);
       clearTimeout(rTimer2);
-      if (titleNode && savedHTML !== null) {
-        try { titleNode.innerHTML = savedHTML; } catch (e) {}
-        titleNode.style.color = sTitleColor;
-      }
+
+      /* Oynani olib, haqiqiy UI ni qaytaramiz — matn ikki marta chiqmaydi. */
+      if (skin.parentNode) skin.parentNode.removeChild(skin);
+      if (textLayer.parentNode) textLayer.parentNode.removeChild(textLayer);
+      for (var i = 0; i < kids.length; i++) kids[i].style.visibility = vis[i];
+      el.style.position = oldPos;
+
       A.fade(); B.fade(); C.fade();
-      /* Oyna to'liq ochildi: rangli qatlam yo'qoladi, tanlangan
-         radius esa clip-path ichida shakl sifatida qoladi. */
-      if (sBg) el.style.setProperty('background', sBg, sBgPri);
-      else el.style.removeProperty('background');
-      el.style.color = sColor;
-      el.style.transition = sTransition;
       el.style.clipPath = 'inset(0% 0% 0% 0% round ' + finalRadius + ')';
       el.style.willChange = '';
       el.classList.add('build-el-done');
-      var i = active.indexOf(inst);
-      if (i > -1) active.splice(i, 1);
+      var ix = active.indexOf(inst);
+      if (ix > -1) active.splice(ix, 1);
+      if (finalizing && active.length === 0) finalCleanup();
     }
     inst.finish = finish;
     active.push(inst);
-    var finalRadius = '0px';
 
     function R() { return el.getBoundingClientRect(); }
 
-    /* Faqat element ichidagi vaqtinchalik "oyna" — global fon o'zgarishsiz.
-       Inline !important kerak: CSS .section background:transparent!important. */
-    function paint(p) {
-      el.style.setProperty('background', p[0], 'important');
-      el.style.color = p[1];
-      if (titleNode) titleNode.style.color = p[1];
+    /* Fonga hech narsa berilmaydi: suv har doimgidek qoladi.
+       Rang faqat yozilayotgan matnda va kursor yorlig'ida sinaladi. */
+    function colorize(p) {
+      textLayer.style.color = p[1];
     }
 
-    /* Oynaning ochilayotgan qirrasini ushlab turadigan nuqta. */
-    function grip(corner, r, px, py) {
-      return [
-        corner.ox ? r.right - W * px : r.left + W * px,
-        corner.oy ? r.bottom - H * py : r.top + H * py
-      ];
+    /* Oyna burchakdan ochiladi: chapga ham, o'ngga ham. */
+    function anchor(corner) {
+      skin.style[corner.ox ? 'right' : 'left'] = '0';
+      skin.style[corner.ox ? 'left' : 'right'] = 'auto';
+      skin.style[corner.oy ? 'bottom' : 'top'] = '0';
+      skin.style[corner.oy ? 'top' : 'bottom'] = 'auto';
     }
 
-    /* clip-path bilan haqiqiy o'lcham o'zgarishi (0% → 100%). */
-    function insetFor(corner, px, py) {
-      var left = corner.ox ? 100 - px : 0;
-      var right = corner.ox ? 0 : 100 - px;
-      var top = corner.oy ? 100 - py : 0;
-      var bottom = corner.oy ? 0 : 100 - py;
-      return 'inset(' + top.toFixed(2) + '% ' + right.toFixed(2) + '% ' +
-             bottom.toFixed(2) + '% ' + left.toFixed(2) + '%)';
-    }
-
-    /* Eni 1200 ms, bo'yi 1500 ms — ikki mustaqil vaqt o'qi. */
+    /* Eni va bo'yi alohida vaqt o'qlarida 0 → to'liq o'lcham. */
     function pull(c, corner, msW, msH) {
       return new Promise(function (res) {
         var t0 = performance.now();
@@ -310,10 +328,10 @@
           var a = Math.min(t / msW, 1), b = Math.min(t / msH, 1);
           var ea = easeHuman(a), eb = easeHuman(b);
           var r = R();
-          el.style.clipPath = insetFor(corner, ea * 100, eb * 100);
-          var g = grip(corner, r, ea, eb);
-          c.x = g[0] + Math.sin(now / 45) * 1.2;
-          c.y = g[1] + Math.cos(now / 55) * 1.2;
+          skin.style.width = (W * ea).toFixed(1) + 'px';
+          skin.style.height = (H * eb).toFixed(1) + 'px';
+          c.x = (corner.ox ? r.right - W * ea : r.left + W * ea) + Math.sin(now / 45) * 1.2;
+          c.y = (corner.oy ? r.bottom - H * eb : r.top + H * eb) + Math.cos(now / 55) * 1.2;
           place(c);
           if (a < 1 || b < 1) requestAnimationFrame(frame);
           else res();
@@ -332,7 +350,7 @@
           fly(C, function () { return pointAt(R(), rand(1), rand(1)); }, 700 + rand(400))
         ]);
 
-        /* 2 — TAHLIL: 900 ms erkin kezish */
+        /* 2 — 900 ms TAHLIL */
         var on = true;
         var study = [A, B, C].map(function (c) {
           return wander(c, R, function () { return on; });
@@ -346,56 +364,55 @@
         var fin = pick(PAL);
         var rad = pick(RAD);
         var radMid = pick(RAD);
-        paint(pick(PAL));
-        el.style.transition = 'border-radius .5s ease, background .12s ease';
+        anchor(corner);
+        colorize(pick(PAL));
         A.label('shakl'); B.label('rang'); C.label('matn');
 
-        /* 4 — SHAKL: burchakka borib bosadi */
+        /* 4 — BURCHAKNI BOSISH */
         await fly(A, function () {
           var r = R();
           return [corner.ox ? r.right : r.left, corner.oy ? r.bottom : r.top];
         }, 450);
         await A.press(150);
 
-        /* 5 — RANG sinovi + MATN kutish; radius ikki marta almashadi */
+        /* 5 — RANG SINOVI + MATN KUTISHI; radius ikki marta */
         on = true;
         var tour = wander(B, R, function () { return on; }, function () {
           var p = pick(PAL);
-          paint(p);
+          colorize(p);
           B.label(p[0]);
         });
         var waiting = wander(C, R, function () { return on; });
-        rTimer1 = setTimeout(function () { el.style.borderRadius = radMid; }, 450);
+        rTimer1 = setTimeout(function () { skin.style.borderRadius = radMid; }, 450);
         rTimer2 = setTimeout(function () {
-          el.style.borderRadius = rad;
+          skin.style.borderRadius = rad;
           finalRadius = rad;
         }, 1000);
 
-        /* 6 — TORTISH: eni va bo'yi alohida tezlikda */
+        /* 6 — HAQIQIY O'LCHAM O'ZGARISHI */
         await pull(A, corner, 1200, 1500);
         await A.press(150);
         A.label('tayyor');
 
-        /* 7 — Yakuniy rang tanlanadi */
+        /* 7 — YAKUNIY RANG */
         on = false;
         await Promise.all([tour, waiting]);
-        paint(fin);
+        colorize(fin);
         B.label('rang ' + fin[0]);
         B.press(150);
 
-        /* 8 — MATN: harf-harf, ▍ bilan */
+        /* 8 — MATN: faqat hozir yoziladi, oldindan ko'rinmaydi */
         await fly(C, function () {
           var r = R();
-          var t = titleNode ? titleNode.getBoundingClientRect() : r;
-          return [t.left + 14, Math.max(r.top + 14, t.top + t.height / 2)];
+          var t = textLayer.getBoundingClientRect();
+          return [t.left + 12, Math.max(r.top + 12, t.top + t.height / 2)];
         }, 450);
-        if (titleNode && savedHTML !== null) {
-          C.label('yozyapti');
-          await typeText(titleNode, titleNode.textContent.trim());
-        }
+        C.label('yozyapti');
+        textLayer.style.visibility = 'visible';
+        await typeText(typed, rest, text);
         await sleep(120);
 
-        /* 9 — Agentlar so'nadi, shakl qoladi */
+        /* 9 — AGENTLAR SO'NADI, HAQIQIY UI QAYTADI */
         finish();
       } catch (e) {
         finish();
@@ -414,24 +431,34 @@
       try { active[i].finish(); } catch (e) {}
     }
   }
-  function complete() {
-    if (done) return;
-    done = true;
+  function finalCleanup() {
+    if (cleanedAll) return;
+    cleanedAll = true;
+    clearTimeout(cleanupTimer);
     buildAll();
-    updateHud(1, true);
-    unbind();
+    if (layer) layer.classList.add('is-done');
+    root.classList.add('is-build-done');
     setTimeout(function () {
-      if (layer) layer.classList.add('is-done');
-      root.classList.add('is-build-done');
-    }, 350);
-    setTimeout(function () {
-      finishAll();
       root.classList.remove('is-building');
       setTimeout(function () {
         if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
         layer = null;
       }, 900);
-    }, 1050);
+    }, 350);
+  }
+  function complete() {
+    if (done) return;
+    done = true;
+    updateHud(1, true);
+    unbind();
+    if (active.length === 0) {
+      finalCleanup();
+    } else {
+      /* Hamma agentlar o'z ishini tugatmaguncha UI ochilmaydi.
+         Xavfsizlik: 14 s dan keyin majburan ochamiz. */
+      finalizing = true;
+      cleanupTimer = setTimeout(finalCleanup, 14000);
+    }
   }
   function sync() {
     if (!started || done) return;

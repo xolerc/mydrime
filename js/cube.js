@@ -55,7 +55,6 @@ class XolericProCore {
 
         this.init();
         this.addCores(); // Endi ham Box ham PRO shakl qo'shiladi
-        this.addNeuralNetwork();
         this.initPostProcessing();
         // addMatrixBackground() — qo'shilmadi: fon mydrime ning o'z WebGL suvi
         this.addEventListeners();
@@ -143,33 +142,6 @@ class XolericProCore {
         this.masterGroup.add(this.pointLight2);
         this.masterGroup.add(this.coreLight);
         this.scene.add(this.masterGroup);
-    }
-
-    addNeuralNetwork() {
-        this.neurons = [];
-        const neuronCount = this.isMobile ? 50 : 120;
-        const neuronGeo = new THREE.SphereGeometry(this.isMobile ? 0.04 : 0.03, 8, 8);
-        this.neuronMat = new THREE.MeshBasicMaterial({ color: 0x00ff88 });
-
-        for(let i = 0; i < neuronCount; i++) {
-            const neuron = new THREE.Mesh(neuronGeo, this.neuronMat);
-            neuron.position.set((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3);
-            neuron.scale.set(0.01, 0.01, 0.01);
-            this.scene.add(neuron);
-
-            this.neurons.push({
-                mesh: neuron,
-                basePos: neuron.position.clone(),
-                vel: new THREE.Vector3((Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01)
-            });
-        }
-
-        this.neuronLinesGeo = new THREE.BufferGeometry();
-        const positions = new Float32Array(neuronCount * neuronCount * 3 * 2);
-        this.neuronLinesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        this.neuronLinesMat = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 });
-        this.neuronLines = new THREE.LineSegments(this.neuronLinesGeo, this.neuronLinesMat);
-        this.scene.add(this.neuronLines);
     }
 
     initPostProcessing() {
@@ -387,13 +359,10 @@ class XolericProCore {
         // 5. Ranglar va Effektlarni yangilash
         const colorHex = new THREE.Color(`hsl(${this.currentHue}, 100%, 50%)`);
         const dimColorHex = new THREE.Color(`hsl(${this.currentHue}, 100%, 20%)`);
-        const mergeColorHex = new THREE.Color(`hsl(${this.currentHue}, 100%, ${50 + this.smoothedMerge * 30}%)`);
 
         this.cageMaterial.color = colorHex;
         this.boxMaterial.emissive = dimColorHex;
         this.knotMaterial.emissive = new THREE.Color(`hsl(${this.currentHue}, 100%, ${30 + this.smoothedMerge * 20}%)`);
-        this.neuronMat.color = mergeColorHex;
-        this.neuronLinesMat.color = mergeColorHex;
 
         // Yorug'lik va Post-processing intensivligi
         this.pointLight1.color = colorHex;
@@ -405,56 +374,6 @@ class XolericProCore {
         this.coreLight.intensity = this.smoothedMerge * 100; // Markazda yorqin chaqnash
 
         this.bloomPass.strength = 1.2 + (this.smoothedMerge * 2.5); // Yorqinlik birlashganda portlaydi
-
-        // 6. Neyronlar gravitatsiyasi (Markazga so'rilish)
-        const globalCenter = new THREE.Vector3(0,0,0);
-        const mouseVec3 = new THREE.Vector3(this.mouse.x * 5, -this.mouse.y * 5, 0);
-
-        this.neurons.forEach(n => {
-            if(n.mesh.scale.x < 1) {
-                const s = Math.min(n.mesh.scale.x + 0.02, 1);
-                n.mesh.scale.set(s, s, s);
-            }
-
-            n.mesh.position.add(n.vel);
-
-            // Chegaralar birlashganda kengayadi
-            let bounds = 1.5 + this.smoothedMerge;
-            for(const axis of ['x','y','z']){
-                if(n.mesh.position[axis] > bounds || n.mesh.position[axis] < -bounds) n.vel[axis] *= -1;
-            }
-
-            // Birlashish vaqtida neyronlar markazga aylanib tortiladi (Qora tuynuk effekti)
-            if (this.smoothedMerge > 0.1) {
-                let pullStrength = this.smoothedMerge * 0.05;
-                n.mesh.position.lerp(globalCenter, pullStrength);
-                // Orbitada aylanish effekti
-                n.mesh.position.applyAxisAngle(new THREE.Vector3(0,1,0), this.smoothedMerge * 0.05);
-            }
-
-            const dist = n.mesh.position.distanceTo(mouseVec3);
-            if(dist < 1.0) n.mesh.position.lerp(n.basePos, 0.05);
-        });
-
-        // Neyron chiziqlari masofasi o'zgarishi
-        const positions = this.neuronLinesGeo.attributes.position.array;
-        let idx = 0;
-        const connectDist = (this.isMobile ? 0.6 : 0.45) + (this.smoothedMerge * 0.5);
-
-        for(let i = 0; i < this.neurons.length; i++) {
-            for(let j = i + 1; j < this.neurons.length; j++) {
-                const dx = this.neurons[i].mesh.position.x - this.neurons[j].mesh.position.x;
-                const dy = this.neurons[i].mesh.position.y - this.neurons[j].mesh.position.y;
-                const dz = this.neurons[i].mesh.position.z - this.neurons[j].mesh.position.z;
-                if((dx*dx + dy*dy + dz*dz) < (connectDist * connectDist)) {
-                    positions[idx++] = this.neurons[i].mesh.position.x; positions[idx++] = this.neurons[i].mesh.position.y; positions[idx++] = this.neurons[i].mesh.position.z;
-                    positions[idx++] = this.neurons[j].mesh.position.x; positions[idx++] = this.neurons[j].mesh.position.y; positions[idx++] = this.neurons[j].mesh.position.z;
-                }
-            }
-        }
-
-        this.neuronLinesGeo.setDrawRange(0, idx / 3);
-        this.neuronLinesGeo.attributes.position.needsUpdate = true;
 
         this.updateTexture();
         // updateMatrix() — yo'q: fon mydrime ning WebGL suvi

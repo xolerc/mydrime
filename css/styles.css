@@ -786,6 +786,109 @@ main#main, footer.site-footer {
   gap: var(--space-3);
 }
 
+/* ─────────── MY CUBE — to'liq kub fayli mydrime ning WebGL suvi ustida ───────────
+   Fanni qo'shmaymiz: orqa fon o'zgarishsiz qoladi (alpha: true). */
+.cube-stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(420px, 68vh, 680px);
+  margin-top: var(--space-6);
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+}
+#canvas-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+#canvas-container canvas { display: block; width: 100%; height: 100%; }
+
+#ui-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  padding: clamp(16px, 3vw, 32px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 1.5s var(--ease-out), transform 1.5s var(--ease-out);
+}
+.hud-panel {
+  background: rgba(5, 5, 5, 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--primary, #00ff88);
+  padding: 16px 22px;
+  border-radius: 4px;
+  display: inline-block;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+}
+.hud-top { align-self: flex-start; }
+.hud-bottom {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: min(250px, 80%);
+}
+.hud-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.hud-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(10px, 1.5vw, 12px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hud-title {
+  color: #fff;
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  letter-spacing: 6px;
+  margin-bottom: 5px;
+  text-shadow: 0 0 20px var(--primary, #00ff88);
+  transition: text-shadow 0.3s ease;
+}
+.hud-value {
+  color: var(--primary, #00ff88);
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--primary, #00ff88);
+  transition: color 0.3s ease;
+}
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--primary, #00ff88);
+  box-shadow: 0 0 10px var(--primary, #00ff88);
+  transition: width 0.1s linear, background 0.3s ease;
+}
+@media (pointer: coarse) {
+  .hud-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(5, 5, 5, 0.65);
+  }
+}
+@media (max-width: 768px) {
+  .cube-stage { min-height: 420px; margin-top: var(--space-5); }
+  .hud-bottom { min-width: min(230px, 85%); }
+}
+
 .project-card {
   position: relative;
   border-radius: 12px;

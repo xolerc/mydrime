@@ -14,8 +14,15 @@
       document.addEventListener('agentbuild:done', function () {
         if (b) b.removeAttribute('data-swim');
       }, { once: true });
-      if (window.AgentBuild) window.AgentBuild.init({ targets: '[data-ab]' });
-      else document.documentElement.classList.remove('ab-on');
+      if (window.AgentBuild) {
+        /* slow:0 — AgentBuild ning "slow scroll" rejimi touchmove/wheel ni
+           preventDefault qilib, barmoq/g‘ildirak harakatining faqat yarmicha
+           scroll qiladi (Telegram WebView da juda sekin tuyuladi).
+           Tabiiy scroll qaytariladi, build effekti esa scroll bilan ishlaydi. */
+        window.AgentBuild.init({ targets: '[data-ab]', slow: 0 });
+        /* slow rejim o‘chirilganda build effektini ishga tushirish uchun */
+        window.dispatchEvent(new Event('scroll'));
+      } else document.documentElement.classList.remove('ab-on');
     };
   </script>
   <meta name="theme-color" content="#05070c">
@@ -151,20 +158,6 @@
     <section id="about" class="section about" role="region" aria-label="Men haqimda">
       <div class="about-content">
         <p class="about-bio" data-ab><strong>Xoleric kim?</strong> Xoleric — O'zbekistonlik frontend dasturchi va kreativ kod muallifi. HTML, CSS, JavaScript, React va WebGL texnologiyalari bilan tez hamda jonli veb-saytlar yaratadi. Ushbu sahifa — Xoleric'ning rasmiy portfoliosi.</p>
-        <div class="about-blurbs">
-          <div class="blurb" data-ab>
-            <h3>Ko'nikmalar</h3>
-            <p>Toza semantik HTML, zamonaviy CSS tizimlar, vanilla va framework JavaScript hamda har qanday qurilmada tez ishlaydigan motion-dizayn.</p>
-          </div>
-          <div class="blurb" data-ab>
-            <h3>Jarayon</h3>
-            <p>Dizayn-tokenlar → komponentli fikrlash → interaksiya xoreografiyasi → Lighthouse. Ko'rinishi kabi his qilinishi ham yoqimli interfeyslar topshiraman.</p>
-          </div>
-          <div class="blurb" data-ab>
-            <h3>Mavjudlik</h3>
-            <p>Freelance loyihalar, hamkorlik va full-time rollar uchun ochiqman. Telegram yoki email orqali tez javob beraman.</p>
-          </div>
-        </div>
       </div>
     </section>
 

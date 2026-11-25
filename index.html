@@ -18,10 +18,9 @@
         /* slow:0 — AgentBuild ning "slow scroll" rejimi touchmove/wheel ni
            preventDefault qilib, barmoq/g‘ildirak harakatining faqat yarmicha
            scroll qiladi (Telegram WebView da juda sekin tuyuladi).
-           Tabiiy scroll qaytariladi, build effekti esa scroll bilan ishlaydi. */
+           Tabiiy scroll saqlanadi; agentlar faqat haqiqiy scroll bilan ishga
+           tushadi — birinchi kirganda kontent yashirin turadi. */
         window.AgentBuild.init({ targets: '[data-ab]', slow: 0 });
-        /* slow rejim o‘chirilganda build effektini ishga tushirish uchun */
-        window.dispatchEvent(new Event('scroll'));
       } else document.documentElement.classList.remove('ab-on');
     };
   </script>

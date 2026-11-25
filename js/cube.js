@@ -81,7 +81,8 @@ class XolericProCore {
         // Shaffof fon: mydrime ning global WebGL suvi kub orqasida ko'rinadi
         this.renderer.setClearColor(0x000000, 0);
         this.renderer.setSize(this.width, this.height);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.isMobile ? 1.5 : 2));
+        // 1.5 ga cheklash kubni yarim aniqlikda chizadi — mobil ekranda xiralik
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.2;
         this.container.appendChild(this.renderer.domElement);
@@ -168,7 +169,11 @@ class XolericProCore {
                 varying vec2 vUv;
                 void main() {
                     vec4 c = texture2D(tDiffuse, vUv);
-                    float a = clamp(max(max(c.r, c.g), c.b) * 1.6, 0.0, 1.0);
+                    float m = max(max(c.r, c.g), c.b);
+                    /* Kub piksellari to'liq shaffof bo'lmasin — aks holda fon
+                       bilan aralashib xiralashadi. Faqat juda qora hududlar
+                       shaffof qoladi. */
+                    float a = smoothstep(0.01, 0.08, m);
                     gl_FragColor = vec4(c.rgb * a, a);
                 }
             `

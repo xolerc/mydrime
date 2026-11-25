@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 class XolericProCore {
     constructor() {
@@ -180,6 +181,26 @@ class XolericProCore {
         this.composer = new EffectComposer(this.renderer);
         this.composer.addPass(renderScene);
         this.composer.addPass(this.bloomPass);
+
+        /* UnrealBloomPass barcha piksellarga alpha=1 yozadi — canvas qora
+           bo'lib qoladi. Oxirgi pass alpha'ni yorqinlikdan qayta hisoblaydi:
+           qora = shaffof, kub = ko'rinadi. Global fon ko'rinib turadi. */
+        this.composer.addPass(new ShaderPass({
+            uniforms: { tDiffuse: { value: null } },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse;
+                varying vec2 vUv;
+                void main() {
+                    vec4 c = texture2D(tDiffuse, vUv);
+                    float a = clamp(max(max(c.r, c.g), c.b) * 1.6, 0.0, 1.0);
+                    gl_FragColor = vec4(c.rgb * a, a);
+                }
+            `
+        }));
     }
 
     updateTexture() {

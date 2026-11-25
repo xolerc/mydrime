@@ -795,7 +795,7 @@ main#main, footer.site-footer {
   margin-top: var(--space-6);
   border-radius: var(--radius);
   overflow: hidden;
-  isolation: isolate;
+  background: transparent;
 }
 #canvas-container {
   position: absolute;
@@ -803,8 +803,14 @@ main#main, footer.site-footer {
   width: 100%;
   height: 100%;
   z-index: 1;
+  background: transparent;
 }
-#canvas-container canvas { display: block; width: 100%; height: 100%; }
+#canvas-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
 
 @media (max-width: 768px) {
   .cube-stage { min-height: 420px; margin-top: var(--space-5); }

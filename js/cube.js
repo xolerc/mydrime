@@ -23,21 +23,11 @@ class XolericProCore {
         this.baseHue = Math.random() * 360; // Har bir oyna o'zining unikal rangidan boshlaydi
         this.currentHue = this.baseHue;
         this.time = 0;
-        this.uiShown = false;
+        this.frameCount = 0;
 
         // Birlashish o'zgaruvchilari
         this.mergeFactor = 0; // 0 dan 1 gacha
         this.smoothedMerge = 0;
-
-        // UI elementlari
-        this.lastFrameTime = performance.now();
-        this.frameCount = 0;
-        this.fpsEl = document.getElementById('fps-counter');
-        this.titleEl = document.getElementById('main-title');
-        this.statusEl = document.getElementById('sync-status');
-        this.mergeBar = document.getElementById('merge-bar');
-        this.topPanel = document.getElementById('top-panel');
-        this.bottomPanel = document.getElementById('bottom-panel');
 
         // Animatsiya faqat blok ekranda bo'lganda
         this.rafId = 0;
@@ -82,7 +72,7 @@ class XolericProCore {
 
     init() {
         this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.FogExp2(0x000000, 0.02);
+        // scene.background yo'q — global mydrime WebGL foni ko'rinadi
 
         this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 0.1, 100);
         this.camera.position.z = this.isMobile ? 7 : 5.5;
@@ -260,19 +250,6 @@ class XolericProCore {
         this.composer.setSize(this.width, this.height);
     }
 
-    updateFPS() {
-        const now = performance.now();
-        const delta = now - this.lastFrameTime;
-        if(delta >= 1000) {
-            const fps = Math.round((this.frameCount * 1000) / delta);
-            this.fpsEl.innerText = fps;
-            this.fpsEl.style.color = fps < 30 ? '#ff3333' : fps < 50 ? '#ffaa00' : 'var(--primary)';
-            this.frameCount = 0;
-            this.lastFrameTime = now;
-        }
-        this.frameCount++;
-    }
-
     animate() {
         this.rafId = 0;
         if (document.hidden || !this.visible) return;
@@ -284,7 +261,7 @@ class XolericProCore {
             this.currentHue = this.baseHue;
         }
 
-        this.updateFPS();
+        this.frameCount++;
 
         // 1. Oynaning global markazini aniqlash
         let leftChrome = (window.outerWidth - window.innerWidth) / 2;
@@ -389,7 +366,6 @@ class XolericProCore {
         const dimColorHex = new THREE.Color(`hsl(${this.currentHue}, 100%, 20%)`);
         const mergeColorHex = new THREE.Color(`hsl(${this.currentHue}, 100%, ${50 + this.smoothedMerge * 30}%)`);
 
-        document.documentElement.style.setProperty('--primary', `hsl(${this.currentHue}, 100%, 50%)`);
         this.cageMaterial.color = colorHex;
         this.boxMaterial.emissive = dimColorHex;
         this.knotMaterial.emissive = new THREE.Color(`hsl(${this.currentHue}, 100%, ${30 + this.smoothedMerge * 20}%)`);
@@ -407,26 +383,7 @@ class XolericProCore {
 
         this.bloomPass.strength = 1.2 + (this.smoothedMerge * 2.5); // Yorqinlik birlashganda portlaydi
 
-        // UI Yangilash
-        this.titleEl.style.textShadow = `0 0 ${15 + this.smoothedMerge*20}px var(--primary)`;
-        if (this.smoothedMerge > 0.8) {
-            this.statusEl.innerText = "CRITICAL MASS";
-            this.statusEl.style.color = "#fff";
-            document.documentElement.style.setProperty('--primary', '#ff0055');
-            this.topPanel.style.borderColor = "var(--primary)";
-        } else if (this.smoothedMerge > 0.1) {
-            this.statusEl.innerText = "ENTANGLING...";
-            this.statusEl.style.color = "var(--primary)";
-            this.topPanel.style.borderColor = "var(--primary)";
-        } else {
-            this.statusEl.innerText = "ISOLATED";
-            this.statusEl.style.color = "var(--primary)";
-            this.topPanel.style.borderColor = "rgba(255,255,255,0.1)";
-        }
-        this.mergeBar.style.width = `${this.smoothedMerge * 100}%`;
-
         // 6. Neyronlar gravitatsiyasi (Markazga so'rilish)
-        let completeCount = 0;
         const globalCenter = new THREE.Vector3(0,0,0);
         const mouseVec3 = new THREE.Vector3(this.mouse.x * 5, -this.mouse.y * 5, 0);
 
@@ -434,7 +391,7 @@ class XolericProCore {
             if(n.mesh.scale.x < 1) {
                 const s = Math.min(n.mesh.scale.x + 0.02, 1);
                 n.mesh.scale.set(s, s, s);
-            } else { completeCount++; }
+            }
 
             n.mesh.position.add(n.vel);
 
@@ -455,12 +412,6 @@ class XolericProCore {
             const dist = n.mesh.position.distanceTo(mouseVec3);
             if(dist < 1.0) n.mesh.position.lerp(n.basePos, 0.05);
         });
-
-        if(!this.uiShown && completeCount === this.neurons.length) {
-            this.uiShown = true;
-            document.getElementById('ui-layer').style.opacity = '1';
-            document.getElementById('ui-layer').style.transform = 'scale(1)';
-        }
 
         // Neyron chiziqlari masofasi o'zgarishi
         const positions = this.neuronLinesGeo.attributes.position.array;

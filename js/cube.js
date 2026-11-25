@@ -78,6 +78,8 @@ class XolericProCore {
         this.camera.position.z = this.isMobile ? 7 : 5.5;
 
         this.renderer = new THREE.WebGLRenderer({ antialias: !this.isMobile, alpha: true, powerPreference: "high-performance" });
+        // Shaffof fon: mydrime ning global WebGL suvi kub orqasida ko'rinadi
+        this.renderer.setClearColor(0x000000, 0);
         this.renderer.setSize(this.width, this.height);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.isMobile ? 1.5 : 2));
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;

@@ -77,7 +77,7 @@ class XolericProCore {
         this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 0.1, 100);
         this.camera.position.z = this.isMobile ? 7 : 5.5;
 
-        this.renderer = new THREE.WebGLRenderer({ antialias: !this.isMobile, alpha: true, powerPreference: "high-performance" });
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
         // Shaffof fon: mydrime ning global WebGL suvi kub orqasida ko'rinadi
         this.renderer.setClearColor(0x000000, 0);
         this.renderer.setSize(this.width, this.height);
@@ -104,14 +104,14 @@ class XolericProCore {
         const boxGeo = new THREE.BoxGeometry(1.4, 1.4, 1.4);
 
         this.canvas = document.createElement('canvas');
-        this.canvas.width = 512; this.canvas.height = 512;
+        this.canvas.width = 1024; this.canvas.height = 1024;
         this.texCtx = this.canvas.getContext('2d', { alpha: false });
         this.canvasTexture = new THREE.CanvasTexture(this.canvas);
         this.canvasTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
         this.boxMaterial = new THREE.MeshPhysicalMaterial({
-            map: this.canvasTexture, color: 0xffffff, metalness: 0.3, roughness: 0.1,
-            transmission: 0.5, thickness: 1.0, emissive: 0x000000, transparent: true
+            map: this.canvasTexture, color: 0xffffff, metalness: 0.35, roughness: 0.25,
+            emissive: 0x000000
         });
 
         this.coreBox = new THREE.Mesh(boxGeo, this.boxMaterial);
@@ -120,8 +120,8 @@ class XolericProCore {
         // 2. Birlashgan Holat (PRO): Kvant Halqa (Torus Knot)
         const knotGeo = new THREE.TorusKnotGeometry(0.8, 0.25, 128, 32);
         this.knotMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff, metalness: 0.9, roughness: 0.0,
-            transmission: 0.9, thickness: 2.0, emissive: 0x000000, transparent: true, opacity: 0
+            color: 0xffffff, metalness: 0.9, roughness: 0.1,
+            emissive: 0x000000, transparent: true, opacity: 0
         });
         this.coreKnot = new THREE.Mesh(knotGeo, this.knotMaterial);
         // Boshida kichkina va ko'rinmas bo'ladi
@@ -148,8 +148,8 @@ class XolericProCore {
     initPostProcessing() {
         const renderScene = new RenderPass(this.scene, this.camera);
         this.bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(this.width / (this.isMobile ? 2 : 1), this.height / (this.isMobile ? 2 : 1)),
-            1.2, 0.5, 0.2
+            new THREE.Vector2(this.width, this.height),
+            0.5, 0.15, 0.75
         );
         this.composer = new EffectComposer(this.renderer);
         this.composer.addPass(renderScene);
@@ -183,18 +183,18 @@ class XolericProCore {
     updateTexture() {
         if(this.frameCount % 3 !== 0) return;
         this.texCtx.fillStyle = '#050505';
-        this.texCtx.fillRect(0, 0, 512, 512);
-        this.texCtx.lineWidth = 15;
+        this.texCtx.fillRect(0, 0, 1024, 1024);
+        this.texCtx.lineWidth = 30;
         this.texCtx.strokeStyle = `hsl(${this.currentHue}, 80%, 40%)`;
-        this.texCtx.strokeRect(30, 30, 452, 452);
+        this.texCtx.strokeRect(60, 60, 904, 904);
 
-        this.texCtx.font = 'bold 60px Courier New';
+        this.texCtx.font = 'bold 120px Courier New';
         this.texCtx.textAlign = 'center';
         this.texCtx.textBaseline = 'middle';
         this.texCtx.fillStyle = `hsl(${this.currentHue}, 100%, 65%)`;
-        this.texCtx.fillText("X O L E R I C", 256, 256);
-        this.texCtx.font = '24px Courier New';
-        this.texCtx.fillText(this.smoothedMerge > 0.5 ? "QUANTUM MERGE" : "NEURAL CORE", 256, 320);
+        this.texCtx.fillText("X O L E R I C", 512, 512);
+        this.texCtx.font = '48px Courier New';
+        this.texCtx.fillText(this.smoothedMerge > 0.5 ? "QUANTUM MERGE" : "NEURAL CORE", 512, 640);
         this.canvasTexture.needsUpdate = true;
     }
 
@@ -378,7 +378,7 @@ class XolericProCore {
         this.coreLight.color = colorHex;
         this.coreLight.intensity = this.smoothedMerge * 100; // Markazda yorqin chaqnash
 
-        this.bloomPass.strength = 1.2 + (this.smoothedMerge * 2.5); // Yorqinlik birlashganda portlaydi
+        this.bloomPass.strength = 0.5 + (this.smoothedMerge * 0.8); // Kam glow — kub xira bo'lmasin
 
         this.updateTexture();
         // updateMatrix() — yo'q: fon mydrime ning WebGL suvi
